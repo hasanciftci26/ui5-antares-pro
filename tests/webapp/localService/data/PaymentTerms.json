@@ -1,0 +1,42 @@
+[
+    {
+        "ID": "NET30",
+        "description": "Net 30 days"
+    },
+    {
+        "ID": "NET45",
+        "description": "Net 45 days"
+    },
+    {
+        "ID": "NET60",
+        "description": "Net 60 days"
+    },
+    {
+        "ID": "DUE_ON_RECEIPT",
+        "description": "Due on Receipt"
+    },
+    {
+        "ID": "COD",
+        "description": "Cash on Delivery"
+    },
+    {
+        "ID": "PREPAID",
+        "description": "Prepaid"
+    },
+    {
+        "ID": "INSTALLMENTS",
+        "description": "Installments"
+    },
+    {
+        "ID": "30_DAYS_EOM",
+        "description": "30 Days End of Month"
+    },
+    {
+        "ID": "60_DAYS_EOM",
+        "description": "60 Days End of Month"
+    },
+    {
+        "ID": "RECURRING",
+        "description": "Recurring Payment"
+    }
+]

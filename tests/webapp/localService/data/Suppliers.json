@@ -1,0 +1,452 @@
+[
+    {
+        "ID": "c67e3407-f3d2-4e29-9e4c-cf6f30db99b0",
+        "companyName": "Global Tech Solutions",
+        "contactName": "Alice Johnson",
+        "contactTitle": "CEO",
+        "country": "USA",
+        "city": "San Francisco",
+        "paymentTerms": "NET30"
+    },
+    {
+        "ID": "2c71b236-8c6f-4b78-9a47-905ff9c3b779",
+        "companyName": "Green Energy Ltd.",
+        "contactName": "Michael Brown",
+        "contactTitle": "COO",
+        "country": "CAN",
+        "city": "Vancouver",
+        "paymentTerms": "NET45"
+    },
+    {
+        "ID": "8fa9d70d-1859-4e02-8e1f-f768d8d1e7a2",
+        "companyName": "Latin Foods Inc.",
+        "contactName": "Carlos Gomez",
+        "contactTitle": "Sales Manager",
+        "country": "MEX",
+        "city": "Guadalajara",
+        "paymentTerms": "DUE_ON_RECEIPT"
+    },
+    {
+        "ID": "f4f91d4b-46f0-4f9a-a61a-cd7cb7593c6d",
+        "companyName": "Innovative Dynamics",
+        "contactName": "Sophia Lee",
+        "contactTitle": "CTO",
+        "country": "BRA",
+        "city": "Rio de Janeiro",
+        "paymentTerms": "PREPAID"
+    },
+    {
+        "ID": "7ab90843-9a63-4d15-91a2-7c7481c889c5",
+        "companyName": "Southern Wines",
+        "contactName": "Juan Martinez",
+        "contactTitle": "Marketing Director",
+        "country": "ARG",
+        "city": "Mendoza",
+        "paymentTerms": "INSTALLMENTS"
+    },
+    {
+        "ID": "d8450bcb-f1b2-4a5e-8d40-d9ffac3f57e2",
+        "companyName": "Andes Electronics",
+        "contactName": "Patricia Vargas",
+        "contactTitle": "Operations Manager",
+        "country": "COL",
+        "city": "Medellín",
+        "paymentTerms": "30_DAYS_EOM"
+    },
+    {
+        "ID": "a9c9b04f-84b8-4c4a-9f3e-92b7d4f9d8f0",
+        "companyName": "Pacific Imports",
+        "contactName": "Miguel Silva",
+        "contactTitle": "Product Manager",
+        "country": "CHL",
+        "city": "Valparaíso",
+        "paymentTerms": "NET60"
+    },
+    {
+        "ID": "62e7dc77-07e0-4a64-9c72-88167a1a0e64",
+        "companyName": "Inca Solutions",
+        "contactName": "Luis Morales",
+        "contactTitle": "Head of Procurement",
+        "country": "PER",
+        "city": "Arequipa",
+        "paymentTerms": "RECURRING"
+    },
+    {
+        "ID": "e235b767-5a90-4e9d-b20e-16f9a023004b",
+        "companyName": "Venezuelan Textiles",
+        "contactName": "Isabella Ortega",
+        "contactTitle": "Logistics Coordinator",
+        "country": "VEN",
+        "city": "Maracaibo",
+        "paymentTerms": "COD"
+    },
+    {
+        "ID": "11c7a6b1-3fd1-44e8-b062-e73c8b7c63f0",
+        "companyName": "Equator Books",
+        "contactName": "David Smith",
+        "contactTitle": "Editor",
+        "country": "ECU",
+        "city": "Guayaquil",
+        "paymentTerms": "60_DAYS_EOM"
+    },
+    {
+        "ID": "7d5f4ac1-1dc6-438f-bc8c-9c0b51c873a7",
+        "companyName": "Bolivian Beverages",
+        "contactName": "Laura González",
+        "contactTitle": "Customer Service",
+        "country": "BOL",
+        "city": "Cochabamba",
+        "paymentTerms": "INSTALLMENTS"
+    },
+    {
+        "ID": "a4e327d6-54d8-4f1b-90ef-5402dc017930",
+        "companyName": "Paraguay Plastics",
+        "contactName": "Jorge Ramírez",
+        "contactTitle": "Quality Control",
+        "country": "PRY",
+        "city": "Ciudad del Este",
+        "paymentTerms": "NET30"
+    },
+    {
+        "ID": "8e5b1f1a-cbfa-4f7d-b2dc-8a34eac6c1a5",
+        "companyName": "Uruguayan Leather Co.",
+        "contactName": "Ana Silva",
+        "contactTitle": "Account Manager",
+        "country": "URY",
+        "city": "Montevideo",
+        "paymentTerms": "DUE_ON_RECEIPT"
+    },
+    {
+        "ID": "e2eac6d2-79e0-4b6e-8b39-93b7740a6fdc",
+        "companyName": "Guyana Agribusiness",
+        "contactName": "Rajesh Patel",
+        "contactTitle": "Business Analyst",
+        "country": "GUY",
+        "city": "Georgetown",
+        "paymentTerms": "PREPAID"
+    },
+    {
+        "ID": "af80bc2e-2fbd-4f07-9fd2-3206f1c13c4b",
+        "companyName": "Suriname Gold",
+        "contactName": "Samantha Lewis",
+        "contactTitle": "Sales Director",
+        "country": "SUR",
+        "city": "Paramaribo",
+        "paymentTerms": "COD"
+    },
+    {
+        "ID": "b17c1a4b-75f3-41bc-8371-d4eaf07b29c0",
+        "companyName": "Luxe Paris",
+        "contactName": "Paul Dubois",
+        "contactTitle": "Founder",
+        "country": "FRA",
+        "city": "Paris",
+        "paymentTerms": "30_DAYS_EOM"
+    },
+    {
+        "ID": "a5e0c0f0-bfc6-4c15-9b65-ef6dc7c81a2d",
+        "companyName": "Deutsche Steel",
+        "contactName": "Anna Meyer",
+        "contactTitle": "Chief Engineer",
+        "country": "DEU",
+        "city": "Frankfurt",
+        "paymentTerms": "NET45"
+    },
+    {
+        "ID": "2d71b235-9b45-4f71-98d6-efc91b0b0f88",
+        "companyName": "Florentine Fabrics",
+        "contactName": "Giovanni Rossi",
+        "contactTitle": "Sales Rep",
+        "country": "ITA",
+        "city": "Florence",
+        "paymentTerms": "RECURRING"
+    },
+    {
+        "ID": "5b6e8d44-8d21-42f7-88d3-bf2b7e9f6cda",
+        "companyName": "Iberian Technologies",
+        "contactName": "Maria Lopez",
+        "contactTitle": "R&D Lead",
+        "country": "ESP",
+        "city": "Barcelona",
+        "paymentTerms": "NET60"
+    },
+    {
+        "ID": "f3d8b8ef-f7ea-4630-8718-befb1f1e0c5d",
+        "companyName": "Britannia Ltd.",
+        "contactName": "James Anderson",
+        "contactTitle": "Managing Director",
+        "country": "GBR",
+        "city": "London",
+        "paymentTerms": "INSTALLMENTS"
+    },
+    {
+        "ID": "c812f026-5a1e-4d8c-b1e2-f4f1a3e476ba",
+        "companyName": "Dutch Innovations",
+        "contactName": "Sophie Van Dijk",
+        "contactTitle": "Finance Director",
+        "country": "NLD",
+        "city": "Rotterdam",
+        "paymentTerms": "PREPAID"
+    },
+    {
+        "ID": "d64e0f3e-40d5-4e1e-9f4c-94623c5717a4",
+        "companyName": "Belgian Chocolates",
+        "contactName": "Emilie Dubois",
+        "contactTitle": "Product Specialist",
+        "country": "BEL",
+        "city": "Brussels",
+        "paymentTerms": "DUE_ON_RECEIPT"
+    },
+    {
+        "ID": "3f9c3c5e-70ae-4e5e-a0c6-c2f81fc2d9c6",
+        "companyName": "Lux Embellishments",
+        "contactName": "Johan Meyer",
+        "contactTitle": "Head of Sales",
+        "country": "LUX",
+        "city": "Luxembourg City",
+        "paymentTerms": "60_DAYS_EOM"
+    },
+    {
+        "ID": "4e3c8f62-9e41-4e6e-bb10-1f9d0794f273",
+        "companyName": "Swiss Watches",
+        "contactName": "Claudia Meier",
+        "contactTitle": "Chief Marketing Officer",
+        "country": "CHE",
+        "city": "Geneva",
+        "paymentTerms": "RECURRING"
+    },
+    {
+        "ID": "5d5b7c2b-31b2-4c66-9d8f-95a4d46e6b23",
+        "companyName": "Viennese Glass",
+        "contactName": "Lukas Fischer",
+        "contactTitle": "CEO",
+        "country": "AUT",
+        "city": "Vienna",
+        "paymentTerms": "COD"
+    },
+    {
+        "ID": "e6a5d9c6-b8c2-4d1b-b1dc-cdff9b9a87c2",
+        "companyName": "Budapest Foods",
+        "contactName": "Gabor Horvath",
+        "contactTitle": "Sales Manager",
+        "country": "HUN",
+        "city": "Budapest",
+        "paymentTerms": "INSTALLMENTS"
+    },
+    {
+        "ID": "5e8d83d3-8db1-4d5e-b8d2-cd7e93a62b43",
+        "companyName": "Warsaw Electronics",
+        "contactName": "Anna Kowalski",
+        "contactTitle": "Product Manager",
+        "country": "POL",
+        "city": "Warsaw",
+        "paymentTerms": "NET30"
+    },
+    {
+        "ID": "c8f7a945-5a92-4d64-9d47-cd0b4fc6d2a7",
+        "companyName": "Czech Innovations",
+        "contactName": "Jakub Novák",
+        "contactTitle": "Operations Director",
+        "country": "CZE",
+        "city": "Prague",
+        "paymentTerms": "30_DAYS_EOM"
+    },
+    {
+        "ID": "a67b2d89-bb7c-4f4b-b8e4-8f4a50c6c0b5",
+        "companyName": "Slovak Software",
+        "contactName": "Marta Kováčová",
+        "contactTitle": "Account Executive",
+        "country": "SVK",
+        "city": "Bratislava",
+        "paymentTerms": "PREPAID"
+    },
+    {
+        "ID": "3e1d8b8d-5f6a-4c8e-9a6e-df7f3eab6d8a",
+        "companyName": "Romanian Networks",
+        "contactName": "George Ionescu",
+        "contactTitle": "Technical Support",
+        "country": "ROU",
+        "city": "Bucharest",
+        "paymentTerms": "NET60"
+    },
+    {
+        "ID": "b2d93a2e-45ea-4d82-a08a-9c3c4a4e6d8e",
+        "companyName": "Bulgarian Metals",
+        "contactName": "Elena Dimitrova",
+        "contactTitle": "Engineering Lead",
+        "country": "BGR",
+        "city": "Sofia",
+        "paymentTerms": "RECURRING"
+    },
+    {
+        "ID": "d8e1c3a9-71f0-4f9b-8b26-0a1f7e2b6d4d",
+        "companyName": "Greek Imports",
+        "contactName": "Nikos Papadopoulos",
+        "contactTitle": "Logistics Manager",
+        "country": "GRC",
+        "city": "Athens",
+        "paymentTerms": "DUE_ON_RECEIPT"
+    },
+    {
+        "ID": "f2a4c6e1-8b90-4d2a-b1c5-2d3f4b7a8e3c",
+        "companyName": "Turkish Trade Co.",
+        "contactName": "Emre Yılmaz",
+        "contactTitle": "Chief Financial Officer",
+        "country": "TUR",
+        "city": "Istanbul",
+        "paymentTerms": "NET30"
+    },
+    {
+        "ID": "c5d7a4a9-bc1e-4d77-97f1-bf8e4e5d9f6d",
+        "companyName": "Israeli Innovations",
+        "contactName": "Avi Cohen",
+        "contactTitle": "Lead Developer",
+        "country": "ISR",
+        "city": "Tel Aviv",
+        "paymentTerms": "INSTALLMENTS"
+    },
+    {
+        "ID": "8b1c7d2e-df90-4e69-8d65-4e0b6f7d2c8b",
+        "companyName": "Saudi Tech",
+        "contactName": "Fatima Al Saud",
+        "contactTitle": "Project Manager",
+        "country": "SAU",
+        "city": "Riyadh",
+        "paymentTerms": "30_DAYS_EOM"
+    },
+    {
+        "ID": "9d6e0c3b-1c7b-4d7a-b9e0-1d5c5e7a8b7e",
+        "companyName": "Dubai Solutions",
+        "contactName": "Omar Al-Mansoori",
+        "contactTitle": "Head of IT",
+        "country": "ARE",
+        "city": "Dubai",
+        "paymentTerms": "PREPAID"
+    },
+    {
+        "ID": "f4b0a1e1-3d0e-4a90-8a56-3b7e8f8c9c2d",
+        "companyName": "Cairo Crafts",
+        "contactName": "Mona Ahmed",
+        "contactTitle": "Marketing Specialist",
+        "country": "EGY",
+        "city": "Cairo",
+        "paymentTerms": "DUE_ON_RECEIPT"
+    },
+    {
+        "ID": "e8c7d3b6-5f8a-4e67-8f5e-8c4a5a6b7f8d",
+        "companyName": "South African Mining",
+        "contactName": "Thabo Mokoena",
+        "contactTitle": "Operations Director",
+        "country": "ZAF",
+        "city": "Johannesburg",
+        "paymentTerms": "NET60"
+    },
+    {
+        "ID": "a5e3c1d7-83e0-4d2b-8d6f-ef9c8b0e4d8a",
+        "companyName": "Kenyan Agriculture",
+        "contactName": "Amina Hassan",
+        "contactTitle": "Head of Procurement",
+        "country": "KEN",
+        "city": "Nairobi",
+        "paymentTerms": "COD"
+    },
+    {
+        "ID": "f9b6c7a8-19d2-4c6a-9d4c-bf7e3c8b0d2d",
+        "companyName": "Nigerian Ventures",
+        "contactName": "Chinedu Okafor",
+        "contactTitle": "Business Analyst",
+        "country": "NGA",
+        "city": "Lagos",
+        "paymentTerms": "PREPAID"
+    },
+    {
+        "ID": "2c5a6d7b-8f8a-4b9a-b2c6-f2b9d4e3f8d7",
+        "companyName": "Ghanaian Exports",
+        "contactName": "Kwame Mensah",
+        "contactTitle": "Chief Executive Officer",
+        "country": "GHA",
+        "city": "Accra",
+        "paymentTerms": "RECURRING"
+    },
+    {
+        "ID": "d0e9f7c3-2d1e-4b8b-9e1f-3b5c9d6a1e2f",
+        "companyName": "Tanzanian Industries",
+        "contactName": "Sylvie Niyonsaba",
+        "contactTitle": "Sales Lead",
+        "country": "Tanzania",
+        "city": "Dodoma",
+        "paymentTerms": "INSTALLMENTS"
+    },
+    {
+        "ID": "e1c7f6b8-7d2a-4e4b-8d8f-7f1e9c3a0b8d",
+        "companyName": "Ugandan Crafts",
+        "contactName": "Josephine Uwase",
+        "contactTitle": "Marketing Director",
+        "country": "UGA",
+        "city": "Kampala",
+        "paymentTerms": "30_DAYS_EOM"
+    },
+    {
+        "ID": "a8d2e6f7-9d0b-4e67-8f3e-1b6e8c5a6d2f",
+        "companyName": "Rwandan Textiles",
+        "contactName": "Pauline Uwase",
+        "contactTitle": "Head of Logistics",
+        "country": "RWA",
+        "city": "Kigali",
+        "paymentTerms": "NET30"
+    },
+    {
+        "ID": "9b0c7a2e-8f1a-4d5b-8d6e-9c5e7b8f9a1e",
+        "companyName": "Ethiopian Agribusiness",
+        "contactName": "Mulugeta Alemayehu",
+        "contactTitle": "Product Manager",
+        "country": "ETH",
+        "city": "Addis Ababa",
+        "paymentTerms": "NET45"
+    },
+    {
+        "ID": "f4a5d2e8-7e9c-4b7d-9c5a-4e0b6d9c2f8a",
+        "companyName": "Indian Innovations",
+        "contactName": "Raj Patel",
+        "contactTitle": "Chief Technology Officer",
+        "country": "IND",
+        "city": "Mumbai",
+        "paymentTerms": "DUE_ON_RECEIPT"
+    },
+    {
+        "ID": "c9d2e5f6-3a7b-4e4d-8f2c-7b8c9d6e0a1f",
+        "companyName": "Pakistani Manufacturing",
+        "contactName": "Ali Khan",
+        "contactTitle": "Head of Production",
+        "country": "PAK",
+        "city": "Karachi",
+        "paymentTerms": "PREPAID"
+    },
+    {
+        "ID": "e1c2d5e9-6b4d-4f8a-9e1f-8c3d5e7b9f0a",
+        "companyName": "Chinese Trade Co.",
+        "contactName": "Wei Zhang",
+        "contactTitle": "Sales Executive",
+        "country": "CHN",
+        "city": "Shanghai",
+        "paymentTerms": "INSTALLMENTS"
+    },
+    {
+        "ID": "a2b3c4d5-6e7f-4a8b-9c0d-1e2f3a4b5c6d",
+        "companyName": "Japanese Electronics",
+        "contactName": "Yuki Nakamura",
+        "contactTitle": "Head of R&D",
+        "country": "JPN",
+        "city": "Tokyo",
+        "paymentTerms": "RECURRING"
+    },
+    {
+        "ID": "b3c4d5e6-7f8a-4b9c-0d1e-2f3a4b5c6d7e",
+        "companyName": "South Korean Tech",
+        "contactName": "Jin-Soo Park",
+        "contactTitle": "Chief Operations Officer",
+        "country": "KOR",
+        "city": "Seoul",
+        "paymentTerms": "NET60"
+    }
+]

@@ -1,0 +1,62 @@
+[
+    {
+        "ID": "VISA",
+        "description": "Credit Card (Visa)"
+    },
+    {
+        "ID": "MASTERCARD",
+        "description": "Credit Card (MasterCard)"
+    },
+    {
+        "ID": "AMEX",
+        "description": "Credit Card (American Express)"
+    },
+    {
+        "ID": "DEBIT",
+        "description": "Debit Card"
+    },
+    {
+        "ID": "PAYPAL",
+        "description": "PayPal"
+    },
+    {
+        "ID": "BANKTRANS",
+        "description": "Bank Transfer"
+    },
+    {
+        "ID": "DIRECTDEB",
+        "description": "Direct Debit"
+    },
+    {
+        "ID": "APPLEPAY",
+        "description": "Apple Pay"
+    },
+    {
+        "ID": "GOOGLEPAY",
+        "description": "Google Pay"
+    },
+    {
+        "ID": "SAMSUNG",
+        "description": "Samsung Pay"
+    },
+    {
+        "ID": "BITCOIN",
+        "description": "Bitcoin"
+    },
+    {
+        "ID": "ETHEREUM",
+        "description": "Ethereum"
+    },
+    {
+        "ID": "PAYONEER",
+        "description": "Payoneer"
+    },
+    {
+        "ID": "ALIPAY",
+        "description": "Alipay"
+    },
+    {
+        "ID": "WECHATPAY",
+        "description": "WeChat Pay"
+    }
+]

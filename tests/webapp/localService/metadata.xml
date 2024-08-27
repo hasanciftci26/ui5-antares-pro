@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices m:DataServiceVersion="2.0">
+    <Schema Namespace="OnlineShopping" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="Products" EntityType="OnlineShopping.Products"/>
+        <EntitySet Name="Categories" EntityType="OnlineShopping.Categories"/>
+        <EntitySet Name="Countries" EntityType="OnlineShopping.Countries"/>
+        <EntitySet Name="Currencies" EntityType="OnlineShopping.Currencies"/>
+        <EntitySet Name="Customers" EntityType="OnlineShopping.Customers"/>
+        <EntitySet Name="OrderHeaders" EntityType="OnlineShopping.OrderHeaders"/>
+        <EntitySet Name="OrderItems" EntityType="OnlineShopping.OrderItems"/>
+        <EntitySet Name="PaymentMethods" EntityType="OnlineShopping.PaymentMethods"/>
+        <EntitySet Name="PaymentTerms" EntityType="OnlineShopping.PaymentTerms"/>
+        <EntitySet Name="Suppliers" EntityType="OnlineShopping.Suppliers"/>
+        <AssociationSet Name="Products_toCategory" Association="OnlineShopping.Products_toCategory">
+          <End Role="Products" EntitySet="Products"/>
+          <End Role="Categories" EntitySet="Categories"/>
+        </AssociationSet>
+        <AssociationSet Name="Products_toSupplier" Association="OnlineShopping.Products_toSupplier">
+          <End Role="Products" EntitySet="Products"/>
+          <End Role="Suppliers" EntitySet="Suppliers"/>
+        </AssociationSet>
+        <AssociationSet Name="Products_toCurrency" Association="OnlineShopping.Products_toCurrency">
+          <End Role="Products" EntitySet="Products"/>
+          <End Role="Currencies" EntitySet="Currencies"/>
+        </AssociationSet>
+        <AssociationSet Name="Customers_toCountry" Association="OnlineShopping.Customers_toCountry">
+          <End Role="Customers" EntitySet="Customers"/>
+          <End Role="Countries" EntitySet="Countries"/>
+        </AssociationSet>
+        <AssociationSet Name="OrderHeaders_toCustomer" Association="OnlineShopping.OrderHeaders_toCustomer">
+          <End Role="OrderHeaders" EntitySet="OrderHeaders"/>
+          <End Role="Customers" EntitySet="Customers"/>
+        </AssociationSet>
+        <AssociationSet Name="OrderHeaders_toPaymentMethod" Association="OnlineShopping.OrderHeaders_toPaymentMethod">
+          <End Role="OrderHeaders" EntitySet="OrderHeaders"/>
+          <End Role="PaymentMethods" EntitySet="PaymentMethods"/>
+        </AssociationSet>
+        <AssociationSet Name="OrderHeaders_toCurrency" Association="OnlineShopping.OrderHeaders_toCurrency">
+          <End Role="OrderHeaders" EntitySet="OrderHeaders"/>
+          <End Role="Currencies" EntitySet="Currencies"/>
+        </AssociationSet>
+        <AssociationSet Name="OrderItems_toHeader" Association="OnlineShopping.OrderItems_toHeader">
+          <End Role="OrderItems" EntitySet="OrderItems"/>
+          <End Role="OrderHeaders" EntitySet="OrderHeaders"/>
+        </AssociationSet>
+        <AssociationSet Name="OrderItems_toProduct" Association="OnlineShopping.OrderItems_toProduct">
+          <End Role="OrderItems" EntitySet="OrderItems"/>
+          <End Role="Products" EntitySet="Products"/>
+        </AssociationSet>
+        <AssociationSet Name="Suppliers_toCountry" Association="OnlineShopping.Suppliers_toCountry">
+          <End Role="Suppliers" EntitySet="Suppliers"/>
+          <End Role="Countries" EntitySet="Countries"/>
+        </AssociationSet>
+        <AssociationSet Name="Suppliers_toPaymentTerms" Association="OnlineShopping.Suppliers_toPaymentTerms">
+          <End Role="Suppliers" EntitySet="Suppliers"/>
+          <End Role="PaymentTerms" EntitySet="PaymentTerms"/>
+        </AssociationSet>
+      </EntityContainer>
+      <EntityType Name="Products">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="50"/>
+        <Property Name="description" Type="Edm.String" MaxLength="255"/>
+        <Property Name="brand" Type="Edm.String" MaxLength="50"/>
+        <Property Name="price" Type="Edm.Decimal" Precision="13" Scale="2" Nullable="false"/>
+        <Property Name="currency" Type="Edm.String" MaxLength="5" Nullable="false"/>
+        <Property Name="quantityInStock" Type="Edm.Int32"/>
+        <Property Name="categoryID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="supplierID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="firstReleaseDate" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="isActive" Type="Edm.Boolean"/>
+        <NavigationProperty Name="toCategory" Relationship="OnlineShopping.Products_toCategory" FromRole="Products" ToRole="Categories"/>
+        <NavigationProperty Name="toSupplier" Relationship="OnlineShopping.Products_toSupplier" FromRole="Products" ToRole="Suppliers"/>
+        <NavigationProperty Name="toCurrency" Relationship="OnlineShopping.Products_toCurrency" FromRole="Products" ToRole="Currencies"/>
+      </EntityType>
+      <EntityType Name="Categories">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="50" Nullable="false"/>
+        <NavigationProperty Name="toProducts" Relationship="OnlineShopping.Products_toCategory" FromRole="Categories" ToRole="Products"/>
+      </EntityType>
+      <EntityType Name="Countries">
+        <Key>
+          <PropertyRef Name="code"/>
+        </Key>
+        <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
+        <Property Name="country" Type="Edm.String" MaxLength="100"/>
+      </EntityType>
+      <EntityType Name="Currencies">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" MaxLength="5" Nullable="false"/>
+        <Property Name="description" Type="Edm.String" MaxLength="50"/>
+      </EntityType>
+      <EntityType Name="Customers">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="100" Nullable="false"/>
+        <Property Name="country" Type="Edm.String" MaxLength="3"/>
+        <Property Name="city" Type="Edm.String" MaxLength="80"/>
+        <NavigationProperty Name="toOrders" Relationship="OnlineShopping.OrderHeaders_toCustomer" FromRole="Customers" ToRole="OrderHeaders"/>
+        <NavigationProperty Name="toCountry" Relationship="OnlineShopping.Customers_toCountry" FromRole="Customers" ToRole="Countries"/>
+      </EntityType>
+      <EntityType Name="OrderHeaders">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="customerID" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="date" Type="Edm.DateTimeOffset"/>
+        <Property Name="status" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="totalPrice" Type="Edm.Decimal" Precision="13" Scale="2"/>
+        <Property Name="currency" Type="Edm.String" MaxLength="5"/>
+        <Property Name="paymentMethod" Type="Edm.String" MaxLength="10"/>
+        <Property Name="shippingAddress" Type="Edm.String" MaxLength="255"/>
+        <Property Name="billingAddress" Type="Edm.String" MaxLength="255"/>
+        <NavigationProperty Name="toItems" Relationship="OnlineShopping.OrderItems_toHeader" FromRole="OrderHeaders" ToRole="OrderItems"/>
+        <NavigationProperty Name="toCustomer" Relationship="OnlineShopping.OrderHeaders_toCustomer" FromRole="OrderHeaders" ToRole="Customers"/>
+        <NavigationProperty Name="toPaymentMethod" Relationship="OnlineShopping.OrderHeaders_toPaymentMethod" FromRole="OrderHeaders" ToRole="PaymentMethods"/>
+        <NavigationProperty Name="toCurrency" Relationship="OnlineShopping.OrderHeaders_toCurrency" FromRole="OrderHeaders" ToRole="Currencies"/>
+      </EntityType>
+      <EntityType Name="OrderItems">
+        <Key>
+          <PropertyRef Name="ID"/>
+          <PropertyRef Name="itemNo"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="itemNo" Type="Edm.Int32" Nullable="false"/>
+        <Property Name="productID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="quantity" Type="Edm.Int32"/>
+        <Property Name="unitPrice" Type="Edm.Decimal" Precision="13" Scale="2" Nullable="false"/>
+        <Property Name="totalPrice" Type="Edm.Decimal" Precision="13" Scale="2"/>
+        <Property Name="status" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <NavigationProperty Name="toHeader" Relationship="OnlineShopping.OrderItems_toHeader" FromRole="OrderItems" ToRole="OrderHeaders"/>
+        <NavigationProperty Name="toProduct" Relationship="OnlineShopping.OrderItems_toProduct" FromRole="OrderItems" ToRole="Products"/>
+      </EntityType>
+      <EntityType Name="PaymentMethods">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="description" Type="Edm.String" MaxLength="100"/>
+      </EntityType>
+      <EntityType Name="PaymentTerms">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" MaxLength="20" Nullable="false"/>
+        <Property Name="description" Type="Edm.String" MaxLength="100"/>
+      </EntityType>
+      <EntityType Name="Suppliers">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="companyName" Type="Edm.String" MaxLength="100" Nullable="false"/>
+        <Property Name="contactName" Type="Edm.String" MaxLength="100"/>
+        <Property Name="contactTitle" Type="Edm.String" MaxLength="100"/>
+        <Property Name="country" Type="Edm.String" MaxLength="3"/>
+        <Property Name="city" Type="Edm.String" MaxLength="80"/>
+        <Property Name="paymentTerms" Type="Edm.String" MaxLength="20"/>
+        <NavigationProperty Name="toProducts" Relationship="OnlineShopping.Products_toSupplier" FromRole="Suppliers" ToRole="Products"/>
+        <NavigationProperty Name="toCountry" Relationship="OnlineShopping.Suppliers_toCountry" FromRole="Suppliers" ToRole="Countries"/>
+        <NavigationProperty Name="toPaymentTerms" Relationship="OnlineShopping.Suppliers_toPaymentTerms" FromRole="Suppliers" ToRole="PaymentTerms"/>
+      </EntityType>
+      <Association Name="Products_toCategory">
+        <End Role="Products" Type="OnlineShopping.Products" Multiplicity="*"/>
+        <End Role="Categories" Type="OnlineShopping.Categories" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Categories">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="Products">
+            <PropertyRef Name="categoryID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Products_toSupplier">
+        <End Role="Products" Type="OnlineShopping.Products" Multiplicity="*"/>
+        <End Role="Suppliers" Type="OnlineShopping.Suppliers" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Suppliers">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="Products">
+            <PropertyRef Name="supplierID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Products_toCurrency">
+        <End Role="Products" Type="OnlineShopping.Products" Multiplicity="*"/>
+        <End Role="Currencies" Type="OnlineShopping.Currencies" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Currencies">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="Products">
+            <PropertyRef Name="currency"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Customers_toCountry">
+        <End Role="Customers" Type="OnlineShopping.Customers" Multiplicity="*"/>
+        <End Role="Countries" Type="OnlineShopping.Countries" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Countries">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="Customers">
+            <PropertyRef Name="country"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="OrderHeaders_toCustomer">
+        <End Role="OrderHeaders" Type="OnlineShopping.OrderHeaders" Multiplicity="*"/>
+        <End Role="Customers" Type="OnlineShopping.Customers" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Customers">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="OrderHeaders">
+            <PropertyRef Name="customerID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="OrderHeaders_toPaymentMethod">
+        <End Role="OrderHeaders" Type="OnlineShopping.OrderHeaders" Multiplicity="*"/>
+        <End Role="PaymentMethods" Type="OnlineShopping.PaymentMethods" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="PaymentMethods">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="OrderHeaders">
+            <PropertyRef Name="paymentMethod"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="OrderHeaders_toCurrency">
+        <End Role="OrderHeaders" Type="OnlineShopping.OrderHeaders" Multiplicity="*"/>
+        <End Role="Currencies" Type="OnlineShopping.Currencies" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Currencies">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="OrderHeaders">
+            <PropertyRef Name="currency"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="OrderItems_toHeader">
+        <End Role="OrderItems" Type="OnlineShopping.OrderItems" Multiplicity="*"/>
+        <End Role="OrderHeaders" Type="OnlineShopping.OrderHeaders" Multiplicity="0..1">
+          <OnDelete Action="Cascade"/>
+        </End>
+        <ReferentialConstraint>
+          <Principal Role="OrderHeaders">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="OrderItems">
+            <PropertyRef Name="ID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="OrderItems_toProduct">
+        <End Role="OrderItems" Type="OnlineShopping.OrderItems" Multiplicity="*"/>
+        <End Role="Products" Type="OnlineShopping.Products" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Products">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="OrderItems">
+            <PropertyRef Name="productID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Suppliers_toCountry">
+        <End Role="Suppliers" Type="OnlineShopping.Suppliers" Multiplicity="*"/>
+        <End Role="Countries" Type="OnlineShopping.Countries" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="Countries">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="Suppliers">
+            <PropertyRef Name="country"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Suppliers_toPaymentTerms">
+        <End Role="Suppliers" Type="OnlineShopping.Suppliers" Multiplicity="*"/>
+        <End Role="PaymentTerms" Type="OnlineShopping.PaymentTerms" Multiplicity="0..1"/>
+        <ReferentialConstraint>
+          <Principal Role="PaymentTerms">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="Suppliers">
+            <PropertyRef Name="paymentTerms"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Annotations Target="OnlineShopping.Products/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Product ID"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Product Name"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/description" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Product Description"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/brand" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Brand"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/price" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Price"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/currency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/quantityInStock" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Quantity In Stock"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/categoryID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Category ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/supplierID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Supplier ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/toCategory" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Category Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/toSupplier" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Supplier Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/toCurrency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Currency Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Categories/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Category ID"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Categories/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Category Name"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Categories/toProducts" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Products Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Countries/code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country Code"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Countries/country" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Currencies/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Currencies/description" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Customers/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Customer ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Customers/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Customer Name"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Customers/country" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Customers/city" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="City"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Customers/toOrders" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Orders Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Customers/toCountry" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Country Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Order ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/customerID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Customer ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/date" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Order Date"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/status" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Order Status"/>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="PENDING"/>
+              <PropertyValue Property="Value" String="Pending"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="PROCESSING"/>
+              <PropertyValue Property="Value" String="Processing"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="SHIPPED"/>
+              <PropertyValue Property="Value" String="Shipped"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="DELIVERED"/>
+              <PropertyValue Property="Value" String="Delivered"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/totalPrice" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Total Price"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/currency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Currency"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/paymentMethod" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Payment Method"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/shippingAddress" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Shipping Address"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/billingAddress" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Billing Address"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/toItems" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Order Items Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/toCustomer" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Customer Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/toPaymentMethod" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Payment Method Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderHeaders/toCurrency" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Currency Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Order ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/itemNo" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Item No"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/productID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Product ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/quantity" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Quantity"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/unitPrice" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Unit Price"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/totalPrice" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Total Price"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/status" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Order Status"/>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="PENDING"/>
+              <PropertyValue Property="Value" String="Pending"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="PROCESSING"/>
+              <PropertyValue Property="Value" String="Processing"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="SHIPPED"/>
+              <PropertyValue Property="Value" String="Shipped"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="DELIVERED"/>
+              <PropertyValue Property="Value" String="Delivered"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/toHeader" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Order Header Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.OrderItems/toProduct" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Product Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.PaymentMethods/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Payment Method ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.PaymentMethods/description" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Payment Method Description"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.PaymentTerms/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Payment Terms ID"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.PaymentTerms/description" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Payment Terms Description"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Supplier ID"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/companyName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Company Name"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/contactName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Contact Name"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/contactTitle" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Contact Title"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/country" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/city" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="City"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/paymentTerms" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Payment Terms"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/toProducts" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Products Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/toCountry" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Country Navigation"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Suppliers/toPaymentTerms" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="To Payment Terms Navigation"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
+</edmx:Edmx>

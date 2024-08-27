@@ -1,0 +1,35 @@
+specVersion: "4.0"
+metadata:
+  name: ui5.antares.pro
+type: library
+framework:
+  name: SAPUI5
+  version: "1.120.19"
+  libraries:
+    - name: sap.m
+    - name: sap.ui.comp
+    - name: sap.ui.core
+    - name: sap.ui.layout
+    - name: sap.ui.table
+resources:
+  configuration:
+    paths:
+      src: lib
+builder:
+  customTasks:
+  - name: ui5-tooling-transpile-task
+    afterTask: replaceVersion
+    configuration:
+      debug: false
+      removeConsoleStatements: true
+      transformAsyncToPromise: false
+      transformTypeScript: true
+      generateDts: true
+      omitTSFromBuildResult: true
+  - name: ui5-task-no-debug-files
+    afterTask: generateLibraryPreload
+    configuration:
+        omitDbgFiles: true
+        omitSourceMapFiles: true
+        omitNonBundled: false
+        omitTSFiles: false

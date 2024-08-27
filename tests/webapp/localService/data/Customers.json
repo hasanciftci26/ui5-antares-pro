@@ -1,0 +1,302 @@
+[
+    {
+        "ID": "CUS0000001",
+        "name": "John Doe",
+        "country": "USA",
+        "city": "New York"
+    },
+    {
+        "ID": "CUS0000002",
+        "name": "Jane Smith",
+        "country": "CAN",
+        "city": "Toronto"
+    },
+    {
+        "ID": "CUS0000003",
+        "name": "Carlos Martinez",
+        "country": "MEX",
+        "city": "Mexico City"
+    },
+    {
+        "ID": "CUS0000004",
+        "name": "Ana Pereira",
+        "country": "BRA",
+        "city": "São Paulo"
+    },
+    {
+        "ID": "CUS0000005",
+        "name": "Luis Fernandez",
+        "country": "ARG",
+        "city": "Buenos Aires"
+    },
+    {
+        "ID": "CUS0000006",
+        "name": "Maria Gonzalez",
+        "country": "COL",
+        "city": "Bogotá"
+    },
+    {
+        "ID": "CUS0000007",
+        "name": "Fernando Silva",
+        "country": "CHL",
+        "city": "Santiago"
+    },
+    {
+        "ID": "CUS0000008",
+        "name": "Gabriela Ruiz",
+        "country": "PER",
+        "city": "Lima"
+    },
+    {
+        "ID": "CUS0000009",
+        "name": "Jorge Ramirez",
+        "country": "VEN",
+        "city": "Caracas"
+    },
+    {
+        "ID": "CUS0000010",
+        "name": "Sofia Morales",
+        "country": "ECU",
+        "city": "Quito"
+    },
+    {
+        "ID": "CUS0000011",
+        "name": "Pablo Morales",
+        "country": "BOL",
+        "city": "La Paz"
+    },
+    {
+        "ID": "CUS0000012",
+        "name": "Isabel Torres",
+        "country": "PRY",
+        "city": "Asunción"
+    },
+    {
+        "ID": "CUS0000013",
+        "name": "Martín González",
+        "country": "URY",
+        "city": "Montevideo"
+    },
+    {
+        "ID": "CUS0000014",
+        "name": "Luis Carvalho",
+        "country": "GUY",
+        "city": "Georgetown"
+    },
+    {
+        "ID": "CUS0000015",
+        "name": "Nina Jacobs",
+        "country": "SUR",
+        "city": "Paramaribo"
+    },
+    {
+        "ID": "CUS0000016",
+        "name": "Pierre Dubois",
+        "country": "FRA",
+        "city": "Paris"
+    },
+    {
+        "ID": "CUS0000017",
+        "name": "Hannah Schmidt",
+        "country": "DEU",
+        "city": "Berlin"
+    },
+    {
+        "ID": "CUS0000018",
+        "name": "Giuseppe Rossi",
+        "country": "ITA",
+        "city": "Rome"
+    },
+    {
+        "ID": "CUS0000019",
+        "name": "Carlos López",
+        "country": "ESP",
+        "city": "Madrid"
+    },
+    {
+        "ID": "CUS0000020",
+        "name": "Emma Brown",
+        "country": "GBR",
+        "city": "London"
+    },
+    {
+        "ID": "CUS0000021",
+        "name": "Johan van Dijk",
+        "country": "NLD",
+        "city": "Amsterdam"
+    },
+    {
+        "ID": "CUS0000022",
+        "name": "Sophie Laurent",
+        "country": "BEL",
+        "city": "Brussels"
+    },
+    {
+        "ID": "CUS0000023",
+        "name": "Maximilian Meier",
+        "country": "LUX",
+        "city": "Luxembourg City"
+    },
+    {
+        "ID": "CUS0000024",
+        "name": "Anna Müller",
+        "country": "CHE",
+        "city": "Zurich"
+    },
+    {
+        "ID": "CUS0000025",
+        "name": "Michael Wagner",
+        "country": "AUT",
+        "city": "Vienna"
+    },
+    {
+        "ID": "CUS0000026",
+        "name": "Zoltán Kovács",
+        "country": "HUN",
+        "city": "Budapest"
+    },
+    {
+        "ID": "CUS0000027",
+        "name": "Krzysztof Nowak",
+        "country": "POL",
+        "city": "Warsaw"
+    },
+    {
+        "ID": "CUS0000028",
+        "name": "Petr Novák",
+        "country": "CZE",
+        "city": "Prague"
+    },
+    {
+        "ID": "CUS0000029",
+        "name": "Marek Kováč",
+        "country": "SVK",
+        "city": "Bratislava"
+    },
+    {
+        "ID": "CUS0000030",
+        "name": "Elena Popescu",
+        "country": "ROU",
+        "city": "Bucharest"
+    },
+    {
+        "ID": "CUS0000031",
+        "name": "Ivan Dimitrov",
+        "country": "BGR",
+        "city": "Sofia"
+    },
+    {
+        "ID": "CUS0000032",
+        "name": "Elena Georgiadou",
+        "country": "GRC",
+        "city": "Athens"
+    },
+    {
+        "ID": "CUS0000033",
+        "name": "Ahmet Yılmaz",
+        "country": "TUR",
+        "city": "Istanbul"
+    },
+    {
+        "ID": "CUS0000034",
+        "name": "David Cohen",
+        "country": "ISR",
+        "city": "Tel Aviv"
+    },
+    {
+        "ID": "CUS0000035",
+        "name": "Fatima Al Saud",
+        "country": "SAU",
+        "city": "Riyadh"
+    },
+    {
+        "ID": "CUS0000036",
+        "name": "Layla Al-Mansoori",
+        "country": "ARE",
+        "city": "Dubai"
+    },
+    {
+        "ID": "CUS0000037",
+        "name": "Mohamed El-Sayed",
+        "country": "EGY",
+        "city": "Cairo"
+    },
+    {
+        "ID": "CUS0000038",
+        "name": "Sibusiso Ndlovu",
+        "country": "ZAF",
+        "city": "Johannesburg"
+    },
+    {
+        "ID": "CUS0000039",
+        "name": "Amina Hassan",
+        "country": "KEN",
+        "city": "Nairobi"
+    },
+    {
+        "ID": "CUS0000040",
+        "name": "Chinwe Okafor",
+        "country": "NGA",
+        "city": "Lagos"
+    },
+    {
+        "ID": "CUS0000041",
+        "name": "Kwame Mensah",
+        "country": "GHA",
+        "city": "Accra"
+    },
+    {
+        "ID": "CUS0000042",
+        "name": "John Smith",
+        "country": "Tanzania",
+        "city": "Dodoma"
+    },
+    {
+        "ID": "CUS0000043",
+        "name": "Sylvie Niyonsaba",
+        "country": "UGA",
+        "city": "Kampala"
+    },
+    {
+        "ID": "CUS0000044",
+        "name": "Josephine Uwase",
+        "country": "RWA",
+        "city": "Kigali"
+    },
+    {
+        "ID": "CUS0000045",
+        "name": "Mulugeta Alemayehu",
+        "country": "ETH",
+        "city": "Addis Ababa"
+    },
+    {
+        "ID": "CUS0000046",
+        "name": "Raj Patel",
+        "country": "IND",
+        "city": "Mumbai"
+    },
+    {
+        "ID": "CUS0000047",
+        "name": "Ali Khan",
+        "country": "PAK",
+        "city": "Karachi"
+    },
+    {
+        "ID": "CUS0000048",
+        "name": "Wei Zhang",
+        "country": "CHN",
+        "city": "Shanghai"
+    },
+    {
+        "ID": "CUS0000049",
+        "name": "Yuki Nakamura",
+        "country": "JPN",
+        "city": "Tokyo"
+    },
+    {
+        "ID": "CUS0000050",
+        "name": "Jin-Soo Park",
+        "country": "KOR",
+        "city": "Seoul"
+    }
+]

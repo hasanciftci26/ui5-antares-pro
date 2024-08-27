@@ -1,0 +1,82 @@
+[
+    {
+        "ID": "USD",
+        "description": "United States Dollar"
+    },
+    {
+        "ID": "EUR",
+        "description": "Euro"
+    },
+    {
+        "ID": "JPY",
+        "description": "Japanese Yen"
+    },
+    {
+        "ID": "GBP",
+        "description": "British Pound Sterling"
+    },
+    {
+        "ID": "AUD",
+        "description": "Australian Dollar"
+    },
+    {
+        "ID": "CAD",
+        "description": "Canadian Dollar"
+    },
+    {
+        "ID": "CHF",
+        "description": "Swiss Franc"
+    },
+    {
+        "ID": "CNY",
+        "description": "Chinese Yuan"
+    },
+    {
+        "ID": "SEK",
+        "description": "Swedish Krona"
+    },
+    {
+        "ID": "NZD",
+        "description": "New Zealand Dollar"
+    },
+    {
+        "ID": "MXN",
+        "description": "Mexican Peso"
+    },
+    {
+        "ID": "SGD",
+        "description": "Singapore Dollar"
+    },
+    {
+        "ID": "HKD",
+        "description": "Hong Kong Dollar"
+    },
+    {
+        "ID": "NOK",
+        "description": "Norwegian Krone"
+    },
+    {
+        "ID": "KRW",
+        "description": "South Korean Won"
+    },
+    {
+        "ID": "TRY",
+        "description": "Turkish Lira"
+    },
+    {
+        "ID": "INR",
+        "description": "Indian Rupee"
+    },
+    {
+        "ID": "RUB",
+        "description": "Russian Ruble"
+    },
+    {
+        "ID": "ZAR",
+        "description": "South African Rand"
+    },
+    {
+        "ID": "BRL",
+        "description": "Brazilian Real"
+    }
+]

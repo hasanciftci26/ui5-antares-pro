@@ -1,0 +1,102 @@
+[
+    {
+        "ID": "e6b34e4d-9290-4b98-9b3b-4b4fba9e63d4",
+        "name": "Electronics"
+    },
+    {
+        "ID": "dbe6d295-73a8-41f4-b4e4-1d9d6f8e5a53",
+        "name": "Home Appliances"
+    },
+    {
+        "ID": "3f5bb73b-d0d3-4c1d-89c0-fd0c4a6a5736",
+        "name": "Books"
+    },
+    {
+        "ID": "baf93f4a-f5e3-4a1b-9ec7-8e79b5b22c84",
+        "name": "Clothing"
+    },
+    {
+        "ID": "cd5d83bc-29f4-43d4-bb62-cae5c074ce3e",
+        "name": "Sports"
+    },
+    {
+        "ID": "b1242d46-6b3b-4c94-a82e-22b2d088b021",
+        "name": "Toys"
+    },
+    {
+        "ID": "e1e29d9b-6a92-43c5-b10d-fc6d62c6c9b7",
+        "name": "Furniture"
+    },
+    {
+        "ID": "2e1e9c8c-d35e-4c18-98f5-2c8d9b2e94e4",
+        "name": "Groceries"
+    },
+    {
+        "ID": "d83b2c73-249d-4f96-b042-3c6b7e0eec69",
+        "name": "Beauty"
+    },
+    {
+        "ID": "9e372b2e-682e-42c4-8a7e-4d8f7c72c8d5",
+        "name": "Health"
+    },
+    {
+        "ID": "0a5e57f8-79a2-4df4-a9a5-028d0b3e7c43",
+        "name": "Automotive"
+    },
+    {
+        "ID": "c7d758f7-5bb5-4f7e-b0c1-9b2c674f021e",
+        "name": "Jewelry"
+    },
+    {
+        "ID": "f2ac78d9-8d55-4ed4-8f8c-3f708a52d0e2",
+        "name": "Musical Instruments"
+    },
+    {
+        "ID": "18cf5a6b-f6d6-4c42-bcbb-4c86b3d7f40b",
+        "name": "Stationery"
+    },
+    {
+        "ID": "a17be9b4-4d53-4a5e-8b78-3e70cb69a09d",
+        "name": "Kitchenware"
+    },
+    {
+        "ID": "5b2a6393-58f4-45c1-a4b0-9d6bbd0a6de1",
+        "name": "Gardening"
+    },
+    {
+        "ID": "c8d896e9-4970-4a7c-8558-4fdb462d6599",
+        "name": "Shoes"
+    },
+    {
+        "ID": "b6d4c4ae-63b7-4f07-9cb0-0d87b2e8c5a6",
+        "name": "Bags"
+    },
+    {
+        "ID": "a9a6d053-8bde-44c2-bf5b-2f83a6a89c0a",
+        "name": "Watches"
+    },
+    {
+        "ID": "6d89d239-f9ec-4eae-94f1-1b93d5f6b9c3",
+        "name": "Outdoor"
+    },
+    {
+        "ID": "f2b7c938-5e1c-4a3f-8c89-7f2e77d2a299",
+        "name": "Pets"
+    },
+    {
+        "ID": "d5d40d68-477e-4b8d-9df5-6a477fbe4f5e",
+        "name": "Craft Supplies"
+    },
+    {
+        "ID": "89c85c23-1b8e-4a9c-9df6-cf2e3e8d67f8",
+        "name": "Office Supplies"
+    },
+    {
+        "ID": "ba7d9c60-6c4a-4b22-b660-53987c8eaf37",
+        "name": "Travel"
+    },
+    {
+        "ID": "eafc20b8-5a64-4b58-904f-7b3dff4b99b1",
+        "name": "Entertainment"
+    }
+]
