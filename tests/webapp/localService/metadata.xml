@@ -343,6 +343,12 @@
       <Annotations Target="OnlineShopping.Products/supplierID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="Common.Label" String="Supplier ID"/>
       </Annotations>
+      <Annotations Target="OnlineShopping.Products/firstReleaseDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="First Release Date"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/isActive" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Active Product"/>
+      </Annotations>
       <Annotations Target="OnlineShopping.Products/toCategory" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="Common.Label" String="To Category Navigation"/>
       </Annotations>

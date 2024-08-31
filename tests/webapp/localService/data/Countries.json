@@ -36,8 +36,8 @@
         "country": "Venezuela"
     },
     {
-        "code": "ECU:Ecuador",
-        "country": ""
+        "code": "ECU",
+        "country": "Ecuador"
     },
     {
         "code": "BOL",
@@ -164,7 +164,7 @@
         "country": "Ghana"
     },
     {
-        "code": "Tanzania",
+        "code": "TNZ",
         "country": "Tanzania"
     },
     {
