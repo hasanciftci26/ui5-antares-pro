@@ -10,7 +10,8 @@
     ],
     "main": "webapp/index.html",
     "scripts": {
-        "start": "ui5 serve --port 8080 -o index.html"
+        "start": "ui5 serve --port 8080 -o index.html",
+        "prestart": "node ../copy-lib-for-test.js"
     },
     "devDependencies": {
         "@sap-ux/eslint-plugin-fiori-tools": "^0.5.0",
