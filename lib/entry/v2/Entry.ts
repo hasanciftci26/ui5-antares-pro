@@ -13,7 +13,10 @@ import SmartValidator from "ui5/antares/pro/validation/SmartValidator";
 /**
  * @namespace ui5.antares.pro.entry.v2
  */
-export default abstract class Entry extends Content {
+export default abstract class Entry<
+    EntityT extends Record<string, any> = Record<string, any>,
+    EntityKeysT extends Record<string, any> = Record<string, any>
+> extends Content {
     private context: Context;
     private completeButtonText: string;
     private completeButtonType: ButtonType;
@@ -26,12 +29,15 @@ export default abstract class Entry extends Content {
     constructor(controller: Controller, entitySetName: string, entryType: EntryType, oDataModelRef?: string | ODataModel) {
         super(controller, entitySetName, entryType, oDataModelRef);
         this.initializeButtonSettings();
+        this.enableTwoWayBinding();
     }
 
     protected reset() {
         if (this.getODataModel().hasPendingChanges()) {
             this.getODataModel().resetChanges([this.context.getPath()]);
         }
+
+        this.resetBindingMode();
     }
 
     protected async submit() {
@@ -57,12 +63,15 @@ export default abstract class Entry extends Content {
                 }
             });
         }
+
+        this.closeDialog();
+        this.resetBindingMode();
     }
 
-    protected async resolveContext(): Promise<Context> {
+    protected async resolveContext(initialValues?: EntityT): Promise<Context> {
         switch (this.getEntryType()) {
             case "Create":
-                this.createEntry();
+                this.createEntry(initialValues);
                 break;
             default:
                 break;
@@ -71,8 +80,10 @@ export default abstract class Entry extends Content {
         return this.context;
     }
 
-    private createEntry() {
-        this.context = this.getODataModel().createEntry(this.getEntitySetPath(), {}) as Context;
+    private createEntry(initialValues?: EntityT) {
+        this.context = this.getODataModel().createEntry(this.getEntitySetPath(), {
+            properties: initialValues
+        }) as Context;
     }
 
     private initializeButtonSettings() {

@@ -6,13 +6,21 @@ import Entry from "ui5/antares/pro/entry/v2/Entry";
 /**
  * @namespace ui5.antares.pro.entry.v2
  */
-export default class EntryCreate extends Entry {
+export default class EntryCreate<
+    EntityT extends Record<string, any> = Record<string, any>,
+    EntityKeysT extends Record<string, any> = Record<string, any>
+> extends Entry<
+    EntityT,
+    EntityKeysT
+> {
     constructor(controller: Controller, entitySetName: string, oDataModelRef?: string | ODataModel) {
         super(controller, entitySetName, "Create", oDataModelRef);
     }
 
-    public async create() {
-        const context = await this.resolveContext();
+    public async create(initialValues?: EntityT) {
+        const newInitialValues = await this.generateRandomGuid(initialValues);
+        const context = await this.resolveContext(newInitialValues);
+
         await this.createContent(context);
         this.addButtons();
         this.getDialog().open();
@@ -47,5 +55,48 @@ export default class EntryCreate extends Entry {
         event.reject();
         this.reset();
         this.closeDialog();
+    }
+
+    private async generateRandomGuid(initialValues?: EntityT): Promise<EntityT | undefined> {
+        if (!this.getGuidMode().generate) {
+            return initialValues;
+        }
+
+        const properties = await this.getEntityProperties();
+        const guidProperties = properties.filter(property => property.type === "Edm.Guid");
+
+        if (initialValues) {
+            for (const property of guidProperties) {
+                if (this.getGuidMode().onlyForKeys && !property.key) {
+                    continue;
+                }
+
+                if (!initialValues.hasOwnProperty(property.name)) {
+                    (initialValues[property.name as keyof typeof initialValues] as string) = window.crypto.randomUUID() as string;
+                }
+            }
+
+            return initialValues;
+        } else {
+            if (!guidProperties.length) {
+                return;
+            } else {
+                const newInitialValues = {};
+
+                for (const property of guidProperties) {
+                    if (this.getGuidMode().onlyForKeys && !property.key) {
+                        continue;
+                    }
+
+                    (newInitialValues[property.name as keyof typeof newInitialValues] as string) = window.crypto.randomUUID() as string;
+                }
+
+                if (Object.keys(newInitialValues).length) {
+                    return newInitialValues as EntityT | undefined;
+                } else {
+                    return;
+                }
+            }
+        }
     }
 }

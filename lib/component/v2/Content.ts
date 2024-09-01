@@ -7,7 +7,8 @@ import Controller from "sap/ui/core/mvc/Controller";
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ODataMetadataReader from "ui5/antares/pro/odata/v2/ODataMetadataReader";
-import { FormType, EntryType } from "ui5/antares/pro/types/component/v2/Content";
+import { FormType, EntryType, IGuidMode } from "ui5/antares/pro/types/component/v2/Content";
+import { IEntityProperty } from "ui5/antares/pro/types/odata/v2/ODataMetadataReader";
 
 /**
  * @namespace ui5.antares.pro.component.v2
@@ -18,6 +19,11 @@ export default abstract class Content extends ODataMetadataReader {
     private smartForm: SmartForm;
     private dialogTitle: string;
     private entryType: EntryType;
+    private guidMode: IGuidMode = {
+        generate: true,
+        display: false,
+        onlyForKeys: true
+    };
 
     constructor(controller: Controller, entitySetName: string, entryType: EntryType, oDataModelRef?: string | ODataModel) {
         super(controller, entitySetName, oDataModelRef);
@@ -112,6 +118,10 @@ export default abstract class Content extends ODataMetadataReader {
                     break;
             }
 
+            if (property.type === "Edm.Guid") {
+                this.setGuidPropertyPermissions(smartField, property);
+            }
+
             groupElements.push(new GroupElement({
                 label: property.label,
                 elements: smartField
@@ -119,6 +129,26 @@ export default abstract class Content extends ODataMetadataReader {
         }
 
         return groupElements;
+    }
+
+    private setGuidPropertyPermissions(smartField: SmartField, property: IEntityProperty) {
+        if (this.guidMode.onlyForKeys) {
+            if (property.key && !this.guidMode.display) {
+                smartField.setVisible(false);
+            }
+
+            if (property.key && this.guidMode.generate) {
+                smartField.setEditable(false);
+            }
+        } else {
+            if (!this.guidMode.display) {
+                smartField.setVisible(false);
+            }
+
+            if (this.guidMode.generate) {
+                smartField.setEditable(false);
+            }
+        }
     }
 
     protected getEntryType(): EntryType {
@@ -148,5 +178,17 @@ export default abstract class Content extends ODataMetadataReader {
 
     public getDialog(): Dialog {
         return this.dialog;
+    }
+
+    public setGuidMode(generateRandom: boolean, display: boolean, onlyForKeys: boolean) {
+        this.guidMode = {
+            generate: generateRandom,
+            display: display,
+            onlyForKeys: onlyForKeys
+        };
+    }
+
+    public getGuidMode(): IGuidMode {
+        return this.guidMode;
     }
 }
