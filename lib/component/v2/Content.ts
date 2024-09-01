@@ -25,21 +25,21 @@ export default abstract class Content extends ODataMetadataReader {
         this.createDialogTitle();
     }
 
-    protected async createContent(context: Context): Promise<Dialog> {
+    protected async createContent(context: Context) {
         this.createDialog();
 
         switch (this.formType) {
-            case "SimpleForm":
-                break;
             case "SmartForm":
                 await this.createSmartForm();
                 this.dialog.addContent(this.smartForm);
+                break;
+            case "SimpleForm":
                 break;
         }
 
         this.dialog.setModel(this.getODataModel());
         this.dialog.setBindingContext(context);
-        return this.dialog;
+        this.getSourceView().addDependent(this.dialog);
     }
 
     private createDialogTitle() {
@@ -74,6 +74,7 @@ export default abstract class Content extends ODataMetadataReader {
         this.smartForm = new SmartForm({
             editTogglable: false,
             editable: this.entryType === "Create" || this.entryType === "Update",
+            validationMode: "Async",
             groups: groups
         });
     }
@@ -124,7 +125,12 @@ export default abstract class Content extends ODataMetadataReader {
         return this.entryType;
     }
 
-    protected getSmartForm(): SmartForm {
+    protected closeDialog() {
+        this.dialog.close();
+        this.dialog.destroy();
+    }
+
+    public getSmartForm(): SmartForm {
         return this.smartForm;
     }
 
@@ -132,7 +138,15 @@ export default abstract class Content extends ODataMetadataReader {
         this.formType = formType;
     }
 
+    public getFormType() {
+        return this.formType;
+    }
+
     public setDialogTitle(title: string) {
         this.dialogTitle = title;
+    }
+
+    public getDialog(): Dialog {
+        return this.dialog;
     }
 }
