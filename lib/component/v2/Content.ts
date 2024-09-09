@@ -7,7 +7,7 @@ import Controller from "sap/ui/core/mvc/Controller";
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ODataMetadataReader from "ui5/antares/pro/odata/v2/ODataMetadataReader";
-import { FormType, EntryType, IGuidMode } from "ui5/antares/pro/types/component/v2/Content";
+import { FormType, EntryType, IGuidBehaviour } from "ui5/antares/pro/types/component/v2/Content";
 import { IEntityProperty } from "ui5/antares/pro/types/odata/v2/ODataMetadataReader";
 
 /**
@@ -19,10 +19,12 @@ export default abstract class Content extends ODataMetadataReader {
     private smartForm: SmartForm;
     private dialogTitle: string;
     private entryType: EntryType;
-    private guidMode: IGuidMode = {
+    private oDataContext: Context;
+    private guidBehaviour: IGuidBehaviour = {
         generate: true,
         display: false,
-        onlyForKeys: true
+        keys: true,
+        properties: []
     };
 
     constructor(controller: Controller, entitySetName: string, entryType: EntryType, oDataModelRef?: string | ODataModel) {
@@ -32,6 +34,7 @@ export default abstract class Content extends ODataMetadataReader {
     }
 
     protected async createContent(context: Context) {
+        this.oDataContext = context;
         this.createDialog();
 
         switch (this.formType) {
@@ -119,7 +122,7 @@ export default abstract class Content extends ODataMetadataReader {
             }
 
             if (property.type === "Edm.Guid") {
-                this.setGuidPropertyPermissions(smartField, property);
+                this.applyGuidBehaviour(property, smartField);
             }
 
             groupElements.push(new GroupElement({
@@ -131,24 +134,40 @@ export default abstract class Content extends ODataMetadataReader {
         return groupElements;
     }
 
-    private setGuidPropertyPermissions(smartField: SmartField, property: IEntityProperty) {
-        if (this.guidMode.onlyForKeys) {
-            if (property.key && !this.guidMode.display) {
-                smartField.setVisible(false);
+    private applyGuidBehaviour(property: IEntityProperty, control: SmartField) {
+        if (this.guidBehaviour.keys) {
+            if (property.key && !this.guidBehaviour.display) {
+                control.setVisible(false);
             }
 
-            if (property.key && this.guidMode.generate) {
-                smartField.setEditable(false);
+            if (property.key && this.guidBehaviour.generate) {
+                control.setEditable(false);
+                this.generateRandomUUID(property.name);
             }
         } else {
-            if (!this.guidMode.display) {
-                smartField.setVisible(false);
+            if (this.guidBehaviour.properties.includes(property.name) && !this.guidBehaviour.display) {
+                control.setVisible(false);
             }
 
-            if (this.guidMode.generate) {
-                smartField.setEditable(false);
+            if (this.guidBehaviour.properties.includes(property.name) && this.guidBehaviour.generate) {
+                control.setEditable(false);
+                this.generateRandomUUID(property.name);
             }
         }
+    }
+
+    private generateRandomUUID(propertyName: string) {
+        if (this.entryType !== "Create") {
+            return;
+        }
+
+        const initialEntryContains = this.oDataContext.getProperty(`${propertyName}`) !== undefined;
+
+        if (initialEntryContains) {
+            return;
+        }
+
+        this.getODataModel().setProperty(this.oDataContext.getPath() + `/${propertyName}`, window.crypto.randomUUID());
     }
 
     protected getEntryType(): EntryType {
@@ -180,15 +199,16 @@ export default abstract class Content extends ODataMetadataReader {
         return this.dialog;
     }
 
-    public setGuidMode(generateRandom: boolean, display: boolean, onlyForKeys: boolean) {
-        this.guidMode = {
-            generate: generateRandom,
+    public setGuidBehaviour(generate: boolean, display: boolean, properties: string[] = []) {
+        this.guidBehaviour = {
+            generate: generate,
             display: display,
-            onlyForKeys: onlyForKeys
+            keys: properties.length === 0,
+            properties: properties
         };
     }
 
-    public getGuidMode(): IGuidMode {
-        return this.guidMode;
+    public getGuidBehaviour(): IGuidBehaviour {
+        return this.guidBehaviour;
     }
 }

@@ -3,15 +3,15 @@ export interface IProductKeys {
 }
 
 export interface IProduct extends IProductKeys {
-    name: string | null;
-    description: string | null;
-    brand: string | null;
-    price: number;
-    currency: string;
-    quantityInStock: number | null;
-    categoryID: string;
-    supplierID: string;
-    isActive: boolean | null;
+    name?: string | null;
+    description?: string | null;
+    brand?: string | null;
+    price?: number;
+    currency?: string;
+    quantityInStock?: number | null;
+    categoryID?: string;
+    supplierID?: string;
+    isActive?: boolean | null;
 }
 
 export interface ICustomerKeys {

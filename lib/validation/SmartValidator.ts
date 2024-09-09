@@ -1,6 +1,9 @@
 import BaseObject from "sap/ui/base/Object";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
 
+/**
+ * @namespace ui5.antares.pro.validation
+ */
 export default class SmartValidator extends BaseObject {
     private smartForm: SmartForm;
 

@@ -18,8 +18,7 @@ export default class EntryCreate<
     }
 
     public async create(initialValues?: EntityT) {
-        const newInitialValues = await this.generateRandomGuid(initialValues);
-        const context = await this.resolveContext(newInitialValues);
+        const context = await this.resolveContext(initialValues);
 
         await this.createContent(context);
         this.addButtons();
@@ -55,48 +54,5 @@ export default class EntryCreate<
         event.reject();
         this.reset();
         this.closeDialog();
-    }
-
-    private async generateRandomGuid(initialValues?: EntityT): Promise<EntityT | undefined> {
-        if (!this.getGuidMode().generate) {
-            return initialValues;
-        }
-
-        const properties = await this.getEntityProperties();
-        const guidProperties = properties.filter(property => property.type === "Edm.Guid");
-
-        if (initialValues) {
-            for (const property of guidProperties) {
-                if (this.getGuidMode().onlyForKeys && !property.key) {
-                    continue;
-                }
-
-                if (!initialValues.hasOwnProperty(property.name)) {
-                    (initialValues[property.name as keyof typeof initialValues] as string) = window.crypto.randomUUID() as string;
-                }
-            }
-
-            return initialValues;
-        } else {
-            if (!guidProperties.length) {
-                return;
-            } else {
-                const newInitialValues = {};
-
-                for (const property of guidProperties) {
-                    if (this.getGuidMode().onlyForKeys && !property.key) {
-                        continue;
-                    }
-
-                    (newInitialValues[property.name as keyof typeof newInitialValues] as string) = window.crypto.randomUUID() as string;
-                }
-
-                if (Object.keys(newInitialValues).length) {
-                    return newInitialValues as EntityT | undefined;
-                } else {
-                    return;
-                }
-            }
-        }
     }
 }

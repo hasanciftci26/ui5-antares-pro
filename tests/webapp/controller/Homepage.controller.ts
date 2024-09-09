@@ -25,18 +25,25 @@ export default class Homepage extends BaseController {
         entry.setInvisibleProperties(["brand"]);
         entry.setRequiredProperties(["name"]);
         entry.enableMetadataLabels();
-        entry.setGuidMode(true, true, false);
+        entry.attachBeforeSubmit(this.beforeCreateProduct, true);
         entry.create();
     }
 
     public onCreateCategory() {
         const entry = new EntryCreate<IProduct>(this, "Categories");
         entry.enableMetadataLabels();
-        entry.setGuidMode(true, true, true);
         entry.create();
     }
 
     /* ======================================================================================================================= */
     /* Internal methods                                                                                                        */
     /* ======================================================================================================================= */
+
+    private beforeCreateProduct(): Promise<void> {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 5000);
+        });
+    }
 }

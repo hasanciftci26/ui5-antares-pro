@@ -9,6 +9,7 @@ import Content from "ui5/antares/pro/component/v2/Content";
 import { EntryType } from "ui5/antares/pro/types/component/v2/Content";
 import { IBeforeSubmit, ISubmitSuccess } from "ui5/antares/pro/types/entry/v2/Entry";
 import SmartValidator from "ui5/antares/pro/validation/SmartValidator";
+import ValidationLogic from "ui5/antares/pro/validation/ValidationLogic";
 
 /**
  * @namespace ui5.antares.pro.entry.v2
@@ -25,6 +26,7 @@ export default abstract class Entry<
     private beforeSubmit?: IBeforeSubmit;
     private submitSuccess?: ISubmitSuccess;
     private validationErrorMessage?: string;
+    private validations: ValidationLogic[] = [];
 
     constructor(controller: Controller, entitySetName: string, entryType: EntryType, oDataModelRef?: string | ODataModel) {
         super(controller, entitySetName, entryType, oDataModelRef);
@@ -49,13 +51,12 @@ export default abstract class Entry<
                 return;
             }
 
-            this.callBeforeSubmit();
             BusyIndicator.show(1);
+            await this.callBeforeSubmit();
 
             this.getODataModel().submitChanges({
                 success: () => {
                     BusyIndicator.hide();
-
                     this.callSubmitSuccess();
                 },
                 error: () => {
@@ -117,9 +118,13 @@ export default abstract class Entry<
         }
     }
 
-    private callBeforeSubmit() {
+    private async callBeforeSubmit() {
         if (this.beforeSubmit) {
-            this.beforeSubmit.eventHandler.call(this.beforeSubmit.listener, this.context, this.getDialog());
+            if (this.beforeSubmit.async) {
+                await this.beforeSubmit.eventHandler.call(this.beforeSubmit.listener, this.context, this.getDialog());
+            } else {
+                this.beforeSubmit.eventHandler.call(this.beforeSubmit.listener, this.context, this.getDialog());
+            }
         }
     }
 
@@ -161,9 +166,10 @@ export default abstract class Entry<
         return this.closeButtonType;
     }
 
-    public attachBeforeSubmit(eventHandler: (context: Context, dialog: Dialog) => void, listener?: object) {
+    public attachBeforeSubmit(eventHandler: (context: Context, dialog: Dialog) => Promise<void> | void, async: boolean, listener?: object) {
         this.beforeSubmit = {
             eventHandler: eventHandler,
+            async: async,
             listener: listener || this.getSourceController()
         };
     }
@@ -177,5 +183,10 @@ export default abstract class Entry<
 
     public setValidationErrorMessage(message: string) {
         this.validationErrorMessage = message;
+    }
+
+    public addValidationLogic(validation: ValidationLogic) {
+        validation.validateInitialSettings();
+        this.validations.push(validation);
     }
 }
