@@ -16,18 +16,22 @@ export type ValidationOperator =
 
 export type ValidationValue = string | boolean | number | Date;
 
-export interface IValidationBase {
+export interface IValidationDependency {
+    propertyName: string;
+    operator: ValidationOperator;
+    value1: ValidationValue;
+    value2?: ValidationValue;
+}
+
+export interface IValidationLogicSettings {
     propertyName: string;
     operator?: ValidationOperator;
     value1?: ValidationValue;
     value2?: ValidationValue;
-}
-
-export interface IValidationLogicSettings extends IValidationBase {
     validator?: (value: ValidationValue) => Promise<boolean> | boolean;
-    listener?: object;    
+    listener?: object;
     dependencies?: {
-        validations: IValidationBase[];
+        validations: IValidationDependency[];
         and?: boolean;
     };
 }

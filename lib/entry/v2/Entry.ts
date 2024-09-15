@@ -183,7 +183,7 @@ export default abstract class Entry<
     }
 
     public addValidationLogic(validation: ValidationLogic) {
-        validation.validateInitialSettings();
+        validation.checkInitialSettings();
         this.validations.push(validation);
     }
 }

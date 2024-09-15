@@ -28,8 +28,9 @@ export default class ValidationLogic extends BaseObject {
         this.properties = properties;
         this.defaultListener = defaultListener;
 
-        this.validateType(propertyType, this.settings.value1!, this.settings.value2);
-        this.validateOperatorCompatibility(this.settings.operator!, propertyType);
+        this.checkValueType(propertyType, this.settings.value1!, this.settings.value2);
+        this.checkOperatorCompatibility(propertyType, this.settings.operator!,);
+        this.checkDependencies();
 
         switch (this.settings.operator!) {
             case "NE":
@@ -47,11 +48,11 @@ export default class ValidationLogic extends BaseObject {
         return true;
     }
 
-    private validateType(edmType: PropertyType, value1: ValidationValue, value2?: ValidationValue) {
+    private checkValueType(edmType: PropertyType, value1: ValidationValue, value2?: ValidationValue) {
         switch (edmType) {
             case "Edm.DateTime":
             case "Edm.DateTimeOffset":
-                this.validateDateType(value1, value2);
+                this.checkDateType(value1, value2);
                 break;
             case "Edm.Byte":
             case "Edm.SByte":
@@ -60,24 +61,24 @@ export default class ValidationLogic extends BaseObject {
             case "Edm.Int16":
             case "Edm.Int32":
             case "Edm.Single":
-                this.validateNumberType(value1, value2);
+                this.checkNumberType(value1, value2);
                 break;
             case "Edm.Boolean":
-                this.validateBooleanType(value1, value2);
+                this.checkBooleanType(value1, value2);
                 break;
             case "Edm.Guid":
-                this.validateGuidType(value1, value2);
+                this.checkGuidType(value1, value2);
                 break;
             case "Edm.String":
-                this.validateStringType(value1, value2);
+                this.checkStringType(value1, value2);
                 break;
             case "Edm.Int64":
-                this.validateBigIntType(value1, value2);
+                this.checkBigIntType(value1, value2);
                 break;
         }
     }
 
-    private validateDateType(value1: ValidationValue, value2?: ValidationValue) {
+    private checkDateType(value1: ValidationValue, value2?: ValidationValue) {
         if (!(value1 instanceof Date)) {
             throw new Error("value1 must be Date instance");
         }
@@ -89,7 +90,7 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    private validateNumberType(value1: ValidationValue, value2?: ValidationValue) {
+    private checkNumberType(value1: ValidationValue, value2?: ValidationValue) {
         if (typeof value1 !== "number") {
             throw new Error("value1 must be number");
         }
@@ -101,7 +102,7 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    private validateBooleanType(value1: ValidationValue, value2?: ValidationValue) {
+    private checkBooleanType(value1: ValidationValue, value2?: ValidationValue) {
         if (typeof value1 !== "boolean") {
             throw new Error("value1 must be boolean");
         }
@@ -113,7 +114,7 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    private validateGuidType(value1: ValidationValue, value2?: ValidationValue) {
+    private checkGuidType(value1: ValidationValue, value2?: ValidationValue) {
         const regex = /[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}/;
 
         if (typeof value1 !== "string") {
@@ -135,7 +136,7 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    private validateStringType(value1: ValidationValue, value2?: ValidationValue) {
+    private checkStringType(value1: ValidationValue, value2?: ValidationValue) {
         if (typeof value1 !== "string") {
             throw new Error("value1 must be string");
         }
@@ -147,7 +148,7 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    private validateBigIntType(value1: ValidationValue, value2?: ValidationValue) {
+    private checkBigIntType(value1: ValidationValue, value2?: ValidationValue) {
         if (typeof value1 !== "bigint") {
             throw new Error("value1 must be bigint");
         }
@@ -159,7 +160,7 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    private validateOperatorCompatibility(operator: ValidationOperator, edmType: PropertyType) {
+    private checkOperatorCompatibility(edmType: PropertyType, operator: ValidationOperator) {
         switch (operator) {
             case "Contains":
             case "NotContains":
@@ -197,23 +198,35 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    public validateInitialSettings() {
+    private checkDependencies() {
+        if (!this.settings.dependencies) {
+            return;
+        }
+
+        for (const dependency of this.settings.dependencies.validations) {
+            const propertyType = this.getPropertyType(dependency.propertyName);
+            this.checkValueType(propertyType, dependency.value1, dependency.value2);
+            this.checkOperatorCompatibility(propertyType, dependency.operator);
+        }
+    }
+
+    public checkInitialSettings() {
         if (this.settings.validator) {
             return;
         }
 
-        this.validateOperator();
-        this.validateProperty();
-        this.validateDependencies();
+        this.checkInitialOperator();
+        this.checkValues();
+        this.checkInitialDependencies();
     }
 
-    private validateOperator() {
+    private checkInitialOperator() {
         if (!this.settings.operator) {
             throw new Error("If no validator function is attached, operator is mandatory");
         }
     }
 
-    private validateProperty() {
+    private checkValues() {
         if (["BT", "NB"].includes(this.settings.operator!)) {
             if (this.settings.value1 == null || this.settings.value2 == null) {
                 throw new Error("BT and NB requires both value1 and value2");
@@ -225,32 +238,19 @@ export default class ValidationLogic extends BaseObject {
         }
     }
 
-    private validateDependencies() {
+    private checkInitialDependencies() {
         if (!this.settings.dependencies) {
             return;
         }
 
-        this.validateDependencyOperator();
-        this.validateDependencyProperty();
+        this.checkDependencyValues();
     }
 
-    private validateDependencyOperator() {
+    private checkDependencyValues() {
         for (const dependency of this.settings.dependencies!.validations) {
-            if (!dependency.operator) {
-                throw new Error("If no validator function is attached, operator is mandatory");
-            }
-        }
-    }
-
-    private validateDependencyProperty() {
-        for (const dependency of this.settings.dependencies!.validations) {
-            if (["BT", "NB"].includes(dependency.operator!)) {
-                if (dependency.value1 == null || dependency.value2 == null) {
+            if (["BT", "NB"].includes(dependency.operator)) {
+                if (dependency.value2 == null) {
                     throw new Error("BT and NB requires both dependentValue1 and dependentValue2");
-                }
-            } else {
-                if (dependency.value1 == null) {
-                    throw new Error("dependentValue1 must be provided");
                 }
             }
         }
