@@ -3,6 +3,7 @@ import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
+import CustomData from "sap/ui/core/CustomData";
 import Controller from "sap/ui/core/mvc/Controller";
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
@@ -99,14 +100,15 @@ export default abstract class Content extends ODataMetadataReader {
     }
 
     private async createSmartFields(): Promise<GroupElement[]> {
-        const properties = await this.getEntityProperties();
+        const properties = await this.loadEntityProperties();
         const groupElements: GroupElement[] = [];
 
         for (const property of properties) {
             const smartField = new SmartField({
                 value: property.bindingPathWithoutModel,
                 mandatory: property.nullable === "false",
-                editable: property.readonly !== "true"
+                editable: property.readonly !== "true",
+                customData: new CustomData({ key: "UI5AntaresStandardPropertyName", value: property.name })
             });
 
             switch (this.entryType) {

@@ -25,7 +25,7 @@ export default class Homepage extends BaseController {
         entry.setInvisibleProperties(["brand"]);
         entry.setRequiredProperties(["name"]);
         entry.enableMetadataLabels();
-        entry.attachBeforeSubmit(this.beforeCreateProduct, true);
+        entry.attachBeforeSubmit(this.beforeCreateProduct, this);
         entry.create();
     }
 

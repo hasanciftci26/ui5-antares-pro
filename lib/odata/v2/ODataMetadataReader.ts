@@ -12,6 +12,7 @@ export default abstract class ODataMetadataReader extends ModelManager {
     private entitySetName: string;
     private entitySetPath: string;
     private oDataMetaModel: ODataMetaModel;
+    private entityProperties?: IEntityProperty[];
     private useMetadataLabels = false;
     private i18nPrefix = "antares";
     private requiredProperties: string[] = [];
@@ -51,7 +52,7 @@ export default abstract class ODataMetadataReader extends ModelManager {
         return entityType as EntityType;
     }
 
-    protected async getEntityProperties(): Promise<IEntityProperty[]> {
+    protected async loadEntityProperties(): Promise<IEntityProperty[]> {
         const entityType = await this.getEntityType();
         const properties: IEntityProperty[] = [];
 
@@ -119,7 +120,16 @@ export default abstract class ODataMetadataReader extends ModelManager {
             });
         }
 
-        return this.applyDisplayOrder(properties);
+        this.entityProperties = this.applyDisplayOrder(properties);
+        return this.entityProperties;
+    }
+
+    protected getEntityProperties(): IEntityProperty[] {
+        if (!this.entityProperties) {
+            throw new Error(this.getLibraryText("loadPropertiesFirst", [this.entitySetName]));
+        }
+
+        return this.entityProperties;
     }
 
     private applyDisplayOrder(properties: IEntityProperty[]): IEntityProperty[] {

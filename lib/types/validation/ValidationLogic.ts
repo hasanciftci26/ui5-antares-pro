@@ -1,18 +1,3 @@
-import UI5Date from "sap/ui/core/date/UI5Date";
-
-export interface IValidationLogicSettings {
-    propertyName: string;
-    operator?: ValidationOperator;
-    value1?: ValidationValueType;
-    value2?: ValidationValueType;
-    dependentProperty?: string;
-    dependentOperator?: ValidationOperator;
-    dependentValue1?: ValidationValueType;
-    dependentValue2?: ValidationValueType;
-    validator?: (value: ValidationValueType) => Promise<boolean> | boolean;
-    listener?: object;
-}
-
 export type ValidationOperator =
     "BT" |
     "Contains" |
@@ -29,4 +14,20 @@ export type ValidationOperator =
     "NotStartsWith" |
     "StartsWith";
 
-export type ValidationValueType = string | boolean | number | Date | UI5Date;
+export type ValidationValue = string | boolean | number | Date;
+
+export interface IValidationBase {
+    propertyName: string;
+    operator?: ValidationOperator;
+    value1?: ValidationValue;
+    value2?: ValidationValue;
+}
+
+export interface IValidationLogicSettings extends IValidationBase {
+    validator?: (value: ValidationValue) => Promise<boolean> | boolean;
+    listener?: object;    
+    dependencies?: {
+        validations: IValidationBase[];
+        and?: boolean;
+    };
+}

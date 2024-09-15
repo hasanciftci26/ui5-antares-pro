@@ -1,4 +1,3 @@
-import Dialog from "sap/m/Dialog";
 import { ButtonType } from "sap/m/library";
 import MessageBox from "sap/m/MessageBox";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
@@ -7,7 +6,7 @@ import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import Content from "ui5/antares/pro/component/v2/Content";
 import { EntryType } from "ui5/antares/pro/types/component/v2/Content";
-import { IBeforeSubmit, ISubmitSuccess } from "ui5/antares/pro/types/entry/v2/Entry";
+import { IBeforeSubmit, ISubmitSuccess, SubmitEventHandler } from "ui5/antares/pro/types/entry/v2/Entry";
 import SmartValidator from "ui5/antares/pro/validation/SmartValidator";
 import ValidationLogic from "ui5/antares/pro/validation/ValidationLogic";
 
@@ -56,17 +55,20 @@ export default abstract class Entry<
 
             this.getODataModel().submitChanges({
                 success: () => {
-                    BusyIndicator.hide();
-                    this.callSubmitSuccess();
+                    this.callSubmitSuccess().then(() => {
+                        BusyIndicator.hide();
+                        this.closeDialog();
+                        this.resetBindingMode();
+                    });
                 },
                 error: () => {
                     BusyIndicator.hide();
                 }
             });
+        } else {
+            this.closeDialog();
+            this.resetBindingMode();
         }
-
-        this.closeDialog();
-        this.resetBindingMode();
     }
 
     protected async resolveContext(initialValues?: EntityT): Promise<Context> {
@@ -110,7 +112,7 @@ export default abstract class Entry<
     private async validateRequiredFields() {
         switch (this.getFormType()) {
             case "SmartForm":
-                const smartValidator = new SmartValidator(this.getSmartForm());
+                const smartValidator = new SmartValidator(this.getSmartForm(), this.getEntityProperties(), this.validations);
                 await smartValidator.validate();
                 break;
             case "SimpleForm":
@@ -120,17 +122,13 @@ export default abstract class Entry<
 
     private async callBeforeSubmit() {
         if (this.beforeSubmit) {
-            if (this.beforeSubmit.async) {
-                await this.beforeSubmit.eventHandler.call(this.beforeSubmit.listener, this.context, this.getDialog());
-            } else {
-                this.beforeSubmit.eventHandler.call(this.beforeSubmit.listener, this.context, this.getDialog());
-            }
+            await Promise.resolve(this.beforeSubmit.eventHandler.call(this.beforeSubmit.listener, this.context, this.getDialog()));
         }
     }
 
-    private callSubmitSuccess() {
+    private async callSubmitSuccess() {
         if (this.submitSuccess) {
-            this.submitSuccess.eventHandler.call(this.submitSuccess.listener);
+            await Promise.resolve(this.submitSuccess.eventHandler.call(this.submitSuccess.listener, this.context, this.getDialog()));
         }
     }
 
@@ -166,15 +164,14 @@ export default abstract class Entry<
         return this.closeButtonType;
     }
 
-    public attachBeforeSubmit(eventHandler: (context: Context, dialog: Dialog) => Promise<void> | void, async: boolean, listener?: object) {
+    public attachBeforeSubmit(eventHandler: SubmitEventHandler, listener?: object) {
         this.beforeSubmit = {
             eventHandler: eventHandler,
-            async: async,
             listener: listener || this.getSourceController()
         };
     }
 
-    public attachSubmitSuccess(eventHandler: () => void, listener?: object) {
+    public attachSubmitSuccess(eventHandler: SubmitEventHandler, listener?: object) {
         this.submitSuccess = {
             eventHandler: eventHandler,
             listener: listener || this.getSourceController()
