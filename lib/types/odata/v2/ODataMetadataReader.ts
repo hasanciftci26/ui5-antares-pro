@@ -30,10 +30,15 @@ export interface IEntityProperty {
     precision?: string;
     scale?: string;
     displayFormat?: string;
+    maxLength?: string;
 }
 
 export type PropertyVocabLabelExt = Property & {
     "com.sap.vocabularies.Common.v1.Label": {
         "String": string;
     };
+}
+
+export type PropertyMaxLengthExt = Property & {
+    maxLength: string;
 }

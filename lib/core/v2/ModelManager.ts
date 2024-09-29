@@ -1,4 +1,3 @@
-import BaseObject from "sap/ui/base/Object";
 import Controller from "sap/ui/core/mvc/Controller";
 import View from "sap/ui/core/mvc/View";
 import UIComponent from "sap/ui/core/UIComponent";
@@ -6,18 +5,18 @@ import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import BindingMode from "sap/ui/model/BindingMode";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
+import LibraryResourceModel from "ui5/antares/pro/core/v2/LibraryResourceModel";
 
 /**
  * @namespace ui5.antares.pro.core.v2
  */
-export default abstract class ModelManager extends BaseObject {
+export default abstract class ModelManager extends LibraryResourceModel {
     private controller: Controller;
     private view: View;
     private uiComponent: UIComponent;
     private oDataModel: ODataModel;
     private oDataModelName?: string;
     private defaultBindingMode: BindingMode | "Default" | "OneTime" | "OneWay" | "TwoWay";
-    private libResourceModel: ResourceModel;
     private srcResourceModel?: ResourceModel;
     private srcResourceBundle?: ResourceBundle;
 
@@ -26,7 +25,6 @@ export default abstract class ModelManager extends BaseObject {
         this.controller = controller;
         this.view = controller.getView() as View;
         this.uiComponent = controller.getOwnerComponent() as UIComponent;
-        this.setLibResourceModel();
         this.setODataModel(oDataModelRef);
         this.setDefaultBindingMode();
         this.setSrcResourceModel();
@@ -68,13 +66,6 @@ export default abstract class ModelManager extends BaseObject {
         }
     }
 
-    // Set the Resource Model of the library to retrieve the messages from library's i18n files
-    private setLibResourceModel() {
-        this.libResourceModel = new ResourceModel({
-            bundleName: "ui5.antares.pro.i18n.i18n"
-        });
-    }
-
     protected getSourceController(): Controller {
         return this.controller;
     }
@@ -110,12 +101,6 @@ export default abstract class ModelManager extends BaseObject {
         }
 
         const bundle = this.srcResourceModel.getResourceBundle() as ResourceBundle;
-        return bundle.getText(key, params) as string;
-    }
-
-    // Get a text from library's i18n files.
-    protected getLibraryText(key: string, params?: any[]): string {
-        const bundle = this.libResourceModel.getResourceBundle() as ResourceBundle;
         return bundle.getText(key, params) as string;
     }
 

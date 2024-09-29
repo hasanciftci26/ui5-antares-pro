@@ -2,7 +2,7 @@ import Controller from "sap/ui/core/mvc/Controller";
 import ODataMetaModel, { EntitySet, EntityType } from "sap/ui/model/odata/ODataMetaModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ModelManager from "ui5/antares/pro/core/v2/ModelManager";
-import { IEntityProperty, PropertyVocabLabelExt } from "ui5/antares/pro/types/odata/v2/ODataMetadataReader";
+import { IEntityProperty, PropertyMaxLengthExt, PropertyVocabLabelExt } from "ui5/antares/pro/types/odata/v2/ODataMetadataReader";
 import LabelGenerator from "ui5/antares/pro/util/LabelGenerator";
 
 /**
@@ -62,7 +62,7 @@ export default abstract class ODataMetadataReader extends ModelManager {
 
         for (const property of entityType.property) {
             const keyProperty = entityType.key.propertyRef.map(ref => ref.name).includes(property.name);
-            let precision, scale, displayFormat, label = property.name;
+            let precision, scale, displayFormat, maxLength, label = property.name;
 
             // If the strict key enforcement is active, the user is not permitted to exclude the key properties
             if (this.strictKeyEnforcement) {
@@ -89,6 +89,10 @@ export default abstract class ODataMetadataReader extends ModelManager {
 
                     if (labelExtension) {
                         label = labelExtension.value;
+                    } else {
+                        if (property.hasOwnProperty("com.sap.vocabularies.Common.v1.Label")) {
+                            label = (property as PropertyVocabLabelExt)["com.sap.vocabularies.Common.v1.Label"].String;
+                        }
                     }
                 } else {
                     if (property.hasOwnProperty("com.sap.vocabularies.Common.v1.Label")) {
@@ -105,6 +109,10 @@ export default abstract class ODataMetadataReader extends ModelManager {
                 scale = property.scale;
             }
 
+            if (property.hasOwnProperty("maxLength")) {
+                maxLength = (property as PropertyMaxLengthExt)["maxLength"];
+            }
+
             properties.push({
                 key: keyProperty,
                 name: property.name,
@@ -116,7 +124,8 @@ export default abstract class ODataMetadataReader extends ModelManager {
                 readonly: this.readOnlyProperties.includes(property.name) ? "true" : property.readOnly,
                 precision: precision,
                 scale: scale,
-                displayFormat: displayFormat
+                displayFormat: displayFormat,
+                maxLength: maxLength
             });
         }
 

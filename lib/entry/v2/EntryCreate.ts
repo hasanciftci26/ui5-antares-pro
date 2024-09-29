@@ -20,7 +20,7 @@ export default class EntryCreate<
     public async create(initialValues?: EntityT) {
         const context = await this.resolveContext(initialValues);
 
-        await this.createContent(context);
+        await this.createControls(context);
         this.addButtons();
         this.getDialog().open();
     }

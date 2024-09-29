@@ -1,11 +1,10 @@
 import { ButtonType } from "sap/m/library";
-import MessageBox from "sap/m/MessageBox";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Controller from "sap/ui/core/mvc/Controller";
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
-import Content from "ui5/antares/pro/component/v2/Content";
-import { EntryType } from "ui5/antares/pro/types/component/v2/Content";
+import ControlFactory from "ui5/antares/pro/component/v2/ControlFactory";
+import { EntryType } from "ui5/antares/pro/types/component/v2/ControlFactory";
 import { IBeforeSubmit, ISubmitSuccess, SubmitEventHandler } from "ui5/antares/pro/types/entry/v2/Entry";
 import SmartValidator from "ui5/antares/pro/validation/SmartValidator";
 import ValidationLogic from "ui5/antares/pro/validation/ValidationLogic";
@@ -16,7 +15,7 @@ import ValidationLogic from "ui5/antares/pro/validation/ValidationLogic";
 export default abstract class Entry<
     EntityT extends Record<string, any> = Record<string, any>,
     EntityKeysT extends Record<string, any> = Record<string, any>
-> extends Content {
+> extends ControlFactory {
     private context: Context;
     private completeButtonText: string;
     private completeButtonType: ButtonType;
@@ -24,7 +23,6 @@ export default abstract class Entry<
     private closeButtonType: ButtonType;
     private beforeSubmit?: IBeforeSubmit;
     private submitSuccess?: ISubmitSuccess;
-    private validationErrorMessage?: string;
     private validations: ValidationLogic[] = [];
 
     constructor(controller: Controller, entitySetName: string, entryType: EntryType, oDataModelRef?: string | ODataModel) {
@@ -43,14 +41,14 @@ export default abstract class Entry<
 
     protected async submit() {
         if (this.getODataModel().hasPendingChanges()) {
-            try {
-                await this.validateRequiredFields();
-            } catch (error) {
-                MessageBox.error(this.validationErrorMessage || this.getLibraryText("requiredFailureMessage"));
+            BusyIndicator.show(1);
+            const isValidationSuccessful = await this.validateValues();
+
+            if (!isValidationSuccessful) {
+                BusyIndicator.hide();
                 return;
             }
 
-            BusyIndicator.show(1);
             await this.callBeforeSubmit();
 
             this.getODataModel().submitChanges({
@@ -109,15 +107,19 @@ export default abstract class Entry<
         }
     }
 
-    private async validateRequiredFields() {
+    private async validateValues() {
+        let isValidationSuccessful = true;
+
         switch (this.getFormType()) {
             case "SmartForm":
-                const smartValidator = new SmartValidator(this.getSmartForm(), this.getEntityProperties(), this.validations);
-                await smartValidator.validate();
+                const smartValidator = new SmartValidator(this.getFormElements(), this.validations);
+                isValidationSuccessful = await smartValidator.validate();
                 break;
             case "SimpleForm":
                 break;
         }
+
+        return isValidationSuccessful;
     }
 
     private async callBeforeSubmit() {
@@ -176,10 +178,6 @@ export default abstract class Entry<
             eventHandler: eventHandler,
             listener: listener || this.getSourceController()
         };
-    }
-
-    public setValidationErrorMessage(message: string) {
-        this.validationErrorMessage = message;
     }
 
     public addValidationLogic(validation: ValidationLogic) {

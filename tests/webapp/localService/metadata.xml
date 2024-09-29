@@ -81,6 +81,8 @@
         <Property Name="categoryID" Type="Edm.Guid" Nullable="false"/>
         <Property Name="supplierID" Type="Edm.Guid" Nullable="false"/>
         <Property Name="firstReleaseDate" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="firstReleaseTime" Type="Edm.Time"/>
+        <Property Name="createdAt" Type="Edm.DateTimeOffset"/>
         <Property Name="isActive" Type="Edm.Boolean"/>
         <NavigationProperty Name="toCategory" Relationship="OnlineShopping.Products_toCategory" FromRole="Products" ToRole="Categories"/>
         <NavigationProperty Name="toSupplier" Relationship="OnlineShopping.Products_toSupplier" FromRole="Products" ToRole="Suppliers"/>
@@ -345,6 +347,12 @@
       </Annotations>
       <Annotations Target="OnlineShopping.Products/firstReleaseDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="Common.Label" String="First Release Date"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/firstReleaseTime" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="First Release Time"/>
+      </Annotations>
+      <Annotations Target="OnlineShopping.Products/createdAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Created At"/>
       </Annotations>
       <Annotations Target="OnlineShopping.Products/isActive" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="Common.Label" String="Active Product"/>

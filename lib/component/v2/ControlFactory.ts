@@ -3,21 +3,22 @@ import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
-import CustomData from "sap/ui/core/CustomData";
+import Control from "sap/ui/core/Control";
 import Controller from "sap/ui/core/mvc/Controller";
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ODataMetadataReader from "ui5/antares/pro/odata/v2/ODataMetadataReader";
-import { FormType, EntryType, IGuidBehaviour } from "ui5/antares/pro/types/component/v2/Content";
+import { FormType, EntryType, IGuidBehaviour, IFormElement } from "ui5/antares/pro/types/component/v2/ControlFactory";
 import { IEntityProperty } from "ui5/antares/pro/types/odata/v2/ODataMetadataReader";
 
 /**
  * @namespace ui5.antares.pro.component.v2
  */
-export default abstract class Content extends ODataMetadataReader {
+export default abstract class ControlFactory extends ODataMetadataReader {
     private formType: FormType = "SmartForm";
     private dialog: Dialog;
     private smartForm: SmartForm;
+    private formElements: IFormElement[] = [];
     private dialogTitle: string;
     private entryType: EntryType;
     private oDataContext: Context;
@@ -34,7 +35,7 @@ export default abstract class Content extends ODataMetadataReader {
         this.createDialogTitle();
     }
 
-    protected async createContent(context: Context) {
+    protected async createControls(context: Context) {
         this.oDataContext = context;
         this.createDialog();
 
@@ -42,13 +43,15 @@ export default abstract class Content extends ODataMetadataReader {
             case "SmartForm":
                 await this.createSmartForm();
                 this.dialog.addContent(this.smartForm);
+                this.dialog.setModel(this.getODataModel());
+                this.dialog.setBindingContext(context);
                 break;
             case "SimpleForm":
+                this.dialog.setModel(this.getODataModel(), this.getODataModelName());
+                this.dialog.setBindingContext(context, this.getODataModelName());
                 break;
         }
 
-        this.dialog.setModel(this.getODataModel());
-        this.dialog.setBindingContext(context);
         this.getSourceView().addDependent(this.dialog);
     }
 
@@ -107,8 +110,7 @@ export default abstract class Content extends ODataMetadataReader {
             const smartField = new SmartField({
                 value: property.bindingPathWithoutModel,
                 mandatory: property.nullable === "false",
-                editable: property.readonly !== "true",
-                customData: new CustomData({ key: "UI5AntaresStandardPropertyName", value: property.name })
+                editable: property.readonly !== "true"
             });
 
             switch (this.entryType) {
@@ -131,6 +133,12 @@ export default abstract class Content extends ODataMetadataReader {
                 label: property.label,
                 elements: smartField
             }));
+
+            this.formElements.push({
+                control: smartField,
+                property: property,
+                standard: true
+            });
         }
 
         return groupElements;
@@ -183,6 +191,10 @@ export default abstract class Content extends ODataMetadataReader {
 
     public getSmartForm(): SmartForm {
         return this.smartForm;
+    }
+
+    public getFormElements(): IFormElement[] {
+        return this.formElements;
     }
 
     public setFormType(formType: FormType) {
