@@ -3,7 +3,6 @@ import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
-import Control from "sap/ui/core/Control";
 import Controller from "sap/ui/core/mvc/Controller";
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";

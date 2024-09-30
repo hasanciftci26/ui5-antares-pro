@@ -1,5 +1,7 @@
 import { Property } from "sap/ui/model/odata/ODataMetaModel";
 
+export type DisplayFormat = "Date" | "NonNegative" | "UpperCase";
+
 export type PropertyType =
     "Edm.Binary" |
     "Edm.Boolean" |
@@ -29,7 +31,7 @@ export interface IEntityProperty {
     readonly?: "true" | "false";
     precision?: string;
     scale?: string;
-    displayFormat?: string;
+    displayFormat?: DisplayFormat;
     maxLength?: string;
 }
 

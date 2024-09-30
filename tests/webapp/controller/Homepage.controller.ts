@@ -23,7 +23,7 @@ export default class Homepage extends BaseController {
         const entry = new EntryCreate<IProduct>(this, "Products");
         entry.setDialogTitle("Test");
         entry.setInvisibleProperties(["brand"]);
-        entry.setRequiredProperties(["name", "firstReleaseDate"]);
+        // entry.setRequiredProperties(["name", "firstReleaseDate"]);
         entry.enableMetadataLabels();
         entry.attachBeforeSubmit(this.beforeCreateProduct, this);
         entry.create();

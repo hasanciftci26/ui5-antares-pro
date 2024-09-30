@@ -2,7 +2,7 @@ import Controller from "sap/ui/core/mvc/Controller";
 import ODataMetaModel, { EntitySet, EntityType } from "sap/ui/model/odata/ODataMetaModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ModelManager from "ui5/antares/pro/core/v2/ModelManager";
-import { IEntityProperty, PropertyMaxLengthExt, PropertyVocabLabelExt } from "ui5/antares/pro/types/odata/v2/ODataMetadataReader";
+import { DisplayFormat, IEntityProperty, PropertyMaxLengthExt, PropertyVocabLabelExt } from "ui5/antares/pro/types/odata/v2/ODataMetadataReader";
 import LabelGenerator from "ui5/antares/pro/util/LabelGenerator";
 
 /**
@@ -124,7 +124,7 @@ export default abstract class ODataMetadataReader extends ModelManager {
                 readonly: this.readOnlyProperties.includes(property.name) ? "true" : property.readOnly,
                 precision: precision,
                 scale: scale,
-                displayFormat: displayFormat,
+                displayFormat: displayFormat as DisplayFormat | undefined,
                 maxLength: maxLength
             });
         }
@@ -253,7 +253,7 @@ export default abstract class ODataMetadataReader extends ModelManager {
         this.forceKeyPropertiesFirst = forceKeyPropertiesFirst;
     }
 
-    public setStrictKeyEnforcement(strictKeyEnforcement: boolean) {
-        this.strictKeyEnforcement = strictKeyEnforcement;
+    public disableStrictKeyEnforcement() {
+        this.strictKeyEnforcement = false;
     }
 }
