@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "skipLibCheck": true,
+        "allowJs": false,
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "sourceMap": false,
+        "inlineSourceMap": false,
+        "baseUrl": "./",
+        "paths": {
+            "ui5/antares/pro/*": [
+                "./src/*"
+            ]
+        },
+        "typeRoots": [
+            "./node_modules/@types",
+            "./node_modules/@sapui5/types"
+        ]
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}
