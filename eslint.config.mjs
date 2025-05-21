@@ -15,7 +15,6 @@ const compat = new FlatCompat({
 
 export default [
     ...compat.extends("plugin:@sap-ux/eslint-plugin-fiori-tools/defaultTS"),
-
     {
         files: ["**/*.ts"],
         languageOptions: {
@@ -53,7 +52,7 @@ export default [
                 }
             ],
             "semi": ["error", "always"],
-            "quotes": ["error", "double", { avoidEscape: true }],
+            "quotes": ["error", "double", { avoidEscape: true, allowTemplateLiterals: true }],
             "@typescript-eslint/member-ordering": ["error", {
                 default: [
                     "public-static-field",
@@ -72,7 +71,14 @@ export default [
                 ]
             }],
             "no-var": "error",
-            "@typescript-eslint/max-params": ["error", { max: 3 }]
+            "@typescript-eslint/max-params": ["error", { max: 3 }],
+            "max-len": ["error", {
+                code: 150,
+                ignoreUrls: true,
+                ignoreStrings: false,
+                ignoreTemplateLiterals: false,
+                ignoreComments: false
+            }]
         }
     }
 ];
