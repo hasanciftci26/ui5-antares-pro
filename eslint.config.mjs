@@ -1,8 +1,21 @@
 import pluginTypescript from "@typescript-eslint/eslint-plugin";
 import parserTypescript from "@typescript-eslint/parser";
-import fioriToolsPlugin from "@sap-ux/eslint-plugin-fiori-tools";
+import js from "@eslint/js";
+import { FlatCompat } from "@eslint/eslintrc";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const compat = new FlatCompat({
+    baseDirectory: __dirname,
+    recommendedConfig: js.configs.recommended
+});
 
 export default [
+    ...compat.extends("plugin:@sap-ux/eslint-plugin-fiori-tools/defaultTS"),
+
     {
         files: ["**/*.ts"],
         languageOptions: {
@@ -14,12 +27,52 @@ export default [
             }
         },
         plugins: {
-            "@typescript-eslint": pluginTypescript,
-            "@sap-ux/eslint-plugin-fiori-tools": fioriToolsPlugin
+            "@typescript-eslint": pluginTypescript
         },
         rules: {
-            semi: ["error", "always"],
-            quotes: ["error", "double"]
+            "@typescript-eslint/naming-convention": [
+                "error",
+                {
+                    selector: ["variableLike", "memberLike", "method"],
+                    format: ["camelCase"],
+                    leadingUnderscore: "forbid",
+                    trailingUnderscore: "forbid"
+                },
+                {
+                    selector: "interface",
+                    format: ["PascalCase"]
+                },
+                {
+                    selector: "property",
+                    modifiers: ["public"],
+                    format: ["camelCase"]
+                },
+                {
+                    selector: "class",
+                    format: ["PascalCase"]
+                }
+            ],
+            "semi": ["error", "always"],
+            "quotes": ["error", "double", { avoidEscape: true }],
+            "@typescript-eslint/member-ordering": ["error", {
+                default: [
+                    "public-static-field",
+                    "public-instance-field",
+                    "protected-static-field",
+                    "protected-instance-field",
+                    "private-static-field",
+                    "private-instance-field",
+                    "constructor",
+                    "public-static-method",
+                    "public-instance-method",
+                    "protected-static-method",
+                    "protected-instance-method",
+                    "private-static-method",
+                    "private-instance-method"
+                ]
+            }],
+            "no-var": "error",
+            "@typescript-eslint/max-params": ["error", { max: 3 }]
         }
     }
 ];
