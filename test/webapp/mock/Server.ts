@@ -4,7 +4,7 @@ export default {
     init: function () {
         const server = new CustomServer();
 
-        server.simulate("metadata.xml");
+        server.simulate("../service/metadata.xml");
         server.start();
     }
 };
