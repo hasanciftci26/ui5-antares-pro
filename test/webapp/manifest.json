@@ -21,7 +21,7 @@
                 "uri": "/mock/v2/antares/pro/",
                 "settings": {
                     "odataVersion": "2.0",
-                    "localUri": "./localService/metadata.xml",
+                    "localUri": "./mock/metadata.xml",
                     "annotations": [
                         "annotation"
                     ]

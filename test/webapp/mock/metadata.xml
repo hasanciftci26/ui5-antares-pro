@@ -5,7 +5,7 @@
    Version="1.0">
    <edmx:DataServices>
       <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm"
-         Namespace="UI5Antares">
+         Namespace="UI5AntaresPro">
          <!-- Product Entity Definition -->
          <EntityType Name="Product">
             <Key>
@@ -27,11 +27,11 @@
             <Property Name="SupplierID"
                Type="Edm.Guid" />
             <NavigationProperty Name="toCategory"
-               Relationship="UI5Antares.Category_Product_Association"
+               Relationship="UI5AntaresPro.Category_Product_Association"
                FromRole="Product"
                ToRole="Category" />
             <NavigationProperty Name="toSupplier"
-               Relationship="UI5Antares.Supplier_Product_Association"
+               Relationship="UI5AntaresPro.Supplier_Product_Association"
                FromRole="Product"
                ToRole="Supplier" />
          </EntityType>
@@ -46,7 +46,7 @@
             <Property Name="Name"
                Type="Edm.String" />
             <NavigationProperty Name="toProducts"
-               Relationship="UI5Antares.Category_Product_Association"
+               Relationship="UI5AntaresPro.Category_Product_Association"
                FromRole="Category"
                ToRole="Product" />
          </EntityType>
@@ -65,7 +65,7 @@
             <Property Name="Country"
                Type="Edm.String" />
             <NavigationProperty Name="toProducts"
-               Relationship="UI5Antares.Supplier_Product_Association"
+               Relationship="UI5AntaresPro.Supplier_Product_Association"
                FromRole="Supplier"
                ToRole="Product" />
          </EntityType>
@@ -91,7 +91,7 @@
                Type="Edm.DateTime"
                sap:display-format="Date"/>
             <NavigationProperty Name="toOrders"
-               Relationship="UI5Antares.Customer_Order_Association"
+               Relationship="UI5AntaresPro.Customer_Order_Association"
                FromRole="Customer"
                ToRole="Order" />
          </EntityType>
@@ -112,34 +112,34 @@
                Precision="13"
                Scale="2"/>
             <NavigationProperty Name="toCustomer"
-               Relationship="UI5Antares.Customer_Order_Association"
+               Relationship="UI5AntaresPro.Customer_Order_Association"
                FromRole="Order"
                ToRole="Customer" />
          </EntityType>
          <!-- Association Definition (Category to Product) -->
          <Association Name="Category_Product_Association">
-            <End Type="UI5Antares.Category"
+            <End Type="UI5AntaresPro.Category"
                Role="Category"
                Multiplicity="1" />
-            <End Type="UI5Antares.Product"
+            <End Type="UI5AntaresPro.Product"
                Role="Product"
                Multiplicity="*" />
          </Association>
          <!-- Association Definition (Supplier to Product) -->
          <Association Name="Supplier_Product_Association">
-            <End Type="UI5Antares.Supplier"
+            <End Type="UI5AntaresPro.Supplier"
                Role="Supplier"
                Multiplicity="1" />
-            <End Type="UI5Antares.Product"
+            <End Type="UI5AntaresPro.Product"
                Role="Product"
                Multiplicity="*" />
          </Association>
          <!-- Association Definition (Customer to Order) -->
          <Association Name="Customer_Order_Association">
-            <End Type="UI5Antares.Customer"
+            <End Type="UI5AntaresPro.Customer"
                Role="Customer"
                Multiplicity="1" />
-            <End Type="UI5Antares.Order"
+            <End Type="UI5AntaresPro.Order"
                Role="Order"
                Multiplicity="*" />
          </Association>
@@ -147,32 +147,32 @@
          <EntityContainer Name="UI5AntaresEntities"
             m:IsDefaultEntityContainer="true">
             <EntitySet Name="Products"
-               EntityType="UI5Antares.Product" />
+               EntityType="UI5AntaresPro.Product" />
             <EntitySet Name="Categories"
-               EntityType="UI5Antares.Category" />
+               EntityType="UI5AntaresPro.Category" />
             <EntitySet Name="Suppliers"
-               EntityType="UI5Antares.Supplier" />
+               EntityType="UI5AntaresPro.Supplier" />
             <EntitySet Name="Customers"
-               EntityType="UI5Antares.Customer" />
+               EntityType="UI5AntaresPro.Customer" />
             <EntitySet Name="Orders"
-               EntityType="UI5Antares.Order" />
+               EntityType="UI5AntaresPro.Order" />
             <!-- Association Sets -->
             <AssociationSet Name="Category_Product_AssociationSet"
-               Association="UI5Antares.Category_Product_Association">
+               Association="UI5AntaresPro.Category_Product_Association">
                <End Role="Product"
                   EntitySet="Products" />
                <End Role="Category"
                   EntitySet="Categories" />
             </AssociationSet>
             <AssociationSet Name="Supplier_Product_AssociationSet"
-               Association="UI5Antares.Supplier_Product_Association">
+               Association="UI5AntaresPro.Supplier_Product_Association">
                <End Role="Product"
                   EntitySet="Products" />
                <End Role="Supplier"
                   EntitySet="Suppliers" />
             </AssociationSet>
             <AssociationSet Name="Customer_Order_AssociationSet"
-               Association="UI5Antares.Customer_Order_Association">
+               Association="UI5AntaresPro.Customer_Order_Association">
                <End Role="Customer"
                   EntitySet="Customers" />
                <End Role="Order"
