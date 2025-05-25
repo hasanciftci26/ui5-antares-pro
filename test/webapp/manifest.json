@@ -115,10 +115,12 @@
             ],
             "targets": {
                 "TargetHomepage": {
+                    "id": "Homepage",
+                    "name": "Homepage",
+                    "type": "View",
                     "viewType": "XML",
                     "transition": "slide",
-                    "clearControlAggregation": false,
-                    "name": "Homepage"
+                    "clearControlAggregation": false
                 }
             }
         },

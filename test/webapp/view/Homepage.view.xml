@@ -8,10 +8,10 @@
     <Page
         id="Homepage"
         showHeader="true"
-        title="UI5 Antares Test App"
+        title="UI5 Antares Pro Test Application"
     >
         <content>
-            <Text text="test app" />
+            <Text text="Test app" />
         </content>
     </Page>
 </mvc:View>
