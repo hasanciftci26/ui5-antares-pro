@@ -1,0 +1,20 @@
+specVersion: '4.0'
+metadata:
+  name: test.ui5.antares.pro
+type: application
+framework:
+  name: SAPUI5
+  version: 1.135.0
+  libraries:
+    - name: sap.ui.core
+    - name: sap.m
+builder:
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+server:
+  customMiddleware:
+    - name: ui5-tooling-transpile-middleware
+      afterMiddleware: compression
+    - name: ui5-middleware-livereload
+      afterMiddleware: compression

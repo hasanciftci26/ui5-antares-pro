@@ -1,0 +1,17 @@
+<mvc:View
+    controllerName="test.ui5.antares.pro.controller.Homepage"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+>
+    <Page
+        id="Homepage"
+        showHeader="true"
+        title="UI5 Antares Test App"
+    >
+        <content>
+            <Text text="test app" />
+        </content>
+    </Page>
+</mvc:View>
