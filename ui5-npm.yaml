@@ -1,0 +1,28 @@
+specVersion: '4.0'
+type: library
+metadata:
+  name: ui5.antares.pro
+framework:
+  name: SAPUI5
+  version: 1.135.0
+  libraries:
+    - name: sap.ui.core
+    - name: sap.m
+builder:
+  resources:
+    excludes:
+      - /test-resources/**
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: false
+        removeConsoleStatements: true
+        transformAsyncToPromise: false
+        transformTypeScript: true
+        generateDts: true
+        omitTSFromBuildResult: true
+        omitSourceMaps: true
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8

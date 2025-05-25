@@ -2,7 +2,10 @@
   "name": "ui5-antares-pro",
   "version": "1.0.0",
   "description": "UI5 Antares Pro",
-  "scripts": {},
+  "scripts": {
+    "build": "ui5 build --config=ui5-npm.yaml --clean-dest --exclude-task=minify",
+    "prepack": "npm run build && rimraf --glob dist/**/*.d.ts.map"
+  },
   "keywords": [
     "sapui5",
     "library",
@@ -11,8 +14,16 @@
     "odata-v2"
   ],
   "author": "hasanciftcii26@gmail.com",
-  "repository": "https://github.com/hasanciftci26/ui5-antares-pro",
+  "repository": {
+    "url": "https://github.com/hasanciftci26/ui5-antares-pro"
+  },
   "license": "UNLICENSED",
+  "files": [
+    "dist",
+    "ui5.yaml",
+    "README.md"
+  ],
+  "types": "dist/index.d.ts",
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.27.0",
@@ -22,6 +33,8 @@
     "@typescript-eslint/parser": "^8.32.1",
     "@ui5/cli": "^4.0.16",
     "eslint": "^8.57.1",
-    "typescript": "^5.8.3"
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3",
+    "ui5-tooling-transpile": "^3.8.0"
   }
 }

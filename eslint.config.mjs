@@ -16,6 +16,7 @@ const compat = new FlatCompat({
 export default [
     ...compat.extends("plugin:@sap-ux/eslint-plugin-fiori-tools/defaultTS"),
     {
+        ignores: ["dist/**"],
         files: ["**/*.ts"],
         languageOptions: {
             parser: parserTypescript,
@@ -29,6 +30,7 @@ export default [
             "@typescript-eslint": pluginTypescript
         },
         rules: {
+            "linebreak-style": "off",
             "@typescript-eslint/naming-convention": [
                 "error",
                 {

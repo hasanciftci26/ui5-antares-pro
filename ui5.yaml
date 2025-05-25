@@ -1,0 +1,15 @@
+specVersion: '4.0'
+type: library
+metadata:
+  name: ui5.antares.pro
+framework:
+  name: SAPUI5
+  version: 1.135.0
+  libraries:
+    - name: sap.ui.core
+    - name: sap.m
+resources:
+  configuration:
+    paths:
+      src: dist/resources
+    propertiesFileSourceEncoding: UTF-8
