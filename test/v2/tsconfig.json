@@ -18,7 +18,8 @@
         },
         "typeRoots": [
             "./node_modules/@types",
-            "./node_modules/@sapui5/types"
+            "./node_modules/@sapui5/types",
+            "./node_modules/ui5-antares-pro"
         ]
     },
     "include": [
