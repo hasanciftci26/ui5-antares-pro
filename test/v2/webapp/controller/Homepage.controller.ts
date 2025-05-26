@@ -1,7 +1,7 @@
-import BaseController from "test/ui5/antares/pro/controller/BaseController";
+import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 
 /**
- * @namespace test.ui5.antares.pro.controller
+ * @namespace test.v2.ui5.antares.pro.controller
  */
 export default class Homepage extends BaseController {
 

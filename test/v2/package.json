@@ -1,7 +1,7 @@
 {
-  "name": "test-ui5-antares-pro",
+  "name": "test-v2-ui5-antares-pro",
   "version": "1.0.0",
-  "description": "UI5 Antares Pro Test Application",
+  "description": "UI5 Antares Pro V2 Test Application",
   "scripts": {
     "start": "ui5 serve --port 8080 -o index.html"
   },

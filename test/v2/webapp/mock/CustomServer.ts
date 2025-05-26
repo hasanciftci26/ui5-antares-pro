@@ -1,7 +1,7 @@
 import MockServer from "sap/ui/core/util/MockServer";
 
 /**
- * @namespace test.ui5.antares.pro.server
+ * @namespace test.v2.ui5.antares.pro.server
  */
 export default class CustomServer extends MockServer {
     constructor() {

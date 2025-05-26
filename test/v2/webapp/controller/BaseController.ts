@@ -8,7 +8,7 @@ import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import View from "sap/ui/core/mvc/View";
 
 /**
- * @namespace test.ui5.antares.pro.controller
+ * @namespace test.v2.ui5.antares.pro.controller
  */
 export default class BaseController extends Controller {
 

@@ -1,7 +1,7 @@
 specVersion: '4.0'
 type: application
 metadata:
-  name: test.ui5.antares.pro
+  name: test.v2.ui5.antares.pro
 framework:
   name: SAPUI5
   version: 1.135.0

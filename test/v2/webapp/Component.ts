@@ -1,8 +1,8 @@
 import BaseComponent from "sap/ui/core/UIComponent";
-import { createDeviceModel } from "test/ui5/antares/pro/model/models";
+import { createDeviceModel } from "test/v2/ui5/antares/pro/model/models";
 
 /**
- * @namespace test.ui5.antares.pro
+ * @namespace test.v2.ui5.antares.pro
  */
 export default class Component extends BaseComponent {
 
