@@ -4,7 +4,11 @@ export default {
     init: function () {
         const server = new CustomServer();
 
-        server.simulate("../service/metadata.xml");
+        server.simulate("../service/metadata.xml", {
+            sMockdataBaseUrl: "../service/data",
+            bGenerateMissingMockData: false
+        });
+
         server.start();
     }
 };

@@ -1,184 +1,407 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
-   xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
-   xmlns:sap="http://www.sap.com/Protocols/SAPData"
-   Version="1.0">
-   <edmx:DataServices>
-      <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm"
-         Namespace="UI5AntaresPro">
-         <!-- Product Entity Definition -->
-         <EntityType Name="Product">
-            <Key>
-               <PropertyRef Name="ID" />
-            </Key>
-            <Property Name="ID"
-               Type="Edm.Guid"
-               Nullable="false" />
-            <Property Name="Name"
-               Type="Edm.String" />
-            <Property Name="Price"
-               Type="Edm.Decimal"
-               Precision="13"
-               Scale="2" />
-            <Property Name="Currency"
-               Type="Edm.String" />
-            <Property Name="CategoryID"
-               Type="Edm.Guid" />
-            <Property Name="SupplierID"
-               Type="Edm.Guid" />
-            <NavigationProperty Name="toCategory"
-               Relationship="UI5AntaresPro.Category_Product_Association"
-               FromRole="Product"
-               ToRole="Category" />
-            <NavigationProperty Name="toSupplier"
-               Relationship="UI5AntaresPro.Supplier_Product_Association"
-               FromRole="Product"
-               ToRole="Supplier" />
-         </EntityType>
-         <!-- Category Entity Definition -->
-         <EntityType Name="Category">
-            <Key>
-               <PropertyRef Name="ID" />
-            </Key>
-            <Property Name="ID"
-               Type="Edm.Guid"
-               Nullable="false" />
-            <Property Name="Name"
-               Type="Edm.String" />
-            <NavigationProperty Name="toProducts"
-               Relationship="UI5AntaresPro.Category_Product_Association"
-               FromRole="Category"
-               ToRole="Product" />
-         </EntityType>
-         <!-- Supplier Entity Definition -->
-         <EntityType Name="Supplier">
-            <Key>
-               <PropertyRef Name="ID" />
-            </Key>
-            <Property Name="ID"
-               Type="Edm.Guid"
-               Nullable="false" />
-            <Property Name="CompanyName"
-               Type="Edm.String" />
-            <Property Name="ContactName"
-               Type="Edm.String" />
-            <Property Name="Country"
-               Type="Edm.String" />
-            <NavigationProperty Name="toProducts"
-               Relationship="UI5AntaresPro.Supplier_Product_Association"
-               FromRole="Supplier"
-               ToRole="Product" />
-         </EntityType>
-         <!-- Customer Entity Definition -->
-         <EntityType Name="Customer">
-            <Key>
-               <PropertyRef Name="ID" />
-            </Key>
-            <Property Name="ID"
-               Type="Edm.String"
-               Nullable="false" />
-            <Property Name="FirstName"
-               Type="Edm.String" />
-            <Property Name="LastName"
-               Type="Edm.String" />
-            <Property Name="Email"
-               Type="Edm.String" />
-            <Property Name="Address"
-               Type="Edm.String" />
-            <Property Name="Phone"
-               Type="Edm.String" />
-            <Property Name="BirthDate"
-               Type="Edm.DateTime"
-               sap:display-format="Date"/>
-            <NavigationProperty Name="toOrders"
-               Relationship="UI5AntaresPro.Customer_Order_Association"
-               FromRole="Customer"
-               ToRole="Order" />
-         </EntityType>
-         <!-- Order Entity -->
-         <EntityType Name="Order">
-            <Key>
-               <PropertyRef Name="ID" />
-            </Key>
-            <Property Name="ID"
-               Type="Edm.Guid"
-               Nullable="false" />
-            <Property Name="OrderDate"
-               Type="Edm.DateTime" />
-            <Property Name="CustomerID"
-               Type="Edm.String" />
-            <Property Name="TotalAmount"
-               Type="Edm.Decimal"
-               Precision="13"
-               Scale="2"/>
-            <NavigationProperty Name="toCustomer"
-               Relationship="UI5AntaresPro.Customer_Order_Association"
-               FromRole="Order"
-               ToRole="Customer" />
-         </EntityType>
-         <!-- Association Definition (Category to Product) -->
-         <Association Name="Category_Product_Association">
-            <End Type="UI5AntaresPro.Category"
-               Role="Category"
-               Multiplicity="1" />
-            <End Type="UI5AntaresPro.Product"
-               Role="Product"
-               Multiplicity="*" />
-         </Association>
-         <!-- Association Definition (Supplier to Product) -->
-         <Association Name="Supplier_Product_Association">
-            <End Type="UI5AntaresPro.Supplier"
-               Role="Supplier"
-               Multiplicity="1" />
-            <End Type="UI5AntaresPro.Product"
-               Role="Product"
-               Multiplicity="*" />
-         </Association>
-         <!-- Association Definition (Customer to Order) -->
-         <Association Name="Customer_Order_Association">
-            <End Type="UI5AntaresPro.Customer"
-               Role="Customer"
-               Multiplicity="1" />
-            <End Type="UI5AntaresPro.Order"
-               Role="Order"
-               Multiplicity="*" />
-         </Association>
-         <!-- EntityContainer -->
-         <EntityContainer Name="UI5AntaresEntities"
-            m:IsDefaultEntityContainer="true">
-            <EntitySet Name="Products"
-               EntityType="UI5AntaresPro.Product" />
-            <EntitySet Name="Categories"
-               EntityType="UI5AntaresPro.Category" />
-            <EntitySet Name="Suppliers"
-               EntityType="UI5AntaresPro.Supplier" />
-            <EntitySet Name="Customers"
-               EntityType="UI5AntaresPro.Customer" />
-            <EntitySet Name="Orders"
-               EntityType="UI5AntaresPro.Order" />
-            <!-- Association Sets -->
-            <AssociationSet Name="Category_Product_AssociationSet"
-               Association="UI5AntaresPro.Category_Product_Association">
-               <End Role="Product"
-                  EntitySet="Products" />
-               <End Role="Category"
-                  EntitySet="Categories" />
-            </AssociationSet>
-            <AssociationSet Name="Supplier_Product_AssociationSet"
-               Association="UI5AntaresPro.Supplier_Product_Association">
-               <End Role="Product"
-                  EntitySet="Products" />
-               <End Role="Supplier"
-                  EntitySet="Suppliers" />
-            </AssociationSet>
-            <AssociationSet Name="Customer_Order_AssociationSet"
-               Association="UI5AntaresPro.Customer_Order_Association">
-               <End Role="Customer"
-                  EntitySet="Customers" />
-               <End Role="Order"
-                  EntitySet="Orders" />
-            </AssociationSet>
-         </EntityContainer>
-      </Schema>
-   </edmx:DataServices>
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+  <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+  </edmx:Reference>
+  <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+  </edmx:Reference>
+  <edmx:DataServices m:DataServiceVersion="2.0">
+    <Schema Namespace="CompanyManagement" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+      <Annotation Term="Core.Links" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Collection>
+          <Record>
+            <PropertyValue Property="rel" String="author"/>
+            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+          </Record>
+        </Collection>
+      </Annotation>
+      <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+        <EntitySet Name="Employees" EntityType="CompanyManagement.Employees"/>
+        <EntitySet Name="Departments" EntityType="CompanyManagement.Departments"/>
+        <EntitySet Name="Countries" EntityType="CompanyManagement.Countries"/>
+        <EntitySet Name="Companies" EntityType="CompanyManagement.Companies"/>
+        <EntitySet Name="EmployeeCertifications" EntityType="CompanyManagement.EmployeeCertifications"/>
+        <EntitySet Name="EmployeeContracts" EntityType="CompanyManagement.EmployeeContracts"/>
+        <AssociationSet Name="Employees_toCountry" Association="CompanyManagement.Employees_toCountry">
+          <End Role="Employees" EntitySet="Employees"/>
+          <End Role="Countries" EntitySet="Countries"/>
+        </AssociationSet>
+        <AssociationSet Name="Employees_toDepartment" Association="CompanyManagement.Employees_toDepartment">
+          <End Role="Employees" EntitySet="Employees"/>
+          <End Role="Departments" EntitySet="Departments"/>
+        </AssociationSet>
+        <AssociationSet Name="Employees_toContract" Association="CompanyManagement.Employees_toContract">
+          <End Role="Employees" EntitySet="Employees"/>
+          <End Role="EmployeeContracts" EntitySet="EmployeeContracts"/>
+        </AssociationSet>
+        <AssociationSet Name="Departments_toCompany" Association="CompanyManagement.Departments_toCompany">
+          <End Role="Departments" EntitySet="Departments"/>
+          <End Role="Companies" EntitySet="Companies"/>
+        </AssociationSet>
+        <AssociationSet Name="Companies_toCountry" Association="CompanyManagement.Companies_toCountry">
+          <End Role="Companies" EntitySet="Companies"/>
+          <End Role="Countries" EntitySet="Countries"/>
+        </AssociationSet>
+        <AssociationSet Name="EmployeeCertifications_toEmployee" Association="CompanyManagement.EmployeeCertifications_toEmployee">
+          <End Role="EmployeeCertifications" EntitySet="EmployeeCertifications"/>
+          <End Role="Employees" EntitySet="Employees"/>
+        </AssociationSet>
+        <AssociationSet Name="EmployeeContracts_toEmployee" Association="CompanyManagement.EmployeeContracts_toEmployee">
+          <End Role="EmployeeContracts" EntitySet="EmployeeContracts"/>
+          <End Role="Employees" EntitySet="Employees"/>
+        </AssociationSet>
+      </EntityContainer>
+      <EntityType Name="Employees">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="firstName" Type="Edm.String" MaxLength="40"/>
+        <Property Name="lastName" Type="Edm.String" MaxLength="40"/>
+        <Property Name="countryCode" Type="Edm.String" MaxLength="2"/>
+        <Property Name="departmentID" Type="Edm.String" MaxLength="20"/>
+        <Property Name="dateOfBirth" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="hireDate" Type="Edm.DateTimeOffset"/>
+        <Property Name="salary" Type="Edm.Decimal" Precision="13" Scale="2"/>
+        <Property Name="level" Type="Edm.Int32"/>
+        <Property Name="isActive" Type="Edm.Boolean"/>
+        <NavigationProperty Name="toCountry" Relationship="CompanyManagement.Employees_toCountry" FromRole="Employees" ToRole="Countries"/>
+        <NavigationProperty Name="toDepartment" Relationship="CompanyManagement.Employees_toDepartment" FromRole="Employees" ToRole="Departments"/>
+        <NavigationProperty Name="toCertifications" Relationship="CompanyManagement.EmployeeCertifications_toEmployee" FromRole="Employees" ToRole="EmployeeCertifications"/>
+        <NavigationProperty Name="toContract" Relationship="CompanyManagement.Employees_toContract" FromRole="Employees" ToRole="EmployeeContracts"/>
+      </EntityType>
+      <EntityType Name="Departments">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.String" MaxLength="20" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="80"/>
+        <Property Name="companyCode" Type="Edm.String" MaxLength="10"/>
+        <NavigationProperty Name="toEmployees" Relationship="CompanyManagement.Employees_toDepartment" FromRole="Departments" ToRole="Employees"/>
+        <NavigationProperty Name="toCompany" Relationship="CompanyManagement.Departments_toCompany" FromRole="Departments" ToRole="Companies"/>
+      </EntityType>
+      <EntityType Name="Countries">
+        <Key>
+          <PropertyRef Name="code"/>
+        </Key>
+        <Property Name="code" Type="Edm.String" MaxLength="2" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="80"/>
+      </EntityType>
+      <EntityType Name="Companies">
+        <Key>
+          <PropertyRef Name="code"/>
+        </Key>
+        <Property Name="code" Type="Edm.String" MaxLength="10" Nullable="false"/>
+        <Property Name="name" Type="Edm.String" MaxLength="80"/>
+        <Property Name="countryCode" Type="Edm.String" MaxLength="2"/>
+        <NavigationProperty Name="toDepartments" Relationship="CompanyManagement.Departments_toCompany" FromRole="Companies" ToRole="Departments"/>
+        <NavigationProperty Name="toCountry" Relationship="CompanyManagement.Companies_toCountry" FromRole="Companies" ToRole="Countries"/>
+      </EntityType>
+      <EntityType Name="EmployeeCertifications">
+        <Key>
+          <PropertyRef Name="ID"/>
+        </Key>
+        <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="employeeID" Type="Edm.Guid"/>
+        <Property Name="title" Type="Edm.String" MaxLength="100"/>
+        <Property Name="authority" Type="Edm.String" MaxLength="100"/>
+        <Property Name="issuedDate" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="expiryDate" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="score" Type="Edm.Int32"/>
+        <NavigationProperty Name="toEmployee" Relationship="CompanyManagement.EmployeeCertifications_toEmployee" FromRole="EmployeeCertifications" ToRole="Employees"/>
+      </EntityType>
+      <EntityType Name="EmployeeContracts">
+        <Key>
+          <PropertyRef Name="employeeID"/>
+        </Key>
+        <Property Name="employeeID" Type="Edm.Guid" Nullable="false"/>
+        <Property Name="contractType" Type="Edm.String" MaxLength="20"/>
+        <Property Name="contractStart" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="contractEnd" Type="Edm.DateTime" sap:display-format="Date"/>
+        <Property Name="weeklyHours" Type="Edm.Int32"/>
+        <Property Name="unionMember" Type="Edm.Boolean"/>
+        <Property Name="noticePeriodDays" Type="Edm.Int32"/>
+        <Property Name="benefitsPackage" Type="Edm.String" MaxLength="50"/>
+        <NavigationProperty Name="toEmployee" Relationship="CompanyManagement.EmployeeContracts_toEmployee" FromRole="EmployeeContracts" ToRole="Employees"/>
+      </EntityType>
+      <Association Name="Employees_toCountry">
+        <End Role="Employees" Type="CompanyManagement.Employees" Multiplicity="*"/>
+        <End Role="Countries" Type="CompanyManagement.Countries" Multiplicity="1"/>
+        <ReferentialConstraint>
+          <Principal Role="Countries">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="Employees">
+            <PropertyRef Name="countryCode"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Employees_toDepartment">
+        <End Role="Employees" Type="CompanyManagement.Employees" Multiplicity="*"/>
+        <End Role="Departments" Type="CompanyManagement.Departments" Multiplicity="1"/>
+        <ReferentialConstraint>
+          <Principal Role="Departments">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="Employees">
+            <PropertyRef Name="departmentID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Employees_toContract">
+        <End Role="Employees" Type="CompanyManagement.Employees" Multiplicity="1">
+          <OnDelete Action="Cascade"/>
+        </End>
+        <End Role="EmployeeContracts" Type="CompanyManagement.EmployeeContracts" Multiplicity="1"/>
+        <ReferentialConstraint>
+          <Principal Role="Employees">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="EmployeeContracts">
+            <PropertyRef Name="employeeID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Departments_toCompany">
+        <End Role="Departments" Type="CompanyManagement.Departments" Multiplicity="*"/>
+        <End Role="Companies" Type="CompanyManagement.Companies" Multiplicity="1">
+          <OnDelete Action="Cascade"/>
+        </End>
+        <ReferentialConstraint>
+          <Principal Role="Companies">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="Departments">
+            <PropertyRef Name="companyCode"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="Companies_toCountry">
+        <End Role="Companies" Type="CompanyManagement.Companies" Multiplicity="*"/>
+        <End Role="Countries" Type="CompanyManagement.Countries" Multiplicity="1"/>
+        <ReferentialConstraint>
+          <Principal Role="Countries">
+            <PropertyRef Name="code"/>
+          </Principal>
+          <Dependent Role="Companies">
+            <PropertyRef Name="countryCode"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="EmployeeCertifications_toEmployee">
+        <End Role="EmployeeCertifications" Type="CompanyManagement.EmployeeCertifications" Multiplicity="*"/>
+        <End Role="Employees" Type="CompanyManagement.Employees" Multiplicity="1">
+          <OnDelete Action="Cascade"/>
+        </End>
+        <ReferentialConstraint>
+          <Principal Role="Employees">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="EmployeeCertifications">
+            <PropertyRef Name="employeeID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Association Name="EmployeeContracts_toEmployee">
+        <End Role="EmployeeContracts" Type="CompanyManagement.EmployeeContracts" Multiplicity="*"/>
+        <End Role="Employees" Type="CompanyManagement.Employees" Multiplicity="1"/>
+        <ReferentialConstraint>
+          <Principal Role="Employees">
+            <PropertyRef Name="ID"/>
+          </Principal>
+          <Dependent Role="EmployeeContracts">
+            <PropertyRef Name="employeeID"/>
+          </Dependent>
+        </ReferentialConstraint>
+      </Association>
+      <Annotations Target="CompanyManagement.Employees/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Employee ID"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/firstName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="First Name"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/lastName" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Last Name"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/countryCode" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country Code"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/departmentID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Department ID"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/dateOfBirth" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Date of Birth"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/hireDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Hire Date"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/salary" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Salary"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/level" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Level"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/isActive" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Active"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/toCountry" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Employee Country"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/toDepartment" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Employee Department"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/toCertifications" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Employee Certifications"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/toContract" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Employee Contract"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Departments/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Department ID"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Departments/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Department Name"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Departments/companyCode" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Company Code"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Departments/toEmployees" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Department Employees"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Departments/toCompany" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Company of the Department"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Countries/code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country Code"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Countries/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country Name"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Companies/code" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Company Code"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Companies/name" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Company Name"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Companies/countryCode" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country Code"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Companies/toDepartments" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Company Departments"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Companies/toCountry" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Country of the Company"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/ID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Certificate ID"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/employeeID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Employee ID"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/title" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Certificate Title"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/authority" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Authority"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/issuedDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Issued Date"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/expiryDate" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Expiry Date"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/score" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Score"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeCertifications/toEmployee" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Certificate Owner"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/employeeID" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Employee ID"/>
+        <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/contractType" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Contract Type"/>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="PERMANENT"/>
+              <PropertyValue Property="Value" String="Permanent"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="CONTRACTOR"/>
+              <PropertyValue Property="Value" String="Contractor"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="INTERN"/>
+              <PropertyValue Property="Value" String="Intern"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/contractStart" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Contract Start Date"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/contractEnd" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Contract End Date"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/weeklyHours" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Weekly Hours"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/unionMember" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Union Member"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/noticePeriodDays" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Notice Period Days"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/benefitsPackage" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Benefits Package"/>
+        <Annotation Term="Validation.AllowedValues">
+          <Collection>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="STANDARD"/>
+              <PropertyValue Property="Value" String="Standard"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="ENHANCED"/>
+              <PropertyValue Property="Value" String="Enhanced"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="EXECUTIVE"/>
+              <PropertyValue Property="Value" String="Executive"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="FLEXIBLE"/>
+              <PropertyValue Property="Value" String="Flexible"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="NONE"/>
+              <PropertyValue Property="Value" String="None"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="FAMILY"/>
+              <PropertyValue Property="Value" String="Family"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="INTERN"/>
+              <PropertyValue Property="Value" String="Intern"/>
+            </Record>
+            <Record Type="Validation.AllowedValue">
+              <Annotation Term="Core.SymbolicName" String="REMOTE"/>
+              <PropertyValue Property="Value" String="Remote"/>
+            </Record>
+          </Collection>
+        </Annotation>
+      </Annotations>
+      <Annotations Target="CompanyManagement.EmployeeContracts/toEmployee" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Contract Owner"/>
+      </Annotations>
+    </Schema>
+  </edmx:DataServices>
 </edmx:Edmx>

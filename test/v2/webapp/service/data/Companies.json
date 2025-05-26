@@ -1,0 +1,27 @@
+[
+    {
+        "code": "CMP001",
+        "name": "TechNova Solutions",
+        "countryCode": "US"
+    },
+    {
+        "code": "CMP002",
+        "name": "Greenfield Energy",
+        "countryCode": "DE"
+    },
+    {
+        "code": "CMP003",
+        "name": "BlueWave Financial",
+        "countryCode": "GB"
+    },
+    {
+        "code": "CMP004",
+        "name": "Solaris Manufacturing",
+        "countryCode": "JP"
+    },
+    {
+        "code": "CMP005",
+        "name": "Apex Logistics",
+        "countryCode": "IN"
+    }
+]

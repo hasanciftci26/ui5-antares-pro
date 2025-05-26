@@ -1,0 +1,127 @@
+[
+    {
+        "ID": "D001",
+        "name": "Research & Development",
+        "companyCode": "CMP001"
+    },
+    {
+        "ID": "D002",
+        "name": "Sales",
+        "companyCode": "CMP001"
+    },
+    {
+        "ID": "D003",
+        "name": "Customer Support",
+        "companyCode": "CMP001"
+    },
+    {
+        "ID": "D004",
+        "name": "Human Resources",
+        "companyCode": "CMP001"
+    },
+    {
+        "ID": "D005",
+        "name": "IT Services",
+        "companyCode": "CMP001"
+    },
+    {
+        "ID": "D006",
+        "name": "Project Management",
+        "companyCode": "CMP002"
+    },
+    {
+        "ID": "D007",
+        "name": "Engineering",
+        "companyCode": "CMP002"
+    },
+    {
+        "ID": "D008",
+        "name": "Environmental Compliance",
+        "companyCode": "CMP002"
+    },
+    {
+        "ID": "D009",
+        "name": "Procurement",
+        "companyCode": "CMP002"
+    },
+    {
+        "ID": "D010",
+        "name": "Finance",
+        "companyCode": "CMP002"
+    },
+    {
+        "ID": "D011",
+        "name": "Investment Banking",
+        "companyCode": "CMP003"
+    },
+    {
+        "ID": "D012",
+        "name": "Risk Management",
+        "companyCode": "CMP003"
+    },
+    {
+        "ID": "D013",
+        "name": "Audit & Compliance",
+        "companyCode": "CMP003"
+    },
+    {
+        "ID": "D014",
+        "name": "Customer Relations",
+        "companyCode": "CMP003"
+    },
+    {
+        "ID": "D015",
+        "name": "Information Technology",
+        "companyCode": "CMP003"
+    },
+    {
+        "ID": "D016",
+        "name": "Production",
+        "companyCode": "CMP004"
+    },
+    {
+        "ID": "D017",
+        "name": "Quality Control",
+        "companyCode": "CMP004"
+    },
+    {
+        "ID": "D018",
+        "name": "Maintenance",
+        "companyCode": "CMP004"
+    },
+    {
+        "ID": "D019",
+        "name": "Research & Development",
+        "companyCode": "CMP004"
+    },
+    {
+        "ID": "D020",
+        "name": "Logistics",
+        "companyCode": "CMP004"
+    },
+    {
+        "ID": "D021",
+        "name": "Operations",
+        "companyCode": "CMP005"
+    },
+    {
+        "ID": "D022",
+        "name": "Fleet Management",
+        "companyCode": "CMP005"
+    },
+    {
+        "ID": "D023",
+        "name": "Customer Service",
+        "companyCode": "CMP005"
+    },
+    {
+        "ID": "D024",
+        "name": "Health & Safety",
+        "companyCode": "CMP005"
+    },
+    {
+        "ID": "D025",
+        "name": "Sales & Marketing",
+        "companyCode": "CMP005"
+    }
+]

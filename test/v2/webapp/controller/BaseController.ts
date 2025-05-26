@@ -1,11 +1,9 @@
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
-import UIComponent from "sap/ui/core/UIComponent";
 import Controller from "sap/ui/core/mvc/Controller";
-import Router from "sap/ui/core/routing/Router";
 import Model from "sap/ui/model/Model";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
-import View from "sap/ui/core/mvc/View";
+import Component from "test/v2/ui5/antares/pro/Component";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -16,27 +14,86 @@ export default class BaseController extends Controller {
     /* Global Methods                                                                                                          */
     /* ======================================================================================================================= */
 
-    public getODataModel(modelName?: string): ODataModel {
-        return (this.getView() as View).getModel(modelName) as ODataModel;
+    public getRouter() {
+        const component = this.getOwnerComponent();
+
+        if (component instanceof Component === false) {
+            throw new Error("The owner component was not found.");
+        }
+
+        return component.getRouter();
     }
 
-    public getComponentModel(modelName?: string): ODataModel {
-        return (this.getOwnerComponent() as UIComponent).getModel(modelName) as ODataModel;
+    public getModel(modelName?: string) {
+        const view = this.getView();
+
+        if (!view) {
+            throw new Error("The View was not found.");
+        }
+
+        const model = view.getModel(modelName);
+
+        if (!model) {
+            throw new Error("The model was not found.");
+        }
+
+        return model;
     }
 
-    public getRouter(): Router {
-        return (this.getOwnerComponent() as UIComponent).getRouter();
+    public getComponentModel(modelName?: string) {
+        const component = this.getOwnerComponent();
+
+        if (component instanceof Component === false) {
+            throw new Error("The owner component was not found.");
+        }
+
+        const model = component.getModel(modelName);
+
+        if (!model) {
+            throw new Error("The model was not found.");
+        }
+
+        return model;
     }
 
-    public getModel(modelName: string): Model {
-        return this.getView()!.getModel(modelName)!;
+    public setModel(model: Model, modelName?: string) {
+        const view = this.getView();
+
+        if (!view) {
+            throw new Error("The View was not found.");
+        }
+
+        view.setModel(model, modelName);
     }
 
-    public setModel(oModel: Model, modelName?: string): void {
-        this.getView()?.setModel(oModel, modelName);
+    public getODataModel(from: "VIEW" | "COMPONENT", modelName?: string) {
+        const model = from === "VIEW" ? this.getModel(modelName) : this.getComponentModel(modelName);
+
+        if (model instanceof ODataModel === false) {
+            throw new Error("The model is not an instance of ODataModel V2.");
+        }
+
+        return model;
     }
 
-    public getResourceBundle(): ResourceBundle {
-        return (((this.getOwnerComponent() as UIComponent).getModel("i18n") as ResourceModel).getResourceBundle() as ResourceBundle);
+    public getBundleText(key: string, parameters?: (string | number | boolean)[]) {
+        const bundle = this.getResourceBundle();
+        return bundle.getText(key, parameters) || "The Resource Bundle text was not found. Contact your administrator.";
+    }
+
+    private getResourceBundle() {
+        const model = this.getComponentModel("i18n");
+
+        if (model instanceof ResourceModel === false) {
+            throw new Error("The model is not an instance of ResourceModel.");
+        }
+
+        const bundle = model.getResourceBundle();
+
+        if (bundle instanceof ResourceBundle === false) {
+            throw new Error("The Resource Bundle was not found.");
+        }
+
+        return bundle;
     }
 } 
