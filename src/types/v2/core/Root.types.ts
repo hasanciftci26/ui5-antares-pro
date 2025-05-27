@@ -9,8 +9,6 @@ declare module "ui5/antares/pro/v2/core/Root" {
         getModelRef: GetProperty<string | ODataModel | undefined>;
         setModelRef: SetProperty<string | ODataModel | undefined>;
         getEntitySet: GetProperty<string>;
-        getNavigationProperties: GetProperty<string[]>;
-        setNavigationProperties: SetProperty<string[]>;
     }
 }
 

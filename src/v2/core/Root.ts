@@ -7,7 +7,6 @@ import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
-import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 
 /**
  * @namespace ui5.antares.pro.v2.core
@@ -22,16 +21,7 @@ export default abstract class Root extends ManagedObject {
             component: { type: "object", visibility: "hidden" },
             entitySet: { type: "string", visibility: "public" },
             entitySetPath: { type: "string", visibility: "hidden" },
-            modelRef: { type: "any", visibility: "public" },
-            navigationProperties: { type: "string[]", visibility: "public", defaultValue: [] }
-        },
-        aggregations: {
-            metaContexts: {
-                type: "ui5.antares.pro.v2.metadata.MetaContext",
-                multiple: true,
-                singularName: "metaContext",
-                visibility: "hidden"
-            }
+            modelRef: { type: "any", visibility: "public" }
         }
     };
 
@@ -93,39 +83,6 @@ export default abstract class Root extends ManagedObject {
         if (bundle.hasText(key)) {
             return bundle.getText(key, parameters);
         }
-    }
-
-    protected getMetaContexts() {
-        return this.getAggregation("metaContexts") as MetaContext[];
-    }
-
-    protected getPrimaryMetaContext() {
-        const context = this.getMetaContexts().find(context => context.getPrimary());
-        return context as MetaContext;
-    }
-
-    protected addMetaContext(metaContext: MetaContext) {
-        this.addAggregation("metaContexts", metaContext);
-    }
-
-    protected insertMetaContext(metaContext: MetaContext, index: number) {
-        this.insertAggregation("metaContexts", metaContext, index);
-    }
-
-    protected indexOfMetaContext(metaContext: MetaContext) {
-        return this.indexOfAggregation("metaContexts", metaContext);
-    }
-
-    protected removeMetaContext(reference: number | string | MetaContext) {
-        this.removeAggregation("metaContexts", reference);
-    }
-
-    protected removeAllMetaContexts() {
-        this.removeAllAggregation("metaContexts");
-    }
-
-    protected destroyMetaContexts() {
-        this.destroyAggregation("metaContexts");
     }
 
     private initController(controller: Controller) {

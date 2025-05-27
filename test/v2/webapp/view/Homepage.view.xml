@@ -12,7 +12,10 @@
     >
         <content>
             <Text text="Test app" />
-            <Button text="Test" press="onInitClass"></Button>
+            <Button
+                text="Test"
+                press="onInitClass"
+            />
         </content>
     </Page>
 </mvc:View>
