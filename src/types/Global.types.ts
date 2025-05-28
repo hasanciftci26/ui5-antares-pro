@@ -31,6 +31,11 @@ export interface IClassMetadata {
     deprecated?: boolean;
 }
 
+export interface IComponentMetadata extends IClassMetadata {
+    manifest: "json";
+    interfaces?: string[];
+}
+
 export interface IClassMetadataProperty {
     [key: string]: {
         type: MetadataPropertyDataType;

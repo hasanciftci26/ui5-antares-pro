@@ -7,6 +7,7 @@ import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
+import Lib from "sap/ui/core/Lib";
 
 /**
  * @namespace ui5.antares.pro.v2.core
@@ -33,7 +34,7 @@ export default abstract class Root extends ManagedObject {
         this.initComponent();
         this.initView();
         this.initODataModel();
-        this.initResourceModel();
+        this.initConsumerResourceModel();
     }
 
     public setEntitySet(newValue: string) {
@@ -63,18 +64,30 @@ export default abstract class Root extends ManagedObject {
         return this.getProperty("entitySetPath");
     }
 
-    protected getResourceModel(): ResourceModel | undefined {
-        return this.getModel("resourceModel") as ResourceModel | undefined;
+    protected getConsumerResourceModel(): ResourceModel | undefined {
+        return this.getModel("consumerResourceModel") as ResourceModel | undefined;
     }
 
-    protected getBundleText(key: string, parameters?: (string | number | boolean)[]): string | undefined {
-        const model = this.getResourceModel();
+    protected getConsumerBundleText(key: string, parameters?: (string | number | boolean)[]): string | undefined {
+        const model = this.getConsumerResourceModel();
 
         if (!model) {
             return;
         }
 
         const bundle = model.getResourceBundle();
+
+        if (bundle instanceof ResourceBundle === false) {
+            return;
+        }
+
+        if (bundle.hasText(key)) {
+            return bundle.getText(key, parameters);
+        }
+    }
+
+    protected getLibraryBundleText(key: string, parameters?: (string | number | boolean)[]) {
+        const bundle = Lib.getResourceBundleFor("ui5.antares.pro");
 
         if (bundle instanceof ResourceBundle === false) {
             return;
@@ -133,11 +146,11 @@ export default abstract class Root extends ManagedObject {
         }
     }
 
-    private initResourceModel() {
+    private initConsumerResourceModel() {
         const model = this.getComponent().getModel("i18n");
 
         if (model instanceof ResourceModel) {
-            this.setModel(model, "resourceModel");
+            this.setModel(model, "consumerResourceModel");
         }
     }
 }

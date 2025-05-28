@@ -1,12 +1,10 @@
 {
     "_version": "1.72.0",
     "sap.app": {
-        "id": "ui5.antares.pro",
-        "type": "library",
-        "embeds": [
-            "v2/component/entry"
-        ],
-        "title": "UI5 Antares Pro",
+        "id": "ui5.antares.pro.v2.component.entry",
+        "type": "component",
+        "embeddedBy": "../../../",
+        "title": "UI5 Antares Pro Entry Component",
         "applicationVersion": {
             "version": "1.0.0"
         }
@@ -20,6 +18,7 @@
         }
     },
     "sap.ui5": {
+        "componentName": "ui5.antares.pro.v2.component.entry",
         "dependencies": {
             "minUI5Version": "1.135.0",
             "libs": {
@@ -30,16 +29,6 @@
         "contentDensities": {
             "compact": true,
             "cozy": true
-        },
-        "library": {
-            "css": false,
-            "i18n": {
-                "bundleUrl": "i18n/i18n.properties",
-                "supportedLocales": [
-                    ""
-                ],
-                "fallbackLocale": ""
-            }
         }
     }
 }

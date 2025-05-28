@@ -16,6 +16,15 @@
                 text="Test"
                 press="onInitClass"
             />
+            <core:ComponentContainer
+                usage="ui5AntaresProEntry"
+                componentCreated="onAntaresComponentCreated"
+                propagateModel="true"               
+                settings="{ 
+                    entitySet: 'Products',
+                    invisibleProperties: ['a', 'b', 'c']
+                }"
+            />
         </content>
     </Page>
 </mvc:View>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<library
+	xmlns="http://www.sap.com/sap.ui.library.xsd">
+	<name>ui5.antares.pro</name>
+	<version>${version}</version>
+	<vendor>Hasan Çiftçi (hasanciftcii26@gmail.com)</vendor>
+	<documentation>UI5 Antares Pro is a modular and extensible SAPUI5 library designed to streamline OData CRUD operations. 
+    It provides ready-to-use, customizable classes for dynamic form and table generation, enabling faster UI development with clean and maintainable code.</documentation>
+	<dependencies>
+		<dependency>
+			<libraryName>sap.ui.core</libraryName>
+		</dependency>
+		<dependency>
+			<libraryName>sap.m</libraryName>
+		</dependency>
+	</dependencies>
+	<appData></appData>
+</library>

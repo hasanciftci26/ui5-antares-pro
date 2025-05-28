@@ -30,6 +30,7 @@ export default [
             "@typescript-eslint": pluginTypescript
         },
         rules: {
+            "@typescript-eslint/no-floating-promises": "off",
             "linebreak-style": "off",
             "@typescript-eslint/naming-convention": [
                 "error",

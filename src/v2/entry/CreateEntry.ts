@@ -14,4 +14,8 @@ export default class CreateEntry extends ContentGenerator {
     constructor(settings: ISettings) {
         super(settings);
     }
+
+    public async execute() {
+        let test = "x";
+    }
 }

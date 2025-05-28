@@ -9,7 +9,7 @@ import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 /**
  * @namespace ui5.antares.pro.v2.ui
  */
-export default abstract class extends Root {
+export default abstract class ContentGenerator extends Root {
     static metadata: IClassMetadata = {
         library: "ui5.antares.pro",
         abstract: true,
