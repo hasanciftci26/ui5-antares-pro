@@ -1,5 +1,6 @@
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
+import { Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
 import Root from "ui5/antares/pro/v2/core/Root";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
@@ -14,7 +15,16 @@ export default abstract class ContentGenerator extends Root {
         library: "ui5.antares.pro",
         abstract: true,
         properties: {
-            navigationProperties: { type: "string[]", visibility: "public", defaultValue: [] }
+            operation: { type: "string", visibility: "hidden" },
+            keyEnforcementEnabled: { type: "boolean", visibility: "public", defaultValue: true },
+            guidGenerationMode: { type: "string", visibility: "public", defaultValue: "Key" },
+            metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
+            invisibleProperties: { type: "string[]", visibility: "public", defaultValue: [] },
+            readonlyProperties: { type: "string[]", visibility: "public", defaultValue: [] },
+            requiredProperties: { type: "string[]", visibility: "public", defaultValue: [] },
+            propertyOrder: { type: "string[]", visibility: "public", defaultValue: [] },
+            propertyLabels: { type: "object[]", visibility: "public", defaultValue: [] },
+            navProperties: { type: "string[]", visibility: "public", defaultValue: [] }
         },
         aggregations: {
             metaContexts: {
@@ -41,16 +51,28 @@ export default abstract class ContentGenerator extends Root {
         }
     };
 
-    constructor(settings: ISettings) {
+    constructor(settings: ISettings, operation: Operation) {
         super(settings);
+        this.setOperation(operation);
+        this.setDialogGenerator(new DialogGenerator());
+        this.setSimpleFormGenerator(new SimpleFormGenerator());
+        this.setSmartFormGenerator(new SmartFormGenerator());
+    }
+
+    protected getOperation() {
+        return this.getProperty("operation") as Operation;
+    }
+
+    protected setOperation(operation: Operation) {
+        this.setProperty("operation", operation);
     }
 
     protected getMetaContexts() {
         return this.getAggregation("metaContexts") as MetaContext[];
     }
 
-    protected getPrimaryMetaContext() {
-        const context = this.getMetaContexts().find(context => context.getPrimary());
+    protected getParentMetaContext() {
+        const context = this.getMetaContexts().find(context => context.getEntitySetType() === "Parent");
         return context as MetaContext;
     }
 
@@ -112,5 +134,35 @@ export default abstract class ContentGenerator extends Root {
 
     protected destroySmartFormGenerator() {
         this.destroyAggregation("smartFormGenerator");
+    }
+
+    protected async generate() {
+        await this.loadMetaContext();
+    }
+
+    private async loadMetaContext() {
+        const parent = new MetaContext({ entitySet: this.getEntitySet(), entitySetType: "Parent" });
+        const navProperties = await MetaContext.extractNavProperties({
+            model: this.getODataModel(),
+            entitySet: this.getEntitySet(),
+            navProperties: this.getNavProperties()
+        });
+
+        this.addMetaContext(parent);
+        await parent.load();
+
+        for (const property of navProperties) {
+            const child = new MetaContext({
+                entitySet: property.entitySet,
+                entitySetType: "Child",
+                navProperty: {
+                    name: property.name,
+                    multiplicity: property.multiplicity
+                }
+            });
+
+            this.addMetaContext(child);
+            await child.load();
+        }
     }
 }

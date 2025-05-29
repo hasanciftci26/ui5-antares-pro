@@ -1,6 +1,4 @@
-import { ComponentContainer$ComponentCreatedEvent } from "sap/ui/core/ComponentContainer";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
-import Component from "ui5/antares/pro/v2/component/entry/Component";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
 
 /**
@@ -21,13 +19,15 @@ export default class Homepage extends BaseController {
     /* ======================================================================================================================= */
 
     public onInitClass() {
-        const entry = new CreateEntry({ controller: this, entitySet: "Employees" });
+        const entry = new CreateEntry({
+            controller: this,
+            entitySet: "Employees",
+            metadataLabelEnabled: true,
+            invisibleProperties: ["hireDate"],
+            readonlyProperties: ["dateOfBirth"],
+            requiredProperties: ["firstName", "lastName"]
+        });
         entry.execute();
-    }
-
-    public onAntaresComponentCreated(event: ComponentContainer$ComponentCreatedEvent) {
-        const component = event.getParameter("component") as Component;
-        component.execute(this);
     }
 
     /* ======================================================================================================================= */

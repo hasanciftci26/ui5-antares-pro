@@ -44,31 +44,11 @@ export default abstract class Root extends ManagedObject {
         this.setProperty("entitySetPath", `/${entitySet}`);
     }
 
-    protected getController(): Controller {
-        return this.getProperty("controller");
-    }
-
-    protected getComponent(): UIComponent {
-        return this.getProperty("component");
-    }
-
-    protected getView(): View {
-        return this.getProperty("view");
-    }
-
-    protected getODataModel() {
+    public getODataModel() {
         return this.getModel() as ODataModel;
     }
 
-    protected getEntitySetPath(): string {
-        return this.getProperty("entitySetPath");
-    }
-
-    protected getConsumerResourceModel(): ResourceModel | undefined {
-        return this.getModel("consumerResourceModel") as ResourceModel | undefined;
-    }
-
-    protected getConsumerBundleText(key: string, parameters?: (string | number | boolean)[]): string | undefined {
+    public getConsumerBundleText(key: string, parameters?: (string | number | boolean)[]): string | undefined {
         const model = this.getConsumerResourceModel();
 
         if (!model) {
@@ -84,6 +64,26 @@ export default abstract class Root extends ManagedObject {
         if (bundle.hasText(key)) {
             return bundle.getText(key, parameters);
         }
+    }
+
+    protected getController(): Controller {
+        return this.getProperty("controller");
+    }
+
+    protected getComponent(): UIComponent {
+        return this.getProperty("component");
+    }
+
+    protected getView(): View {
+        return this.getProperty("view");
+    }
+
+    protected getEntitySetPath(): string {
+        return this.getProperty("entitySetPath");
+    }
+
+    protected getConsumerResourceModel(): ResourceModel | undefined {
+        return this.getModel("consumerResourceModel") as ResourceModel | undefined;
     }
 
     protected getLibraryBundleText(key: string, parameters?: (string | number | boolean)[]) {

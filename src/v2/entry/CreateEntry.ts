@@ -12,10 +12,10 @@ export default class CreateEntry extends ContentGenerator {
     };
 
     constructor(settings: ISettings) {
-        super(settings);
+        super(settings, "Create");
     }
 
     public async execute() {
-        let test = "x";
+        await this.generate();
     }
 }
