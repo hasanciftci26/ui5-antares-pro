@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "UI5 Antares Pro V2 Test Application",
   "scripts": {
-    "start": "ui5 serve --port 8080 -o index.html"
+    "start": "ui5 serve --port 8080 -o index.html",
+    "install-tgz": "npm install ../../ui5-antares-pro-1.0.0.tgz"
   },
   "keywords": [
     "sapui5",
@@ -28,6 +29,6 @@
     "ui5-tooling-transpile": "^3.8.0"
   },
   "dependencies": {
-    "ui5-antares-pro": "file:ui5-antares-pro-1.0.0.tgz"
+    "ui5-antares-pro": "file:../../ui5-antares-pro-1.0.0.tgz"
   }
 }

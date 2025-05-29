@@ -4,7 +4,8 @@
   "description": "UI5 Antares Pro",
   "scripts": {
     "build": "ui5 build --config=ui5-npm.yaml --clean-dest --exclude-task=minify",
-    "prepack": "npm run build && rimraf --glob dist/**/*.d.ts.map"
+    "prepack": "npm run build && rimraf --glob dist/**/*.d.ts.map",
+    "local-install": "npm pack && npm --prefix test/v2 run install-tgz"
   },
   "keywords": [
     "sapui5",
