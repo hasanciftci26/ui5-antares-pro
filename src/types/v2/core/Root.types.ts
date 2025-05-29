@@ -1,5 +1,4 @@
 /* eslint-disable semi */
-import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import Controller from "sap/ui/core/mvc/Controller";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
@@ -13,7 +12,7 @@ declare module "ui5/antares/pro/v2/core/Root" {
     }
 }
 
-export interface ISettings extends $ManagedObjectSettings {
+export interface ISettings {
     controller: Controller;
     entitySet: string;
     modelRef?: string | ODataModel;

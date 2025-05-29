@@ -1,4 +1,4 @@
-import ManagedObject from "sap/ui/base/ManagedObject";
+import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import Controller from "sap/ui/core/mvc/Controller";
 import View from "sap/ui/core/mvc/View";
 import UIComponent from "sap/ui/core/UIComponent";
@@ -29,7 +29,7 @@ export default abstract class Root extends ManagedObject {
     constructor(settings: ISettings) {
         const { controller, ...publicProperties } = settings;
 
-        super(publicProperties);
+        super(publicProperties as $ManagedObjectSettings);
         this.initController(controller);
         this.initComponent();
         this.initView();

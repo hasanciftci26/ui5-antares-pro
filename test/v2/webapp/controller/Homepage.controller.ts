@@ -22,11 +22,13 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            metadataLabelEnabled: true,
-            invisibleProperties: ["hireDate"],
+            keyEnforcementEnabled: false,
+            invisibleProperties: ["ID", "hireDate", "toCertifications/authority"],
             readonlyProperties: ["dateOfBirth"],
-            requiredProperties: ["firstName", "lastName"]
+            requiredProperties: ["firstName", "lastName"],
+            navProperties: ["toCertifications"]
         });
+
         entry.execute();
     }
 

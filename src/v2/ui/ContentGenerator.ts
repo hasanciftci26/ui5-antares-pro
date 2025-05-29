@@ -141,7 +141,10 @@ export default abstract class ContentGenerator extends Root {
     }
 
     private async loadMetaContext() {
-        const parent = new MetaContext({ entitySet: this.getEntitySet(), entitySetType: "Parent" });
+        const parent = new MetaContext({
+            entitySet: this.getEntitySet(),
+            entitySetType: "Parent"
+        });
         const navProperties = await MetaContext.extractNavProperties({
             model: this.getODataModel(),
             entitySet: this.getEntitySet(),

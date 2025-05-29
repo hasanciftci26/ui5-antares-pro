@@ -5,7 +5,7 @@ import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 /**
  * @namespace ui5.antares.pro.v2.entry
  */
-export default class CreateEntry extends ContentGenerator {
+export default class CreateEntry<EntityT extends Record<string, any> = Record<string, any>> extends ContentGenerator {
     static metadata: IClassMetadata = {
         library: "ui5.antares.pro",
         final: true
@@ -15,7 +15,7 @@ export default class CreateEntry extends ContentGenerator {
         super(settings, "Create");
     }
 
-    public async execute() {
+    public async execute(initialData?: EntityT) {
         await this.generate();
     }
 }
