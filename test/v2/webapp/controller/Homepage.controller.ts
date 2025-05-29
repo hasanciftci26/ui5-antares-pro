@@ -22,11 +22,7 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            keyEnforcementEnabled: false,
-            invisibleProperties: ["ID", "hireDate", "toCertifications/authority"],
-            readonlyProperties: ["dateOfBirth"],
-            requiredProperties: ["firstName", "lastName"],
-            navProperties: ["toCertifications"]
+            formTitle: "Test 123"
         });
 
         entry.execute();

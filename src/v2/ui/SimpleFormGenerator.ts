@@ -7,10 +7,17 @@ import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 export default class SimpleFormGenerator extends ManagedObject {
     static metadata: IClassMetadata = {
         library: "ui5.antares.pro",
-        final: true
+        final: true,
+        properties: {
+            form: { type: "object", visibility: "public" }
+        }
     };
 
     constructor() {
         super();
+    }
+
+    public generate() {
+
     }
 }

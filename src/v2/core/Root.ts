@@ -8,6 +8,7 @@ import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
 import Lib from "sap/ui/core/Lib";
+import BindingMode from "sap/ui/model/BindingMode";
 
 /**
  * @namespace ui5.antares.pro.v2.core
@@ -22,7 +23,9 @@ export default abstract class Root extends ManagedObject {
             component: { type: "object", visibility: "hidden" },
             entitySet: { type: "string", visibility: "public" },
             entitySetPath: { type: "string", visibility: "hidden" },
-            modelRef: { type: "any", visibility: "public" }
+            modelRef: { type: "any", visibility: "public" },
+            deferredGroupId: { type: "string", visibility: "public", defaultValue: "ui5AntaresPro" },
+            consumerBindingMode: { type: "string", visibility: "hidden" }
         }
     };
 
@@ -34,6 +37,8 @@ export default abstract class Root extends ManagedObject {
         this.initComponent();
         this.initView();
         this.initODataModel();
+        this.enableODataTwoWayBinding();
+        this.addODataDeferredGroup();
         this.initConsumerResourceModel();
     }
 
@@ -98,6 +103,18 @@ export default abstract class Root extends ManagedObject {
         }
     }
 
+    protected getConsumerBindingMode() {
+        return this.getProperty("consumerBindingMode") as BindingMode;
+    }
+
+    protected setConsumerBindingMode(consumerBindingMode: BindingMode) {
+        this.setProperty("consumerBindingMode", consumerBindingMode);
+    }
+
+    protected resetODataBindingMode() {
+        this.getODataModel().setDefaultBindingMode(this.getConsumerBindingMode());
+    }
+
     private initController(controller: Controller) {
         this.setProperty("controller", controller);
     }
@@ -144,6 +161,20 @@ export default abstract class Root extends ManagedObject {
 
             this.setModel(model);
         }
+
+        this.setConsumerBindingMode(this.getODataModel().getDefaultBindingMode());
+    }
+
+    private addODataDeferredGroup() {
+        const deferredGroups = this.getODataModel().getDeferredGroups();
+
+        if (!deferredGroups.includes(this.getDeferredGroupId())) {
+            this.getODataModel().setDeferredGroups([...deferredGroups, this.getDeferredGroupId()]);
+        }
+    }
+
+    private enableODataTwoWayBinding() {
+        this.getODataModel().setDefaultBindingMode("TwoWay");
     }
 
     private initConsumerResourceModel() {

@@ -1,3 +1,4 @@
+import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
@@ -16,6 +17,9 @@ export default abstract class ContentGenerator extends Root {
         abstract: true,
         properties: {
             operation: { type: "string", visibility: "hidden" },
+            context: { type: "object", visibility: "hidden" },
+            formType: { type: "string", visibility: "public", defaultValue: "SmartForm" },
+            formTitle: { type: "string", visibility: "public" },
             keyEnforcementEnabled: { type: "boolean", visibility: "public", defaultValue: true },
             guidGenerationMode: { type: "string", visibility: "public", defaultValue: "Key" },
             metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
@@ -54,9 +58,18 @@ export default abstract class ContentGenerator extends Root {
     constructor(settings: ISettings, operation: Operation) {
         super(settings);
         this.setOperation(operation);
-        this.setDialogGenerator(new DialogGenerator());
+        this.setDialogGenerator(new DialogGenerator({ operation: this.getOperation() }));
         this.setSimpleFormGenerator(new SimpleFormGenerator());
         this.setSmartFormGenerator(new SmartFormGenerator());
+    }
+
+    public getMetaContexts() {
+        return this.getAggregation("metaContexts") as MetaContext[];
+    }
+
+    public getParentMetaContext() {
+        const context = this.getMetaContexts().find(context => context.getEntitySetType() === "Parent");
+        return context as MetaContext;
     }
 
     protected getOperation() {
@@ -65,15 +78,6 @@ export default abstract class ContentGenerator extends Root {
 
     protected setOperation(operation: Operation) {
         this.setProperty("operation", operation);
-    }
-
-    protected getMetaContexts() {
-        return this.getAggregation("metaContexts") as MetaContext[];
-    }
-
-    protected getParentMetaContext() {
-        const context = this.getMetaContexts().find(context => context.getEntitySetType() === "Parent");
-        return context as MetaContext;
     }
 
     protected addMetaContext(metaContext: MetaContext) {
@@ -136,8 +140,30 @@ export default abstract class ContentGenerator extends Root {
         this.destroyAggregation("smartFormGenerator");
     }
 
+    protected setContext(context: Context) {
+        this.setProperty("context", context);
+    }
+
+    protected getContext() {
+        return this.getProperty("context") as Context;
+    }
+
     protected async generate() {
         await this.loadMetaContext();
+        this.getDialogGenerator().generate();
+
+        if (this.getFormType() === "SmartForm") {
+            this.getSmartFormGenerator().generate();
+            this.getSmartFormGenerator().getForm().setBindingContext(this.getContext());
+            this.getDialogGenerator().getDialog().addContent(this.getSmartFormGenerator().getForm());
+        } else {
+            this.getSimpleFormGenerator().generate();
+            this.getSimpleFormGenerator().getForm().setBindingContext(this.getContext());
+            this.getDialogGenerator().getDialog().addContent(this.getSimpleFormGenerator().getForm());
+        }
+
+        this.getView().addDependent(this.getDialogGenerator().getDialog());
+        this.getDialogGenerator().getDialog().open();
     }
 
     private async loadMetaContext() {

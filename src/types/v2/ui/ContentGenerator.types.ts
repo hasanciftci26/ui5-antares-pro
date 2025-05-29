@@ -3,6 +3,10 @@ import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
 declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
     export default interface ContentGenerator {
+        getFormType: GetProperty<FormType>;
+        setFormType: SetProperty<FormType>;
+        getFormTitle: GetProperty<string>;
+        setFormTitle: SetProperty<string>;
         getKeyEnforcementEnabled: GetProperty<boolean>;
         setKeyEnforcementEnabled: SetProperty<boolean>;
         getGuidGenerationMode: GetProperty<GuidGenerationMode>;
@@ -31,3 +35,5 @@ export interface IPropertyLabel {
     name: string;
     label: string;
 }
+
+export type FormType = "SmartForm" | "SimpleForm";
