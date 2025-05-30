@@ -42,14 +42,16 @@ export default abstract class ContentGenerator extends Root {
                 multiple: false,
                 visibility: "hidden"
             },
-            simpleFormGenerator: {
+            simpleFormGenerators: {
                 type: "ui5.antares.pro.v2.ui.SimpleFormGenerator",
-                multiple: false,
+                multiple: true,
+                singularName: "simpleFormGenerators",
                 visibility: "hidden"
             },
-            smartFormGenerator: {
+            smartFormGenerators: {
                 type: "ui5.antares.pro.v2.ui.SmartFormGenerator",
-                multiple: false,
+                multiple: true,
+                singularName: "smartFormGenerator",
                 visibility: "hidden"
             }
         }
@@ -58,9 +60,10 @@ export default abstract class ContentGenerator extends Root {
     constructor(settings: ISettings, operation: Operation) {
         super(settings);
         this.setOperation(operation);
-        this.setDialogGenerator(new DialogGenerator({ operation: this.getOperation() }));
-        this.setSimpleFormGenerator(new SimpleFormGenerator());
-        this.setSmartFormGenerator(new SmartFormGenerator());
+        this.setDialogGenerator(new DialogGenerator({
+            operation: this.getOperation()
+        }));
+        this.setInitialFormTitle();
     }
 
     public getMetaContexts() {
@@ -70,6 +73,28 @@ export default abstract class ContentGenerator extends Root {
     public getParentMetaContext() {
         const context = this.getMetaContexts().find(context => context.getEntitySetType() === "Parent");
         return context as MetaContext;
+    }
+
+    public getMetaContextByEntitySet(entitySet: string) {
+        const metaContext = this.getMetaContexts().find(context => context.getEntitySet() === entitySet);
+
+        if (!metaContext) {
+            throw new Error("The MetaContext was not found for the Entity Set: " + entitySet);
+        }
+
+        return metaContext;
+    }
+
+    public getChildMetaContexts() {
+        return this.getMetaContexts().filter(context => context.getEntitySetType() === "Child");
+    }
+
+    public getSimpleFormGenerators() {
+        return this.getAggregation("simpleFormGenerators") as SimpleFormGenerator[];
+    }
+
+    public getSmartFormGenerators() {
+        return this.getAggregation("smartFormGenerators") as SmartFormGenerator[];
     }
 
     protected getOperation() {
@@ -82,14 +107,6 @@ export default abstract class ContentGenerator extends Root {
 
     protected addMetaContext(metaContext: MetaContext) {
         this.addAggregation("metaContexts", metaContext);
-    }
-
-    protected insertMetaContext(metaContext: MetaContext, index: number) {
-        this.insertAggregation("metaContexts", metaContext, index);
-    }
-
-    protected indexOfMetaContext(metaContext: MetaContext) {
-        return this.indexOfAggregation("metaContexts", metaContext);
     }
 
     protected removeMetaContext(reference: number | string | MetaContext) {
@@ -116,28 +133,36 @@ export default abstract class ContentGenerator extends Root {
         this.destroyAggregation("dialogGenerator");
     }
 
-    protected getSimpleFormGenerator() {
-        return this.getAggregation("simpleFormGenerator") as SimpleFormGenerator;
+    protected addSimpleFormGenerator(simpleFormGenerator: SimpleFormGenerator) {
+        this.addAggregation("simpleFormGenerators", simpleFormGenerator);
     }
 
-    protected setSimpleFormGenerator(simpleFormGenerator: SimpleFormGenerator) {
-        this.setAggregation("simpleFormGenerator", simpleFormGenerator);
+    protected removeSimpleFormGenerator(reference: number | string | SimpleFormGenerator) {
+        this.removeAggregation("simpleFormGenerators", reference);
     }
 
-    protected destroySimpleFormGenerator() {
-        this.destroyAggregation("simpleFormGenerator");
+    protected removeAllSimpleFormGenerators() {
+        this.removeAllAggregation("simpleFormGenerators");
     }
 
-    protected getSmartFormGenerator() {
-        return this.getAggregation("smartFormGenerator") as SmartFormGenerator;
+    protected destroySimpleFormGenerators() {
+        this.destroyAggregation("simpleFormGenerators");
     }
 
-    protected setSmartFormGenerator(smartFormGenerator: SmartFormGenerator) {
-        this.setAggregation("smartFormGenerator", smartFormGenerator);
+    protected addSmartFormGenerator(smartFormGenerator: SmartFormGenerator) {
+        this.addAggregation("smartFormGenerators", smartFormGenerator);
     }
 
-    protected destroySmartFormGenerator() {
-        this.destroyAggregation("smartFormGenerator");
+    protected removeSmartFormGenerator(reference: number | string | SmartFormGenerator) {
+        this.removeAggregation("smartFormGenerators", reference);
+    }
+
+    protected removeAllSmartFormGenerators() {
+        this.removeAllAggregation("smartFormGenerators");
+    }
+
+    protected destroySmartFormGenerators() {
+        this.destroyAggregation("smartFormGenerators");
     }
 
     protected setContext(context: Context) {
@@ -150,18 +175,14 @@ export default abstract class ContentGenerator extends Root {
 
     protected async generate() {
         await this.loadMetaContext();
+
         this.getDialogGenerator().generate();
+        this.generateParentForm();
+        this.generateChildForm();
 
-        if (this.getFormType() === "SmartForm") {
-            this.getSmartFormGenerator().generate();
-            this.getSmartFormGenerator().getForm().setBindingContext(this.getContext());
-            this.getDialogGenerator().getDialog().addContent(this.getSmartFormGenerator().getForm());
-        } else {
-            this.getSimpleFormGenerator().generate();
-            this.getSimpleFormGenerator().getForm().setBindingContext(this.getContext());
-            this.getDialogGenerator().getDialog().addContent(this.getSimpleFormGenerator().getForm());
-        }
-
+        // Dialog related methods should not run for the reuse component
+        this.addFormsToDialog();
+        this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
         this.getView().addDependent(this.getDialogGenerator().getDialog());
         this.getDialogGenerator().getDialog().open();
     }
@@ -192,6 +213,71 @@ export default abstract class ContentGenerator extends Root {
 
             this.addMetaContext(child);
             await child.load();
+        }
+    }
+
+    private generateParentForm() {
+        const entitySet = this.getParentMetaContext().getEntitySet();
+
+        if (this.getFormType() === "SmartForm") {
+            const smartFormGenerator = new SmartFormGenerator({ entitySet: entitySet });
+            this.addSmartFormGenerator(smartFormGenerator);
+            smartFormGenerator.generate();
+        } else {
+            const simpleFormGenerator = new SimpleFormGenerator({ entitySet: entitySet });
+            this.addSimpleFormGenerator(simpleFormGenerator);
+            simpleFormGenerator.generate();
+        }
+    }
+
+    private generateChildForm() {
+        const children = this.getChildMetaContexts().filter(child => child.getNavProperty()!.multiplicity === "One");
+
+        for (const child of children) {
+            const entitySet = child.getEntitySet();
+
+            if (this.getFormType() === "SmartForm") {
+                const smartFormGenerator = new SmartFormGenerator({ entitySet: entitySet });
+                this.addSmartFormGenerator(smartFormGenerator);
+                smartFormGenerator.generate();
+            } else {
+                const simpleFormGenerator = new SimpleFormGenerator({ entitySet: entitySet });
+                this.addSimpleFormGenerator(simpleFormGenerator);
+                simpleFormGenerator.generate();
+            }
+        }
+    }
+
+    private addFormsToDialog() {
+        if (this.getFormType() === "SmartForm") {
+            for (const generator of this.getSmartFormGenerators()) {
+                this.getDialogGenerator().getDialog().addContent(generator.getForm());
+            }
+        } else {
+            for (const generator of this.getSimpleFormGenerators()) {
+                this.getDialogGenerator().getDialog().addContent(generator.getForm());
+            }
+        }
+    }
+
+    private setInitialFormTitle() {
+        if (this.getFormTitle()) {
+            return;
+        }
+
+        switch (this.getOperation()) {
+            case "Create":
+                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.createEntry", [this.getEntitySet()])!);
+                break;
+            case "Update":
+                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()])!);
+                break;
+            case "Delete":
+                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()])!);
+                break;
+            case "Read":
+                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.readEntry", [this.getEntitySet()])!);
+                break;
         }
     }
 }

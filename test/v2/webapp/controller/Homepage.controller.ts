@@ -22,7 +22,7 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            formTitle: "Test 123"
+            navProperties: ["toContract"]
         });
 
         entry.execute();
