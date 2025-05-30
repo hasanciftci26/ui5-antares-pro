@@ -18,8 +18,8 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         super(settings, "Create");
 
         // Attach events
-        this.getDialogGenerator().attachSubmitted(this.onSubmit, this);
-        this.getDialogGenerator().attachClosed(this.onClose, this);
+        this.getDialogGenerator().attachSubmitted(this.onDialogSubmit, this);
+        this.getDialogGenerator().attachClosed(this.onDialogClose, this);
     }
 
     public async execute(initialData?: EntityT) {
@@ -27,7 +27,11 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
 
         const context = await this.createContext(initialData);
         this.setContext(context);
+
         await this.generate();
+
+        this.addNavPropertiesToContext();
+        this.generateGuid();
 
         BusyIndicator.hide();
     }
@@ -41,13 +45,64 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         }) as Context;
     }
 
-    private onSubmit(event: DialogGenerator$SubmittedEvent) {
+    private addNavPropertiesToContext() {
+        const children = this.getChildMetaContexts();
+
+        for (const child of children) {
+            const navProperty = child.getNavProperty()!;
+
+            if (this.getContext().getProperty(navProperty.name)) {
+                continue;
+            }
+
+            const path = this.getContext().getPath() + "/" + navProperty.name;
+
+            if (navProperty.multiplicity === "Many") {
+                this.getODataModel().setProperty(path, []);
+            } else {
+                this.getODataModel().setProperty(path, {});
+            }
+        }
+    }
+
+    private generateGuid() {
+        const parent = this.getParentMetaContext();
+        const guidProperties = parent.getProps().filter(prop => prop.type === "Edm.Guid");
+
+        for (const property of guidProperties) {
+            if (this.getContext().getProperty(property.name)) {
+                continue;
+            }
+
+            const path = this.getContext().getPath() + "/" + property.name;
+
+            switch (this.getGuidGenerationMode()) {
+                case "All":
+                    this.getODataModel().setProperty(path, window.crypto.randomUUID());
+                    break;
+                case "Key":
+                    if (property.key) {
+                        this.getODataModel().setProperty(path, window.crypto.randomUUID());
+                    }
+                    break;
+                case "NonKey":
+                    if (!property.key) {
+                        this.getODataModel().setProperty(path, window.crypto.randomUUID());
+                    }
+                    break;
+            }
+        }
+    }
+
+    private onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
         event.getParameter("dialog");
     }
 
-    private onClose(event: DialogGenerator$ClosedEvent) {
+    private onDialogClose(event: DialogGenerator$ClosedEvent) {
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().resetChanges([this.getContext().getPath()], true, true);
         }
+
+        this.resetODataBindingMode();
     }
 }

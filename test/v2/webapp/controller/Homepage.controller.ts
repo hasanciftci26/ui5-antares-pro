@@ -28,7 +28,7 @@ export default class Homepage extends BaseController {
             metadataLabelEnabled: true
         });
 
-        entry.execute({ toContract: {} });
+        entry.execute();
     }
 
     /* ======================================================================================================================= */
