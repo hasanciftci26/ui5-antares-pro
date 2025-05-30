@@ -22,10 +22,13 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            navProperties: ["toContract"]
+            navProperties: ["toContract"],
+            invisibleProperties: ["firstName", "toContract/contractType"],
+            readonlyProperties: ["lastName"],
+            metadataLabelEnabled: true
         });
 
-        entry.execute();
+        entry.execute({ toContract: {} });
     }
 
     /* ======================================================================================================================= */

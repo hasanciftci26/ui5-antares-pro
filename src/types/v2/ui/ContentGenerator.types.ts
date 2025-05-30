@@ -1,4 +1,5 @@
 /* eslint-disable semi */
+import { ButtonType } from "sap/m/library";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
 declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
@@ -7,6 +8,14 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setFormType: SetProperty<FormType>;
         getFormTitle: GetProperty<string>;
         setFormTitle: SetProperty<string>;
+        getSubmitButtonText: GetProperty<string>;
+        setSubmitButtonText: SetProperty<string>;
+        getSubmitButtonType: GetProperty<ButtonType>;
+        setSubmitButtonType: SetProperty<ButtonType>;
+        getCloseButtonText: GetProperty<string>;
+        setCloseButtonText: SetProperty<string>;
+        getCloseButtonType: GetProperty<ButtonType>;
+        setCloseButtonType: SetProperty<ButtonType>;
         getKeyEnforcementEnabled: GetProperty<boolean>;
         setKeyEnforcementEnabled: SetProperty<boolean>;
         getGuidGenerationMode: GetProperty<GuidGenerationMode>;

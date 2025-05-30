@@ -14,7 +14,9 @@ export type AddAggregation<AggregationT extends ManagedObject> = (aggregation: A
 export type RemoveAggregation<AggregationT extends ManagedObject> = (aggregation: AggregationT) => void;
 
 // Event Types for ManagedObject Classes
-export type AttachEvent<EventT extends Event = Event<object, EventProvider>> = (handler: (event: EventT) => void, listener: object) => void;
+export type AttachEvent<EventT extends Event<object, EventProvider> = Event<object, EventProvider>> =
+    (handler: (event: EventT) => void, listener: object) => void;
+
 export type FireEvent<ParameterT extends object = object> = (parameters?: ParameterT) => void;
 
 // Metadata Types for ManagedObject Classes

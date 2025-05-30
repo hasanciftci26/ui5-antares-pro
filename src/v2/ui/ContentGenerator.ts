@@ -20,6 +20,10 @@ export default abstract class ContentGenerator extends Root {
             context: { type: "object", visibility: "hidden" },
             formType: { type: "string", visibility: "public", defaultValue: "SmartForm" },
             formTitle: { type: "string", visibility: "public" },
+            submitButtonText: { type: "string", visibility: "public" },
+            submitButtonType: { type: "string", visibility: "public", defaultValue: "Emphasized" },
+            closeButtonText: { type: "string", visibility: "public" },
+            closeButtonType: { type: "string", visibility: "public", defaultValue: "Default" },
             keyEnforcementEnabled: { type: "boolean", visibility: "public", defaultValue: true },
             guidGenerationMode: { type: "string", visibility: "public", defaultValue: "Key" },
             metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
@@ -63,7 +67,7 @@ export default abstract class ContentGenerator extends Root {
         this.setDialogGenerator(new DialogGenerator({
             operation: this.getOperation()
         }));
-        this.setInitialFormTitle();
+        this.setDefaultValues();
     }
 
     public getMetaContexts() {
@@ -183,7 +187,7 @@ export default abstract class ContentGenerator extends Root {
         // Dialog related methods should not run for the reuse component
         this.addFormsToDialog();
         this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
-        this.getView().addDependent(this.getDialogGenerator().getDialog());
+        this.getDialogGenerator().getDialog().setModel(this.getODataModel());
         this.getDialogGenerator().getDialog().open();
     }
 
@@ -260,7 +264,13 @@ export default abstract class ContentGenerator extends Root {
         }
     }
 
-    private setInitialFormTitle() {
+    private setDefaultValues() {
+        this.setDefaultFormTitle();
+        this.setDefaultSubmitButtonText();
+        this.setDefaultCloseButtonText();
+    }
+
+    private setDefaultFormTitle() {
         if (this.getFormTitle()) {
             return;
         }
@@ -279,5 +289,31 @@ export default abstract class ContentGenerator extends Root {
                 this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.readEntry", [this.getEntitySet()])!);
                 break;
         }
+    }
+
+    private setDefaultSubmitButtonText() {
+        if (this.getSubmitButtonText()) {
+            return;
+        }
+
+        switch (this.getOperation()) {
+            case "Create":
+                this.setSubmitButtonText(this.getLibraryBundleText("ui5AntaresPro.button.create")!);
+                break;
+            case "Update":
+                this.setSubmitButtonText(this.getLibraryBundleText("ui5AntaresPro.button.update")!);
+                break;
+            case "Delete":
+                this.setSubmitButtonText(this.getLibraryBundleText("ui5AntaresPro.button.delete")!);
+                break;
+        }
+    }
+
+    private setDefaultCloseButtonText() {
+        if (this.getCloseButtonText()) {
+            return;
+        }
+
+        this.setCloseButtonText(this.getLibraryBundleText("ui5AntaresPro.button.close")!);
     }
 }
