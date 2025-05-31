@@ -55,10 +55,12 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getSmartField(property: IProp, navProperty?: string) {
         const value = navProperty ? `{${navProperty}/${property.name}}` : `{${property.name}}`;
+        
         const field = new SmartField({
             value: value,
             mandatory: property.required,
-            editable: property.readonly === false
+            editable: property.readonly === false,
+            visible: property.visible
         });
 
         return field;

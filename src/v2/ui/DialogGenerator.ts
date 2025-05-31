@@ -32,14 +32,19 @@ export default class DialogGenerator extends ManagedObject {
 
     public generate() {
         const parent = this.getParent() as ContentGenerator;
-
+        
         const dialog = new Dialog({
             draggable: true,
             resizable: true,
-            title: parent.getFormTitle(),
+            title: {
+                path: "content>/formTitle"
+            },
             endButton: this.getEndButton(),
             escapeHandler: this.onEscape as EscapeHandler
         });
+
+        dialog.setModel(parent.getODataModel());
+        dialog.setModel(parent.getModel("content"), "content");
 
         if (this.getOperation() !== "Read") {
             dialog.setBeginButton(this.getBeginButton());
@@ -49,11 +54,13 @@ export default class DialogGenerator extends ManagedObject {
     }
 
     private getBeginButton() {
-        const parent = this.getParent() as ContentGenerator;
-
         return new Button({
-            text: parent.getSubmitButtonText(),
-            type: parent.getSubmitButtonType(),
+            text: {
+                path: "content>/submitButtonText"
+            },
+            type: {
+                path: "content>/submitButtonType"
+            },
             press: () => {
                 this.fireSubmitted({ dialog: this.getDialog() });
             }
@@ -61,11 +68,13 @@ export default class DialogGenerator extends ManagedObject {
     }
 
     private getEndButton() {
-        const parent = this.getParent() as ContentGenerator;
-
         return new Button({
-            text: parent.getCloseButtonText(),
-            type: parent.getCloseButtonType(),
+            text: {
+                path: "content>/closeButtonText"
+            },
+            type: {
+                path: "content>/closeButtonType"
+            },
             press: () => {
                 this.getDialog().close();
                 this.fireClosed({ dialog: this.getDialog() });

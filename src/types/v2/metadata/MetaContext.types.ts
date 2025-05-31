@@ -51,6 +51,7 @@ export interface IProp {
     label: string;
     readonly: boolean;
     required: boolean;
+    visible: boolean;
     displayFormat?: PropertyDisplayFormat;
     precision?: number;
     scale?: number;

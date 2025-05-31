@@ -16,7 +16,7 @@ export default class Component extends UIComponent {
         library: "ui5.antares.pro",
         properties: {
             entitySet: { type: "string", visibility: "public" },
-            invisibleProperties: { type: "string[]", visibility: "public", defaultValue: [] }
+            excludedProperties: { type: "string[]", visibility: "public", defaultValue: [] }
         }
     };
 

@@ -22,7 +22,7 @@
                 propagateModel="true"               
                 settings="{ 
                     entitySet: 'Products',
-                    invisibleProperties: ['a', 'b', 'c']
+                    excludedProperties: ['a', 'b', 'c']
                 }"
             />
         </content>

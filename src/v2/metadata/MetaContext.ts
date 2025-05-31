@@ -82,7 +82,7 @@ export default class MetaContext extends ManagedObject {
         }
 
         for (const property of entityType.property as MetaModelProperty[]) {
-            if (this.isPropInvisible(entityType, property)) {
+            if (this.isPropExcluded(entityType, property)) {
                 continue;
             }
 
@@ -93,6 +93,7 @@ export default class MetaContext extends ManagedObject {
                 label: this.getLabelGenerator().generate(property),
                 readonly: this.isPropReadonly(entityType, property),
                 required: this.isPropRequired(entityType, property),
+                visible: this.isPropVisible(entityType, property),
                 displayFormat: this.getPropDisplayFormat(property),
                 precision: this.getPropPrecision(property),
                 scale: this.getPropScale(property),
@@ -151,14 +152,14 @@ export default class MetaContext extends ManagedObject {
         return entityType.key.propertyRef.some(ref => ref.name === property.name);
     }
 
-    private isPropInvisible(entityType: EntityType, property: MetaModelProperty) {
+    private isPropExcluded(entityType: EntityType, property: MetaModelProperty) {
         const parent = this.getParent() as ContentGenerator;
 
         if (parent.getKeyEnforcementEnabled() && this.isKeyProp(entityType, property)) {
             return false;
         }
 
-        return this.getInvisibleProperties().includes(property.name);
+        return this.getExcludedProperties().includes(property.name);
     }
 
     private isPropReadonly(entityType: EntityType, property: MetaModelProperty) {
@@ -197,6 +198,25 @@ export default class MetaContext extends ManagedObject {
         }
     }
 
+    private isPropVisible(entityType: EntityType, property: MetaModelProperty) {
+        if (property.type !== "Edm.Guid") {
+            return true;
+        }
+
+        const parent = this.getParent() as ContentGenerator;
+
+        switch (parent.getGuidVisibilityMode()) {
+            case "All":
+                return true;
+            case "Key":
+                return this.isKeyProp(entityType, property);
+            case "NonKey":
+                return this.isKeyProp(entityType, property) === false;
+            default:
+                return false;
+        }
+    }
+
     private getPropDisplayFormat(property: MetaModelProperty) {
         const displayFormat = property.extensions?.find(ext => ext.name === "display-format");
         return displayFormat?.value as PropertyDisplayFormat | undefined;
@@ -230,17 +250,17 @@ export default class MetaContext extends ManagedObject {
         }
     }
 
-    private getInvisibleProperties() {
+    private getExcludedProperties() {
         const parent = this.getParent() as ContentGenerator;
 
         if (this.getEntitySetType() === "Parent") {
-            return parent.getInvisibleProperties().filter(prop => prop.includes("/") === false);
+            return parent.getExcludedProperties().filter(prop => prop.includes("/") === false);
         } else {
-            const invisibleProperties = parent.getInvisibleProperties().filter(
+            const excludedProperties = parent.getExcludedProperties().filter(
                 prop => prop.startsWith(this.getNavProperty()!.name + "/")
             );
 
-            return invisibleProperties.map(prop => prop.split("/")[1]);
+            return excludedProperties.map(prop => prop.split("/")[1]);
         }
     }
 

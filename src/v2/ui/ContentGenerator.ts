@@ -1,3 +1,4 @@
+import JSONModel from "sap/ui/model/json/JSONModel";
 import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
@@ -26,8 +27,9 @@ export default abstract class ContentGenerator extends Root {
             closeButtonType: { type: "string", visibility: "public", defaultValue: "Default" },
             keyEnforcementEnabled: { type: "boolean", visibility: "public", defaultValue: true },
             guidGenerationMode: { type: "string", visibility: "public", defaultValue: "Key" },
+            guidVisibilityMode: { type: "string", visibility: "public", defaultValue: "NonKey" },
             metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
-            invisibleProperties: { type: "string[]", visibility: "public", defaultValue: [] },
+            excludedProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             readonlyProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             requiredProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             propertyOrder: { type: "string[]", visibility: "public", defaultValue: [] },
@@ -68,6 +70,25 @@ export default abstract class ContentGenerator extends Root {
             operation: this.getOperation()
         }));
         this.setDefaultValues();
+
+        const model = new JSONModel({
+            formTitle: this.getFormTitle(),
+            submitButtonText: this.getSubmitButtonText(),
+            submitButtonType: this.getSubmitButtonType(),
+            closeButtonText: this.getCloseButtonText(),
+            closeButtonType: this.getCloseButtonType()
+        });
+
+        model.setDefaultBindingMode("TwoWay");
+        this.setModel(model, "content");
+
+        this.bindProperties([
+            "formTitle",
+            "submitButtonText",
+            "submitButtonType",
+            "closeButtonText",
+            "closeButtonType"
+        ]);
     }
 
     public getMetaContexts() {
@@ -187,7 +208,6 @@ export default abstract class ContentGenerator extends Root {
         // Dialog related methods should not run for the reuse component
         this.addFormsToDialog();
         this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
-        this.getDialogGenerator().getDialog().setModel(this.getODataModel());
         this.getDialogGenerator().getDialog().open();
     }
 
@@ -315,5 +335,15 @@ export default abstract class ContentGenerator extends Root {
         }
 
         this.setCloseButtonText(this.getLibraryBundleText("ui5AntaresPro.button.close")!);
+    }
+
+    private bindProperties(properties: string[]) {
+        for (const property of properties) {
+            this.bindProperty(property, {
+                path: "/" + property,
+                model: "content",
+                mode: "TwoWay"
+            });
+        }
     }
 }

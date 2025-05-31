@@ -5,7 +5,7 @@ declare module "ui5/antares/pro/v2/component/entry/Component" {
     export default interface Root {
         getEntitySet: GetProperty<string>;
         setEntitySet: SetProperty<string>;
-        getInvisibleProperties: GetProperty<string[]>;
-        setInvisibleProperties: SetProperty<string[]>;
+        getExcludedProperties: GetProperty<string[]>;
+        setExcludedProperties: SetProperty<string[]>;        
     }
 }

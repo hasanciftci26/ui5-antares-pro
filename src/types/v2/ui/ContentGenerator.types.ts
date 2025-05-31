@@ -18,12 +18,14 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setCloseButtonType: SetProperty<ButtonType>;
         getKeyEnforcementEnabled: GetProperty<boolean>;
         setKeyEnforcementEnabled: SetProperty<boolean>;
-        getGuidGenerationMode: GetProperty<GuidGenerationMode>;
-        setGuidGenerationMode: SetProperty<GuidGenerationMode>;
+        getGuidGenerationMode: GetProperty<GuidMode>;
+        setGuidGenerationMode: SetProperty<GuidMode>;
+        getGuidVisibilityMode: GetProperty<GuidMode>;
+        setGuidVisibilityMode: SetProperty<GuidMode>;
         getMetadataLabelEnabled: GetProperty<boolean>;
         setMetadataLabelEnabled: SetProperty<boolean>;
-        getInvisibleProperties: GetProperty<string[]>;
-        setInvisibleProperties: SetProperty<string[]>;
+        getExcludedProperties: GetProperty<string[]>;
+        setExcludedProperties: SetProperty<string[]>;
         getReadonlyProperties: GetProperty<string[]>;
         setReadonlyProperties: SetProperty<string[]>;
         getRequiredProperties: GetProperty<string[]>;
@@ -38,7 +40,7 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
 }
 
 export type Operation = "Create" | "Read" | "Update" | "Delete";
-export type GuidGenerationMode = "All" | "Key" | "NonKey" | "None";
+export type GuidMode = "All" | "Key" | "NonKey" | "None";
 
 export interface IPropertyLabel {
     name: string;

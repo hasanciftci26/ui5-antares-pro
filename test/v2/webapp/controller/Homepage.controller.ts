@@ -1,3 +1,4 @@
+import { ButtonType } from "sap/m/library";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
 
@@ -22,10 +23,12 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            navProperties: ["toContract"],
-            invisibleProperties: ["firstName", "toContract/contractType"],
-            readonlyProperties: ["lastName"],
-            metadataLabelEnabled: true
+            metadataLabelEnabled: true,
+            formTitle: "Create a New Employee",
+            submitButtonText: "Save",
+            submitButtonType: ButtonType.Accept,
+            closeButtonText: "Cancel",
+            guidVisibilityMode: "All"
         });
 
         entry.execute();
