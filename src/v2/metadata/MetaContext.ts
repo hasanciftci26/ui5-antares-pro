@@ -101,7 +101,8 @@ export default class MetaContext extends ManagedObject {
             });
         }
 
-        this.setProps(props);
+        const sortedProperties = this.sortProperties(props);
+        this.setProps(sortedProperties);
     }
 
     protected getLabelGenerator() {
@@ -290,5 +291,57 @@ export default class MetaContext extends ManagedObject {
 
             return requiredProperties.map(prop => prop.split("/")[1]);
         }
+    }
+
+    private getPropertyOrder() {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (this.getEntitySetType() === "Parent") {
+            return parent.getPropertyOrder().filter(prop => prop.includes("/") === false);
+        } else {
+            const propertyOrder = parent.getPropertyOrder().filter(
+                prop => prop.startsWith(this.getNavProperty()!.name + "/")
+            );
+
+            return propertyOrder.map(prop => prop.split("/")[1]);
+        }
+    }
+
+    private sortProperties(props: IProp[]) {
+        const parent = this.getParent() as ContentGenerator;
+        const orderMap = new Map<string, number>();
+        let orderIndex = 0;
+
+        if (parent.getKeyEnforcementEnabled()) {
+            for (const name of this.getPropertyOrder()) {
+                const prop = props.find(prop => prop.name === name && prop.key);
+
+                if (prop && !orderMap.has(prop.name)) {
+                    orderMap.set(prop.name, orderIndex++);
+                }
+            }
+
+            for (const prop of props) {
+                if (prop.key && !orderMap.has(prop.name)) {
+                    orderMap.set(prop.name, orderIndex++);
+                }
+            }
+        }
+
+        for (const name of this.getPropertyOrder()) {
+            if (!orderMap.has(name)) {
+                orderMap.set(name, orderIndex++);
+            }
+        }
+
+        for (const prop of props) {
+            if (!orderMap.has(prop.name)) {
+                orderMap.set(prop.name, orderIndex++);
+            }
+        }
+
+        return [...props].sort((a, b) => {
+            return (orderMap.get(a.name) ?? Infinity) - (orderMap.get(b.name) ?? Infinity);
+        });
     }
 }
