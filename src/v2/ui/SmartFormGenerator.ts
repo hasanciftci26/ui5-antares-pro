@@ -32,7 +32,9 @@ export default class SmartFormGenerator extends ManagedObject {
 
     public generate() {
         const form = new SmartForm({
+            editTogglable: false,
             editable: true,
+            validationMode: "Async",
             groups: new Group({
                 groupElements: this.getGroupElements()
             })
@@ -77,7 +79,7 @@ export default class SmartFormGenerator extends ManagedObject {
     private getDateControl(property: IProp, navProperty?: string) {
         const parent = this.getParent() as ContentGenerator;
 
-        if (parent.getDatePattern()) {
+        if (parent.getDateTimeSettings()?.datePattern) {
             if (property.readonly) {
                 return this.getDateText(property, navProperty);
             } else {
@@ -100,7 +102,7 @@ export default class SmartFormGenerator extends ManagedObject {
                     displayFormat: "Date"
                 },
                 formatOptions: {
-                    pattern: parent.getDatePattern()
+                    pattern: parent.getDateTimeSettings()!.datePattern
                 }
             }
         });
@@ -118,7 +120,7 @@ export default class SmartFormGenerator extends ManagedObject {
                     displayFormat: "Date"
                 },
                 formatOptions: {
-                    pattern: parent.getDatePattern()
+                    pattern: parent.getDateTimeSettings()!.datePattern
                 }
             }
         });
@@ -127,7 +129,7 @@ export default class SmartFormGenerator extends ManagedObject {
     private getDateTimeControl(property: IProp, navProperty?: string) {
         const parent = this.getParent() as ContentGenerator;
 
-        if (parent.getDateTimePattern()) {
+        if (parent.getDateTimeSettings()?.dateTimePattern) {
             if (property.readonly) {
                 return this.getDateTimeText(property, navProperty);
             } else {
@@ -147,7 +149,7 @@ export default class SmartFormGenerator extends ManagedObject {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
                 formatOptions: {
-                    pattern: parent.getDateTimePattern()
+                    pattern: parent.getDateTimeSettings()!.dateTimePattern
                 }
             }
         });
@@ -162,7 +164,7 @@ export default class SmartFormGenerator extends ManagedObject {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
                 formatOptions: {
-                    pattern: parent.getDateTimePattern()
+                    pattern: parent.getDateTimeSettings()!.dateTimePattern
                 }
             }
         });
@@ -171,7 +173,7 @@ export default class SmartFormGenerator extends ManagedObject {
     private getTimeControl(property: IProp, navProperty?: string) {
         const parent = this.getParent() as ContentGenerator;
 
-        if (parent.getTimePattern()) {
+        if (parent.getDateTimeSettings()?.timePattern) {
             if (property.readonly) {
                 return this.getTimeText(property, navProperty);
             } else {
@@ -191,7 +193,7 @@ export default class SmartFormGenerator extends ManagedObject {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
                 formatOptions: {
-                    pattern: parent.getTimePattern()
+                    pattern: parent.getDateTimeSettings()!.timePattern
                 }
             }
         });
@@ -206,7 +208,7 @@ export default class SmartFormGenerator extends ManagedObject {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
                 formatOptions: {
-                    pattern: parent.getTimePattern()
+                    pattern: parent.getDateTimeSettings()!.timePattern
                 }
             }
         });

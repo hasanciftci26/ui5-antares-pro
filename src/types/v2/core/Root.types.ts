@@ -3,7 +3,7 @@ import { ButtonType } from "sap/m/library";
 import Controller from "sap/ui/core/mvc/Controller";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
-import { FormType, GuidMode, IPropertyLabel } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
+import { FormType, GuidMode, IDateTimeSettings, INumberSettings, IPropertyLabel } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
 
 declare module "ui5/antares/pro/v2/core/Root" {
     export default interface Root {
@@ -30,9 +30,8 @@ export interface ISettings {
     guidGenerationMode?: GuidMode;
     guidVisibilityMode?: GuidMode;
     metadataLabelEnabled?: boolean;
-    datePattern?: string;
-    dateTimePattern?: string;
-    timePattern?: string;
+    dateTimeSettings?: IDateTimeSettings;
+    numberSettings?: INumberSettings;
     excludedProperties?: string[];
     readonlyProperties?: string[];
     requiredProperties?: string[];

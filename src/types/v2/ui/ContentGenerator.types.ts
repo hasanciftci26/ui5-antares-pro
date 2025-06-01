@@ -24,12 +24,10 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setGuidVisibilityMode: SetProperty<GuidMode>;
         getMetadataLabelEnabled: GetProperty<boolean>;
         setMetadataLabelEnabled: SetProperty<boolean>;
-        getDatePattern: GetProperty<string | undefined>;
-        setDatePattern: SetProperty<string | undefined>;
-        getDateTimePattern: GetProperty<string | undefined>;
-        setDateTimePattern: SetProperty<string | undefined>;
-        getTimePattern: GetProperty<string | undefined>;
-        setTimePattern: SetProperty<string | undefined>;
+        getDateTimeSettings: GetProperty<IDateTimeSettings | undefined>;
+        setDateTimeSettings: SetProperty<IDateTimeSettings | undefined>;
+        getNumberSettings: GetProperty<INumberSettings | undefined>;
+        setNumberSettings: SetProperty<INumberSettings | undefined>;
         getExcludedProperties: GetProperty<string[]>;
         setExcludedProperties: SetProperty<string[]>;
         getReadonlyProperties: GetProperty<string[]>;
@@ -54,3 +52,16 @@ export interface IPropertyLabel {
 }
 
 export type FormType = "SmartForm" | "SimpleForm";
+
+export interface IDateTimeSettings {
+    datePattern?: string;
+    dateTimePattern?: string;
+    timePattern?: string;
+}
+
+export interface INumberSettings {
+    groupingEnabled?: boolean;
+    groupingSeparator?: string;
+    groupingSize?: number;
+    decimalSeparator?: string;
+}

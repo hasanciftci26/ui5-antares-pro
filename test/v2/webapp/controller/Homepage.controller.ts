@@ -23,15 +23,14 @@ export default class Homepage extends BaseController {
             controller: this,
             entitySet: "Employees",
             metadataLabelEnabled: true,
-            datePattern: "dd MMMM y",
-            dateTimePattern: "dd MMMM y - hh:mm:ss a",
-            readonlyProperties: ["dateOfBirth"]
+            dateTimeSettings: {
+                datePattern: "dd MMMM y",
+                dateTimePattern: "dd MMMM y - hh:mm:ss a",
+                timePattern: "hh:mm:ss a"
+            }
         });
 
-        entry.execute({
-            hireDate: new Date(),
-            dateOfBirth: new Date()
-        });
+        entry.execute();
     }
 
     /* ======================================================================================================================= */
