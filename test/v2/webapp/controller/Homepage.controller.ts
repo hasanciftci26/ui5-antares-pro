@@ -23,6 +23,7 @@ export default class Homepage extends BaseController {
             controller: this,
             entitySet: "Employees",
             metadataLabelEnabled: true,
+            formType: "SimpleForm",
             dateTimeSettings: {
                 datePattern: "dd MMMM y",
                 dateTimePattern: "dd MMMM y - hh:mm:ss a",

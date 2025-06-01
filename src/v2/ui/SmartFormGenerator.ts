@@ -1,5 +1,6 @@
 import DatePicker from "sap/m/DatePicker";
 import DateTimePicker from "sap/m/DateTimePicker";
+import Input from "sap/m/Input";
 import Label from "sap/m/Label";
 import Text from "sap/m/Text";
 import TimePicker from "sap/m/TimePicker";
@@ -11,8 +12,10 @@ import SmartForm from "sap/ui/comp/smartform/SmartForm";
 import Messaging from "sap/ui/core/Messaging";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import { INumberBinding } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
 import { ISettings } from "ui5/antares/pro/types/v2/ui/SmartFormGenerator.types";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
+import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -72,6 +75,15 @@ export default class SmartFormGenerator extends ManagedObject {
                 return this.getDateTimeControl(property, navProperty);
             case "Edm.Time":
                 return this.getTimeControl(property, navProperty);
+            case "Edm.Byte":
+            case "Edm.SByte":
+            case "Edm.Int16":
+            case "Edm.Int32":
+            case "Edm.Int64":
+            case "Edm.Single":
+            case "Edm.Double":
+            case "Edm.Decimal":
+                return this.getNumberControl(property, navProperty);
             default:
                 return this.getSmartField(property, navProperty);
         }
@@ -228,6 +240,68 @@ export default class SmartFormGenerator extends ManagedObject {
 
         Messaging.registerObject(timePicker, true);
         return timePicker;
+    }
+
+    private getNumberControl(property: IProp, navProperty?: string) {
+        const parent = this.getParent() as ContentGenerator;
+        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
+
+        if (numberSettings) {
+            if (property.readonly) {
+                return this.getNumberText(property, navProperty);
+            } else {
+                return this.getNumberInput(property, navProperty);
+            }
+        } else {
+            return this.getSmartField(property, navProperty);
+        }
+    }
+
+    private getNumberText(property: IProp, navProperty?: string) {
+        return new Text({
+            visible: property.visible,
+            text: this.getNumberBinding(property, navProperty)
+        });
+    }
+
+    private getNumberInput(property: IProp, navProperty?: string) {
+        const input = new Input({
+            textAlign: "End",
+            visible: property.visible,
+            required: property.required,
+            value: this.getNumberBinding(property, navProperty)
+        });
+
+        Messaging.registerObject(input, true);
+        return input;
+    }
+
+    private getNumberBinding(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
+        const binding: INumberBinding = {
+            path: path,
+            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        };
+
+        if (numberSettings) {
+            binding.formatOptions = {
+                groupingEnabled: numberSettings.groupingEnabled,
+                groupingSeparator: numberSettings.groupingSeparator,
+                groupingSize: numberSettings.groupingSize,
+                decimalSeparator: numberSettings.decimalSeparator
+            };
+        }
+
+        if (property.precision && property.scale) {
+            binding.constraints = {
+                precision: property.precision,
+                scale: property.scale
+            };
+        }
+
+        return binding;
     }
 
     private getSmartField(property: IProp, navProperty?: string) {

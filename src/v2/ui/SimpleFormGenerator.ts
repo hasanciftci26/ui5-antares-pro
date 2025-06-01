@@ -235,6 +235,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getNumberInput(property: IProp, navProperty?: string) {
         const input = new Input({
+            textAlign: "End",
             visible: property.visible,
             required: property.required,
             value: this.getNumberBinding(property, navProperty)
