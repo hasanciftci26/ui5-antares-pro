@@ -69,19 +69,7 @@ export default abstract class Root extends ManagedObject {
         if (bundle.hasText(key)) {
             return bundle.getText(key, parameters);
         }
-    }
-
-    public getLibraryBundleText(key: string, parameters?: (string | number | boolean)[]) {
-        const bundle = Lib.getResourceBundleFor("ui5.antares.pro");
-
-        if (bundle instanceof ResourceBundle === false) {
-            return;
-        }
-
-        if (bundle.hasText(key)) {
-            return bundle.getText(key, parameters);
-        }
-    }    
+    }  
 
     protected getController(): Controller {
         return this.getProperty("controller");

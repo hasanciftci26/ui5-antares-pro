@@ -8,6 +8,7 @@ import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
@@ -137,13 +138,7 @@ export default abstract class ContentGenerator extends Root {
     }
 
     public getValueListByProperty(property: string) {
-        const valueList = this.getValueLists().find(list => list.getLocalDataProperty() === property);
-
-        if (!valueList) {
-            throw new Error("The ValueList was not found for the property: " + property);
-        }
-
-        return valueList;
+        return this.getValueLists().find(list => list.getLocalDataProperty() === property);
     }
 
     protected getOperation() {
@@ -321,16 +316,16 @@ export default abstract class ContentGenerator extends Root {
 
         switch (this.getOperation()) {
             case "Create":
-                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.createEntry", [this.getEntitySet()])!);
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.createEntry", [this.getEntitySet()])!);
                 break;
             case "Update":
-                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()])!);
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()])!);
                 break;
             case "Delete":
-                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()])!);
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()])!);
                 break;
             case "Read":
-                this.setFormTitle(this.getLibraryBundleText("ui5AntaresPro.title.readEntry", [this.getEntitySet()])!);
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.readEntry", [this.getEntitySet()])!);
                 break;
         }
     }
@@ -342,13 +337,13 @@ export default abstract class ContentGenerator extends Root {
 
         switch (this.getOperation()) {
             case "Create":
-                this.setSubmitButtonText(this.getLibraryBundleText("ui5AntaresPro.button.create")!);
+                this.setSubmitButtonText(LibraryBundle.getText("ui5AntaresPro.button.create")!);
                 break;
             case "Update":
-                this.setSubmitButtonText(this.getLibraryBundleText("ui5AntaresPro.button.update")!);
+                this.setSubmitButtonText(LibraryBundle.getText("ui5AntaresPro.button.update")!);
                 break;
             case "Delete":
-                this.setSubmitButtonText(this.getLibraryBundleText("ui5AntaresPro.button.delete")!);
+                this.setSubmitButtonText(LibraryBundle.getText("ui5AntaresPro.button.delete")!);
                 break;
         }
     }
@@ -358,7 +353,7 @@ export default abstract class ContentGenerator extends Root {
             return;
         }
 
-        this.setCloseButtonText(this.getLibraryBundleText("ui5AntaresPro.button.close")!);
+        this.setCloseButtonText(LibraryBundle.getText("ui5AntaresPro.button.close")!);
     }
 
     private bindProperties(properties: string[]) {

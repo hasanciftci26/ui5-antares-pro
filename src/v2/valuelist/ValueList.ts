@@ -1,7 +1,7 @@
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/valuelist/ValueList.types";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
  * @namespace ui5.antares.pro.v2.valuelist
@@ -38,7 +38,7 @@ export default class ValueList extends ManagedObject {
         }
     }
 
-    public open() {
+    public async open() {
 
     }
 
@@ -47,8 +47,7 @@ export default class ValueList extends ManagedObject {
             return;
         }
 
-        const parent = this.getParent() as ContentGenerator;
         const entitySet = this.getCollectionPath().substring(1);
-        this.setTitle(parent.getLibraryBundleText("ui5AntaresPro.title.select", [entitySet])!);
+        this.setTitle(LibraryBundle.getText("ui5AntaresPro.title.select", [entitySet])!);
     }
 }

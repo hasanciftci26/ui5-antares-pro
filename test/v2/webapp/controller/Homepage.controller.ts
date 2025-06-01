@@ -34,12 +34,12 @@ export default class Homepage extends BaseController {
             requiredProperties: ["hireDate"],
             valueLists: [
                 new ValueList({
-                    collectionPath: "test",
-                    localDataProperty: "test",
+                    collectionPath: "Countries",
+                    localDataProperty: "countryCode",
                     parameters: [{
                         type: "InOut",
-                        localDataProperty: "test",
-                        valueListProperty: "test"
+                        localDataProperty: "countryCode",
+                        valueListProperty: "code"
                     }]
                 })
             ]

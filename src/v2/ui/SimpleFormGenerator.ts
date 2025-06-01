@@ -1,7 +1,7 @@
 import CheckBox from "sap/m/CheckBox";
 import DatePicker from "sap/m/DatePicker";
 import DateTimePicker from "sap/m/DateTimePicker";
-import Input from "sap/m/Input";
+import Input, { Input$ValueHelpRequestEvent } from "sap/m/Input";
 import Label from "sap/m/Label";
 import Text from "sap/m/Text";
 import TimePicker from "sap/m/TimePicker";
@@ -309,7 +309,10 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getStringInput(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const valueList = parent.getValueListByProperty(path);
         const input = new Input({
+            name: path,
             visible: property.visible,
             required: property.required,
             value: {
@@ -319,7 +322,22 @@ export default class SimpleFormGenerator extends ManagedObject {
             maxLength: property.maxLength
         });
 
+        if (valueList) {
+            input.setShowValueHelp(true);
+            input.attachValueHelpRequest(this.onValueHelpRequest, this);
+        }
+
         Messaging.registerObject(input, true);
         return input;
+    }
+
+    private onValueHelpRequest(event: Input$ValueHelpRequestEvent) {
+        const parent = this.getParent() as ContentGenerator;
+        const path = event.getSource().getName();
+        const valueList = parent.getValueListByProperty(path);
+
+        if (valueList) {
+            valueList.open();
+        }
     }
 }
