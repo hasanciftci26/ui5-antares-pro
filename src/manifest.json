@@ -20,7 +20,6 @@
         }
     },
     "sap.ui5": {
-        "handleValidation": true,
         "dependencies": {
             "minUI5Version": "1.135.0",
             "libs": {

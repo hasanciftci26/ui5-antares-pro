@@ -27,7 +27,8 @@ export default class Homepage extends BaseController {
                 datePattern: "dd MMMM y",
                 dateTimePattern: "dd MMMM y - hh:mm:ss a",
                 timePattern: "hh:mm:ss a"
-            }
+            },
+            requiredProperties: ["hireDate"]
         });
 
         entry.execute();

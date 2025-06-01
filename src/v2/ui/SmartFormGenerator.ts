@@ -8,6 +8,7 @@ import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
+import Messaging from "sap/ui/core/Messaging";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { ISettings } from "ui5/antares/pro/types/v2/ui/SmartFormGenerator.types";
@@ -95,6 +96,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
 
         return new Text({
+            visible: property.visible,
             text: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
@@ -111,8 +113,9 @@ export default class SmartFormGenerator extends ManagedObject {
     private getDatePicker(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
-
-        return new DatePicker({
+        const datePicker = new DatePicker({
+            visible: property.visible,
+            required: property.required,
             value: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
@@ -124,6 +127,9 @@ export default class SmartFormGenerator extends ManagedObject {
                 }
             }
         });
+
+        Messaging.registerObject(datePicker, true);
+        return datePicker;
     }
 
     private getDateTimeControl(property: IProp, navProperty?: string) {
@@ -145,6 +151,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
 
         return new Text({
+            visible: property.visible,
             text: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
@@ -158,8 +165,9 @@ export default class SmartFormGenerator extends ManagedObject {
     private getDateTimePicker(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
-
-        return new DateTimePicker({
+        const dateTimePicker = new DateTimePicker({
+            visible: property.visible,
+            required: property.required,
             value: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
@@ -168,6 +176,9 @@ export default class SmartFormGenerator extends ManagedObject {
                 }
             }
         });
+
+        Messaging.registerObject(dateTimePicker, true);
+        return dateTimePicker;
     }
 
     private getTimeControl(property: IProp, navProperty?: string) {
@@ -189,6 +200,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
 
         return new Text({
+            visible: property.visible,
             text: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
@@ -202,8 +214,9 @@ export default class SmartFormGenerator extends ManagedObject {
     private getTimePicker(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
-
-        return new TimePicker({
+        const timePicker = new TimePicker({
+            visible: property.visible,
+            required: property.required,
             value: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4),
@@ -212,6 +225,9 @@ export default class SmartFormGenerator extends ManagedObject {
                 }
             }
         });
+
+        Messaging.registerObject(timePicker, true);
+        return timePicker;
     }
 
     private getSmartField(property: IProp, navProperty?: string) {

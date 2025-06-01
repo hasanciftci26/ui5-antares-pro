@@ -14,3 +14,37 @@ declare module "ui5/antares/pro/v2/ui/SimpleFormGenerator" {
 export interface ISettings {
     entitySet: string;
 }
+
+export interface IDateBinding {
+    path: string;
+    type: string;
+    constraints: {
+        displayFormat: "Date";
+    };
+    formatOptions?: {
+        pattern: string;
+    };
+}
+
+export interface IDateTimeBinding {
+    path: string;
+    type: string;
+    formatOptions?: {
+        pattern: string;
+    };
+}
+
+export interface INumberBinding {
+    path: string;
+    type: string;
+    constraints?: {
+        precision?: number;
+        scale?: number;
+    };
+    formatOptions?: {
+        groupingEnabled?: boolean;
+        groupingSeparator?: string;
+        groupingSize?: number;
+        decimalSeparator?: string;
+    };
+}
