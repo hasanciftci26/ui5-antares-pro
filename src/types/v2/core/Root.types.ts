@@ -4,6 +4,7 @@ import Controller from "sap/ui/core/mvc/Controller";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 import { FormType, GuidMode, IDateTimeSettings, INumberSettings, IPropertyLabel } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 declare module "ui5/antares/pro/v2/core/Root" {
     export default interface Root {
@@ -38,4 +39,5 @@ export interface ISettings {
     propertyOrder?: string[];
     propertyLabels?: IPropertyLabel[];
     navProperties?: string[];
+    valueLists?: ValueList[];
 }

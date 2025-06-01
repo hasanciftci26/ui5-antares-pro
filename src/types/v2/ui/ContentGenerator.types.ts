@@ -1,6 +1,14 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
-import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
+import {
+    DestroyAggregation,
+    GetAggregation,
+    GetProperty,
+    RemoveAggregation,
+    RemoveAllAggregation,
+    SetProperty
+} from "ui5/antares/pro/types/Global.types";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
     export default interface ContentGenerator {
@@ -40,6 +48,10 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setPropertyLabels: SetProperty<IPropertyLabel[]>;
         getNavProperties: GetProperty<string[]>;
         setNavProperties: SetProperty<string[]>;
+        getValueLists: GetAggregation<ValueList[]>;
+        removeValueList: RemoveAggregation<ValueList>;
+        removeAllValueLists: RemoveAllAggregation;
+        destroyValueLists: DestroyAggregation;
     }
 }
 

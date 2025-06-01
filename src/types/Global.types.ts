@@ -11,7 +11,9 @@ export type BindAggregation = (aggregationInfo: AggregationBindingInfo) => void;
 export type SetAggregation<AggregationT extends ManagedObject> = (aggregation: AggregationT) => void;
 export type GetAggregation<AggregationT extends ManagedObject | ManagedObject[]> = () => AggregationT;
 export type AddAggregation<AggregationT extends ManagedObject> = (aggregation: AggregationT) => void;
-export type RemoveAggregation<AggregationT extends ManagedObject> = (aggregation: AggregationT) => void;
+export type RemoveAggregation<AggregationT extends ManagedObject> = (reference: number | string | AggregationT) => void;
+export type RemoveAllAggregation = () => void;
+export type DestroyAggregation = () => void;
 
 // Event Types for ManagedObject Classes
 export type AttachEvent<EventT extends Event<object, EventProvider> = Event<object, EventProvider>> =

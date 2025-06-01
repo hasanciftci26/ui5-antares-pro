@@ -8,6 +8,7 @@ import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -61,6 +62,12 @@ export default abstract class ContentGenerator extends Root {
                 multiple: true,
                 singularName: "smartFormGenerator",
                 visibility: "hidden"
+            },
+            valueLists: {
+                type: "ui5.antares.pro.v2.valuelist.ValueList",
+                multiple: true,
+                singularName: "valueList",
+                visibility: "public"
             }
         }
     };
@@ -122,6 +129,21 @@ export default abstract class ContentGenerator extends Root {
 
     public getSmartFormGenerators() {
         return this.getAggregation("smartFormGenerators") as SmartFormGenerator[];
+    }
+
+    public addValueList(valueList: ValueList) {
+        valueList.check();
+        this.addAggregation("valueLists", valueList);
+    }
+
+    public getValueListByProperty(property: string) {
+        const valueList = this.getValueLists().find(list => list.getLocalDataProperty() === property);
+
+        if (!valueList) {
+            throw new Error("The ValueList was not found for the property: " + property);
+        }
+
+        return valueList;
     }
 
     protected getOperation() {
