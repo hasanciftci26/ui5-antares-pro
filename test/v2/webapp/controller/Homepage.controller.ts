@@ -22,10 +22,16 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            metadataLabelEnabled: true
+            metadataLabelEnabled: true,
+            datePattern: "dd MMMM y",
+            dateTimePattern: "dd MMMM y - hh:mm:ss a",
+            readonlyProperties: ["dateOfBirth"]
         });
 
-        entry.execute();
+        entry.execute({
+            hireDate: new Date(),
+            dateOfBirth: new Date()
+        });
     }
 
     /* ======================================================================================================================= */

@@ -1,4 +1,8 @@
+import DatePicker from "sap/m/DatePicker";
+import DateTimePicker from "sap/m/DateTimePicker";
 import Label from "sap/m/Label";
+import Text from "sap/m/Text";
+import TimePicker from "sap/m/TimePicker";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
@@ -46,16 +50,171 @@ export default class SmartFormGenerator extends ManagedObject {
         for (const property of properties) {
             elements.push(new GroupElement({
                 label: new Label({ text: property.label }),
-                elements: this.getSmartField(property, metaContext.getNavProperty()?.name)
+                elements: this.getControl(property, metaContext.getNavProperty()?.name)
             }));
         }
 
         return elements;
     }
 
+    private getControl(property: IProp, navProperty?: string) {
+        switch (property.type) {
+            case "Edm.DateTime":
+                if (property.displayFormat === "Date") {
+                    return this.getDateControl(property, navProperty);
+                } else {
+                    return this.getDateTimeControl(property, navProperty);
+                }
+            case "Edm.DateTimeOffset":
+                return this.getDateTimeControl(property, navProperty);
+            case "Edm.Time":
+                return this.getTimeControl(property, navProperty);
+            default:
+                return this.getSmartField(property, navProperty);
+        }
+    }
+
+    private getDateControl(property: IProp, navProperty?: string) {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (parent.getDatePattern()) {
+            if (property.readonly) {
+                return this.getDateText(property, navProperty);
+            } else {
+                return this.getDatePicker(property, navProperty);
+            }
+        } else {
+            return this.getSmartField(property, navProperty);
+        }
+    }
+
+    private getDateText(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+
+        return new Text({
+            text: {
+                path: path,
+                type: "sap.ui.model.odata.type." + property.type.substring(4),
+                constraints: {
+                    displayFormat: "Date"
+                },
+                formatOptions: {
+                    pattern: parent.getDatePattern()
+                }
+            }
+        });
+    }
+
+    private getDatePicker(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+
+        return new DatePicker({
+            value: {
+                path: path,
+                type: "sap.ui.model.odata.type." + property.type.substring(4),
+                constraints: {
+                    displayFormat: "Date"
+                },
+                formatOptions: {
+                    pattern: parent.getDatePattern()
+                }
+            }
+        });
+    }
+
+    private getDateTimeControl(property: IProp, navProperty?: string) {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (parent.getDateTimePattern()) {
+            if (property.readonly) {
+                return this.getDateTimeText(property, navProperty);
+            } else {
+                return this.getDateTimePicker(property, navProperty);
+            }
+        } else {
+            return this.getSmartField(property, navProperty);
+        }
+    }
+
+    private getDateTimeText(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+
+        return new Text({
+            text: {
+                path: path,
+                type: "sap.ui.model.odata.type." + property.type.substring(4),
+                formatOptions: {
+                    pattern: parent.getDateTimePattern()
+                }
+            }
+        });
+    }
+
+    private getDateTimePicker(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+
+        return new DateTimePicker({
+            value: {
+                path: path,
+                type: "sap.ui.model.odata.type." + property.type.substring(4),
+                formatOptions: {
+                    pattern: parent.getDateTimePattern()
+                }
+            }
+        });
+    }
+
+    private getTimeControl(property: IProp, navProperty?: string) {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (parent.getTimePattern()) {
+            if (property.readonly) {
+                return this.getTimeText(property, navProperty);
+            } else {
+                return this.getTimePicker(property, navProperty);
+            }
+        } else {
+            return this.getSmartField(property, navProperty);
+        }
+    }
+
+    private getTimeText(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+
+        return new Text({
+            text: {
+                path: path,
+                type: "sap.ui.model.odata.type." + property.type.substring(4),
+                formatOptions: {
+                    pattern: parent.getTimePattern()
+                }
+            }
+        });
+    }
+
+    private getTimePicker(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+
+        return new TimePicker({
+            value: {
+                path: path,
+                type: "sap.ui.model.odata.type." + property.type.substring(4),
+                formatOptions: {
+                    pattern: parent.getTimePattern()
+                }
+            }
+        });
+    }
+
     private getSmartField(property: IProp, navProperty?: string) {
         const value = navProperty ? `{${navProperty}/${property.name}}` : `{${property.name}}`;
-        
+
         const field = new SmartField({
             value: value,
             mandatory: property.required,
