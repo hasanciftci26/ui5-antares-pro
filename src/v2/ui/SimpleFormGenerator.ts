@@ -238,6 +238,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             textAlign: "End",
             visible: property.visible,
             required: property.required,
+            valueLiveUpdate: true,
             value: this.getNumberBinding(property, navProperty)
         });
 
@@ -315,6 +316,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             name: path,
             visible: property.visible,
             required: property.required,
+            valueLiveUpdate: true,
             value: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4)

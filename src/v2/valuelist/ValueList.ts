@@ -25,6 +25,11 @@ import Label from "sap/m/Label";
 import Text from "sap/m/Text";
 import ColumnListItem from "sap/m/ColumnListItem";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
+import Filter from "sap/ui/model/Filter";
+import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
+import { ValueState } from "sap/ui/core/library";
+import MessageBox from "sap/m/MessageBox";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
  * @namespace ui5.antares.pro.v2.valuelist
@@ -39,6 +44,7 @@ export default class ValueList extends ManagedObject {
             fixedValues: { type: "boolean", visibility: "public", defaultValue: false },
             searchSupported: { type: "boolean", visibility: "public", defaultValue: false },
             title: { type: "string", visibility: "public" },
+            filterBarErrorMessage: { type: "string", visibility: "public" },
             parameters: { type: "object[]", visibility: "public", defaultValue: [] },
             valueHelpDialog: { type: "object", visibility: "hidden" }
         },
@@ -54,6 +60,7 @@ export default class ValueList extends ManagedObject {
     constructor(settings: ISettings) {
         super(settings as $ManagedObjectSettings);
         this.setDefaultTitle();
+        this.setDefaultFilterBarErrorMessage();
         this.setCollectionMetaContext(new MetaContext({
             entitySet: this.getCollectionPath().substring(1),
             entitySetType: "Parent"
@@ -105,6 +112,7 @@ export default class ValueList extends ManagedObject {
             valueHelpDialog.open();
         }
 
+        this.setInitialFilters();
         BusyIndicator.hide();
     }
 
@@ -489,8 +497,113 @@ export default class ValueList extends ManagedObject {
         });
     }
 
-    private onFilter(event: FilterBar$SearchEvent) {
+    private async onFilter(event: FilterBar$SearchEvent) {
+        const valid = this.checkFilterBarValues();
 
+        if (!valid) {
+            MessageBox.error(this.getFilterBarErrorMessage());
+            return;
+        }
+
+        const filters = this.getFilters();
+        const searchFieldFilter = this.getSearchFieldFilter();
+        const binding = await this.getListBinding();
+
+        if (!binding) {
+            return;
+        }
+
+        if (searchFieldFilter) {
+            filters.push(searchFieldFilter);
+        }
+
+        if (filters.length) {
+            const filter = new Filter({
+                filters: filters,
+                and: true
+            });
+
+            binding.filter(filter);
+        } else {
+            binding.filter();
+        }
+    }
+
+    private checkFilterBarValues() {
+        const filterBar = this.getValueHelpDialog().getFilterBar();
+        let valid = true;
+
+        for (const item of filterBar.getFilterGroupItems()) {
+            const control = item.getControl() as Input | DatePicker | DateTimePicker | TimePicker | CheckBox;
+
+            if (control instanceof CheckBox === false) {
+                if (control.getValueState() === ValueState.Error) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+
+        return valid;
+    }
+
+    private getSearchFieldFilter() {
+        const value = this.getValueHelpFilterModel().getProperty("/ui5AntaresProVHSearch") as string;
+
+        if (!value) {
+            return;
+        }
+
+        const filters: Filter[] = [];
+        const props = this.getCollectionMetaContext().getProps();
+
+        for (const param of this.getParameters()) {
+            if (param.type === "In") {
+                continue;
+            }
+
+            const property = props.find(prop => prop.name === this.splitProperty(param.valueListProperty));
+
+            if (!property) {
+                throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+            }
+
+            if (property.type !== "Edm.String") {
+                continue;
+            }
+
+            filters.push(new Filter({
+                path: property.name,
+                operator: "Contains",
+                value1: value
+            }));
+        }
+
+        if (!filters.length) {
+            return;
+        }
+
+        return new Filter({
+            filters: filters,
+            and: false
+        });
+    }
+
+    private getFilters() {
+        const filters: Filter[] = [];
+        const filterData: Record<string, any> = this.getValueHelpFilterModel().getData();
+
+        for (const property in filterData) {
+            if (property === "ui5AntaresProVHSearch") {
+                continue;
+            }
+
+            if (filterData[property] != null && filterData[property] !== "") {
+                filters.push(new Filter(property, "EQ", filterData[property]));
+            }
+        }
+
+        return filters;
     }
 
     private onConfirm(event: ValueHelpDialog$OkEvent) {
@@ -512,6 +625,14 @@ export default class ValueList extends ManagedObject {
 
         const entitySet = this.getCollectionPath().substring(1);
         this.setTitle(entitySet);
+    }
+
+    private setDefaultFilterBarErrorMessage() {
+        if (this.getFilterBarErrorMessage()) {
+            return;
+        }
+
+        this.setFilterBarErrorMessage(LibraryBundle.getText("ui5AntaresPro.error.invalidValue")!);
     }
 
     private getCollectionMetaContext() {
@@ -540,5 +661,43 @@ export default class ValueList extends ManagedObject {
 
     private getValueHelpFilterModel() {
         return this.getModel("valueHelpFilter") as JSONModel;
+    }
+
+    private setInitialFilters() {
+        const context = (this.getParent() as ContentGenerator).getContext();
+        const props = this.getCollectionMetaContext().getProps();
+        let triggerSearch = false;
+
+        for (const param of this.getParameters()) {
+            if (param.type !== "In" && param.type !== "InOut") {
+                continue;
+            }
+
+            const contextValue = context.getProperty(param.localDataProperty);
+            const property = props.find(prop => prop.name === this.splitProperty(param.valueListProperty));
+
+            if (!property) {
+                throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+            }
+
+            this.getValueHelpFilterModel().setProperty("/" + property.name, contextValue || null);
+            triggerSearch = true;
+        }
+
+        if (triggerSearch) {
+            this.getValueHelpDialog().getFilterBar().search();
+        }
+    }
+
+    private async getListBinding() {
+        const table = await this.getValueHelpDialog().getTableAsync();
+
+        if (table instanceof GridTable) {
+            return table.getBinding("rows") as ODataListBinding;
+        }
+
+        if (table instanceof ResponsiveTable) {
+            return table.getBinding("items") as ODataListBinding;
+        }
     }
 }

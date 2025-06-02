@@ -49,8 +49,11 @@ export default class Homepage extends BaseController {
                         type: "DisplayOnly",
                         valueListProperty: "lastName"
                     }, {
+                        type: "DisplayOnly",
+                        valueListProperty: "dateOfBirth"
+                    }, {
                         type: "FilterOnly",
-                        valueListProperty: "hireDate"
+                        valueListProperty: "level"
                     }]
                 })
             ]
