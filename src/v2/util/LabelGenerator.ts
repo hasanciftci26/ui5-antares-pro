@@ -19,7 +19,7 @@ export default class LabelGenerator extends ManagedObject {
 
     public generate(property: MetaModelProperty) {
         const parent = this.getParent() as MetaContext;
-        const content = parent.getParent() as ContentGenerator;
+        const content = this.getOwnerContentGenerator();
         const entitySet = parent.getEntitySet();
         const propertyLabel = content.getPropertyLabels().find(prop => prop.name === property.name)?.label;
 
@@ -164,5 +164,15 @@ export default class LabelGenerator extends ManagedObject {
 
     private capitalize(word: string) {
         return word.length > 0 ? word[0].toUpperCase() + word.slice(1) : word;
+    }
+
+    private getOwnerContentGenerator() {
+        const parent = (this.getParent() as MetaContext).getParent()!;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.valuelist.ValueList") {
+            return parent.getParent() as ContentGenerator;
+        } else {
+            return parent as ContentGenerator;
+        }
     }
 }

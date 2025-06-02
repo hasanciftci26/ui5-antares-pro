@@ -141,7 +141,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private async getMetaModel() {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const model = parent.getODataModel();
         const metaModel = model.getMetaModel();
 
@@ -154,7 +154,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private isPropExcluded(entityType: EntityType, property: MetaModelProperty) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
 
         if (parent.getKeyEnforcementEnabled() && this.isKeyProp(entityType, property)) {
             return false;
@@ -164,7 +164,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private isPropReadonly(entityType: EntityType, property: MetaModelProperty) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const operation = parent.getProperty("operation") as Operation;
 
         switch (operation) {
@@ -183,7 +183,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private isPropRequired(entityType: EntityType, property: MetaModelProperty) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const operation = parent.getProperty("operation") as Operation;
 
         switch (operation) {
@@ -204,7 +204,7 @@ export default class MetaContext extends ManagedObject {
             return true;
         }
 
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
 
         switch (parent.getGuidVisibilityMode()) {
             case "All":
@@ -252,7 +252,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private getExcludedProperties() {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
 
         if (this.getEntitySetType() === "Parent") {
             return parent.getExcludedProperties().filter(prop => prop.includes("/") === false);
@@ -266,7 +266,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private getReadonlyProperties() {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
 
         if (this.getEntitySetType() === "Parent") {
             return parent.getReadonlyProperties().filter(prop => prop.includes("/") === false);
@@ -280,7 +280,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private getRequiredProperties() {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
 
         if (this.getEntitySetType() === "Parent") {
             return parent.getRequiredProperties().filter(prop => prop.includes("/") === false);
@@ -294,7 +294,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private getPropertyOrder() {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
 
         if (this.getEntitySetType() === "Parent") {
             return parent.getPropertyOrder().filter(prop => prop.includes("/") === false);
@@ -308,7 +308,7 @@ export default class MetaContext extends ManagedObject {
     }
 
     private sortProperties(props: IProp[]) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const orderMap = new Map<string, number>();
         let orderIndex = 0;
 
@@ -343,5 +343,15 @@ export default class MetaContext extends ManagedObject {
         return [...props].sort((a, b) => {
             return (orderMap.get(a.name) ?? Infinity) - (orderMap.get(b.name) ?? Infinity);
         });
+    }
+
+    private getOwnerContentGenerator() {
+        const parent = this.getParent()!;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.valuelist.ValueList") {
+            return parent.getParent() as ContentGenerator;
+        } else {
+            return parent as ContentGenerator;
+        }
     }
 }

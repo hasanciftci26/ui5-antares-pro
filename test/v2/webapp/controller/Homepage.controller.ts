@@ -23,7 +23,7 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "Employees",
+            entitySet: "EmployeeContracts",
             metadataLabelEnabled: true,
             formType: "SimpleForm",
             dateTimeSettings: {
@@ -31,15 +31,26 @@ export default class Homepage extends BaseController {
                 dateTimePattern: "dd MMMM y - hh:mm:ss a",
                 timePattern: "hh:mm:ss a"
             },
-            requiredProperties: ["hireDate"],
+            guidGenerationMode: "None",
+            guidVisibilityMode: "All",
             valueLists: [
                 new ValueList({
-                    collectionPath: "Countries",
-                    localDataProperty: "countryCode",
+                    searchSupported: true,
+                    collectionPath: "Employees",
+                    localDataProperty: "employeeID",
                     parameters: [{
                         type: "InOut",
-                        localDataProperty: "countryCode",
-                        valueListProperty: "code"
+                        localDataProperty: "employeeID",
+                        valueListProperty: "ID"
+                    }, {
+                        type: "DisplayOnly",
+                        valueListProperty: "firstName"
+                    }, {
+                        type: "DisplayOnly",
+                        valueListProperty: "lastName"
+                    }, {
+                        type: "FilterOnly",
+                        valueListProperty: "hireDate"
                     }]
                 })
             ]

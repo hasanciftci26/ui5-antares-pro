@@ -1,7 +1,30 @@
+import CheckBox from "sap/m/CheckBox";
+import DatePicker from "sap/m/DatePicker";
+import DateTimePicker from "sap/m/DateTimePicker";
+import Input from "sap/m/Input";
+import SearchField from "sap/m/SearchField";
+import TimePicker from "sap/m/TimePicker";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
+import FilterBar, { FilterBar$SearchEvent } from "sap/ui/comp/filterbar/FilterBar";
+import FilterGroupItem from "sap/ui/comp/filterbar/FilterGroupItem";
+import ValueHelpDialog, { ValueHelpDialog$CancelEvent, ValueHelpDialog$OkEvent } from "sap/ui/comp/valuehelpdialog/ValueHelpDialog";
+import Messaging from "sap/ui/core/Messaging";
+import JSONModel from "sap/ui/model/json/JSONModel";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import { IDateBinding, IDateTimeBinding, INumberBinding } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
 import { ISettings } from "ui5/antares/pro/types/v2/valuelist/ValueList.types";
-import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
+import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
+import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
+import ResponsiveTable from "sap/m/Table";
+import GridTable from "sap/ui/table/Table";
+import GridTableColumn from "sap/ui/table/Column";
+import ResponsiveTableColumn from "sap/m/Column";
+import Label from "sap/m/Label";
+import Text from "sap/m/Text";
+import ColumnListItem from "sap/m/ColumnListItem";
+import BusyIndicator from "sap/ui/core/BusyIndicator";
 
 /**
  * @namespace ui5.antares.pro.v2.valuelist
@@ -16,13 +39,32 @@ export default class ValueList extends ManagedObject {
             fixedValues: { type: "boolean", visibility: "public", defaultValue: false },
             searchSupported: { type: "boolean", visibility: "public", defaultValue: false },
             title: { type: "string", visibility: "public" },
-            parameters: { type: "object[]", visibility: "public", defaultValue: [] }
+            parameters: { type: "object[]", visibility: "public", defaultValue: [] },
+            valueHelpDialog: { type: "object", visibility: "hidden" }
+        },
+        aggregations: {
+            collectionMetaContext: {
+                type: "ui5.antares.pro.v2.metadata.MetaContext",
+                multiple: false,
+                visibility: "hidden"
+            }
         }
     };
 
     constructor(settings: ISettings) {
         super(settings as $ManagedObjectSettings);
         this.setDefaultTitle();
+        this.setCollectionMetaContext(new MetaContext({
+            entitySet: this.getCollectionPath().substring(1),
+            entitySetType: "Parent"
+        }));
+
+        const model = new JSONModel({
+            ui5AntaresProVHSearch: ""
+        });
+
+        model.setDefaultBindingMode("TwoWay");
+        this.setModel(model, "valueHelpFilter");
     }
 
     public setCollectionPath(newValue: string) {
@@ -39,7 +81,428 @@ export default class ValueList extends ManagedObject {
     }
 
     public async open() {
+        BusyIndicator.show(0);
 
+        const valueHelpDialog = new ValueHelpDialog({
+            title: this.getTitle(),
+            supportMultiselect: false,
+            supportRanges: false
+        });
+
+        this.setValueHelpDialog(valueHelpDialog);
+        valueHelpDialog.attachOk(this.onConfirm, this);
+        valueHelpDialog.attachCancel(this.onCancel, this);
+        valueHelpDialog.attachAfterClose(this.onAfterClose, this);
+
+        await this.getCollectionMetaContext().load();
+
+        this.addFilterBar();
+        await this.bindTable();
+
+        valueHelpDialog.update();
+
+        if (!valueHelpDialog.isOpen()) {
+            valueHelpDialog.open();
+        }
+
+        BusyIndicator.hide();
+    }
+
+    private addFilterBar() {
+        const filterBar = new FilterBar({
+            advancedMode: true,
+            isRunningInValueHelpDialog: true,
+            filterGroupItems: this.getFilterGroupItems()
+        });
+
+        filterBar.setModel(this.getValueHelpFilterModel(), "valueHelpFilter");
+        filterBar.attachSearch(this.onFilter, this);
+
+        if (this.getSearchSupported()) {
+            const searchField = this.getSearchField();
+
+            filterBar.setBasicSearch(searchField);
+            searchField.attachSearch(() => {
+                filterBar.search();
+            });
+        }
+
+        this.getValueHelpDialog().setFilterBar(filterBar);
+    }
+
+    private getFilterGroupItems() {
+        const items: FilterGroupItem[] = [];
+        const parameters = this.getParameters();
+        const props = this.getCollectionMetaContext().getProps();
+
+        for (const parameter of parameters) {
+            if (parameter.type === "In") {
+                continue;
+            }
+
+            const property = props.find(prop => prop.name === this.splitProperty(parameter.valueListProperty));
+
+            if (!property) {
+                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+            }
+
+            items.push(new FilterGroupItem({
+                groupName: "__$INTERNAL$",
+                name: property.name,
+                label: property.label,
+                visibleInFilterBar: true,
+                control: this.getFilterBarControl(property)
+            }));
+        }
+
+        return items;
+    }
+
+    private getFilterBarControl(property: IProp) {
+        switch (property.type) {
+            case "Edm.DateTime":
+                if (property.displayFormat === "Date") {
+                    return this.getDatePicker(property);
+                } else {
+                    return this.getDateTimePicker(property);
+                }
+            case "Edm.DateTimeOffset":
+                return this.getDateTimePicker(property);
+            case "Edm.Time":
+                return this.getTimePicker(property);
+            case "Edm.Byte":
+            case "Edm.SByte":
+            case "Edm.Int16":
+            case "Edm.Int32":
+            case "Edm.Int64":
+            case "Edm.Single":
+            case "Edm.Double":
+            case "Edm.Decimal":
+                return this.getNumberInput(property);
+            case "Edm.Boolean":
+                return this.getBooleanControl(property);
+            default:
+                return this.getStringInput(property);
+        }
+    }
+
+    private getDatePicker(property: IProp) {
+        const datePicker = new DatePicker({
+            value: this.getDateBinding(property)
+        });
+
+        Messaging.registerObject(datePicker, true);
+        return datePicker;
+    }
+
+    private getDateBinding(property: IProp) {
+        const parent = this.getParent() as ContentGenerator;
+        const datePattern = parent.getDateTimeSettings()?.datePattern;
+        const binding: IDateBinding = {
+            path: "valueHelpFilter>/" + property.name,
+            type: "sap.ui.model.odata.type." + property.type.substring(4),
+            constraints: {
+                displayFormat: "Date"
+            }
+        };
+
+        if (datePattern) {
+            binding.formatOptions = {
+                pattern: datePattern
+            };
+        }
+
+        return binding;
+    }
+
+    private getDateTimePicker(property: IProp) {
+        const dateTimePicker = new DateTimePicker({
+            value: this.getDateTimeBinding(property)
+        });
+
+        Messaging.registerObject(dateTimePicker, true);
+        return dateTimePicker;
+    }
+
+    private getDateTimeBinding(property: IProp) {
+        const parent = this.getParent() as ContentGenerator;
+        const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
+        const binding: IDateTimeBinding = {
+            path: "valueHelpFilter>/" + property.name,
+            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        };
+
+        if (dateTimePattern) {
+            binding.formatOptions = {
+                pattern: dateTimePattern
+            };
+        }
+
+        return binding;
+    }
+
+    private getTimePicker(property: IProp) {
+        const timePicker = new TimePicker({
+            value: this.getTimeBinding(property)
+        });
+
+        Messaging.registerObject(timePicker, true);
+        return timePicker;
+    }
+
+    private getTimeBinding(property: IProp) {
+        const parent = this.getParent() as ContentGenerator;
+        const timePattern = parent.getDateTimeSettings()?.timePattern;
+        const binding: IDateTimeBinding = {
+            path: "valueHelpFilter>/" + property.name,
+            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        };
+
+        if (timePattern) {
+            binding.formatOptions = {
+                pattern: timePattern
+            };
+        }
+
+        return binding;
+    }
+
+    private getNumberInput(property: IProp) {
+        const input = new Input({
+            textAlign: "End",
+            value: this.getNumberBinding(property)
+        });
+
+        Messaging.registerObject(input, true);
+        return input;
+    }
+
+    private getNumberBinding(property: IProp) {
+        const parent = this.getParent() as ContentGenerator;
+        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
+        const binding: INumberBinding = {
+            path: "valueHelpFilter>/" + property.name,
+            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        };
+
+        if (numberSettings) {
+            binding.formatOptions = {
+                groupingEnabled: numberSettings.groupingEnabled,
+                groupingSeparator: numberSettings.groupingSeparator,
+                groupingSize: numberSettings.groupingSize,
+                decimalSeparator: numberSettings.decimalSeparator
+            };
+        }
+
+        if (property.precision && property.scale) {
+            binding.constraints = {
+                precision: property.precision,
+                scale: property.scale
+            };
+        }
+
+        return binding;
+    }
+
+    private getBooleanControl(property: IProp) {
+        return new CheckBox({
+            selected: {
+                path: "valueHelpFilter>/" + property.name,
+                type: "sap.ui.model.odata.type." + property.type.substring(4)
+            }
+        });
+    }
+
+    private getStringInput(property: IProp) {
+        const input = new Input({
+            value: {
+                path: "valueHelpFilter>/" + property.name,
+                type: "sap.ui.model.odata.type." + property.type.substring(4)
+            },
+            maxLength: property.maxLength
+        });
+
+        Messaging.registerObject(input, true);
+        return input;
+    }
+
+    private getSearchField() {
+        const searchField = new SearchField({
+            value: {
+                path: "valueHelpFilter>/ui5AntaresProVHSearch",
+                type: "sap.ui.model.odata.type.String"
+            }
+        });
+
+        return searchField;
+    }
+
+    private async bindTable() {
+        const table = await this.getValueHelpDialog().getTableAsync();
+
+        if (table instanceof GridTable) {
+            this.bindGridTable(table);
+        }
+
+        if (table instanceof ResponsiveTable) {
+            this.bindResponsiveTable(table);
+        }
+    }
+
+    private bindGridTable(table: GridTable) {
+        const parent = this.getParent() as ContentGenerator;
+
+        table.setModel(parent.getODataModel());
+        table.bindRows({
+            path: this.getCollectionPath(),
+            events: {
+                dataReceived: () => {
+                    this.getValueHelpDialog().update();
+                }
+            }
+        });
+
+        this.addGridTableColumns(table);
+    }
+
+    private addGridTableColumns(table: GridTable) {
+        const parameters = this.getParameters();
+        const props = this.getCollectionMetaContext().getProps();
+
+        for (const parameter of parameters) {
+            if (parameter.type === "In" || parameter.type === "FilterOnly") {
+                continue;
+            }
+
+            const property = props.find(prop => prop.name === this.splitProperty(parameter.valueListProperty));
+
+            if (!property) {
+                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+            }
+
+            table.addColumn(new GridTableColumn({
+                label: new Label({ text: property.label }),
+                template: this.getTableColumnText(property)
+            }));
+        }
+    }
+
+    private bindResponsiveTable(table: ResponsiveTable) {
+        const parent = this.getParent() as ContentGenerator;
+
+        table.setModel(parent.getODataModel());
+        table.bindItems({
+            path: this.getCollectionPath(),
+            template: new ColumnListItem({
+                cells: this.addResponsiveTableColumns(table)
+            }),
+            events: {
+                dataReceived: () => {
+                    this.getValueHelpDialog().update();
+                }
+            }
+        });
+    }
+
+    private addResponsiveTableColumns(table: ResponsiveTable) {
+        const parameters = this.getParameters();
+        const props = this.getCollectionMetaContext().getProps();
+        const cells: Text[] = [];
+
+        for (const parameter of parameters) {
+            if (parameter.type === "In" || parameter.type === "FilterOnly") {
+                continue;
+            }
+
+            const property = props.find(prop => prop.name === this.splitProperty(parameter.valueListProperty));
+
+            if (!property) {
+                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+            }
+
+            table.addColumn(new ResponsiveTableColumn({
+                header: new Label({ text: property.label })
+            }));
+
+            cells.push(this.getTableColumnText(property));
+        }
+
+        return cells;
+    }
+
+    private getTableColumnText(property: IProp) {
+        switch (property.type) {
+            case "Edm.DateTime":
+                if (property.displayFormat === "Date") {
+                    return this.getDateText(property);
+                } else {
+                    return this.getDateTimeText(property);
+                }
+            case "Edm.DateTimeOffset":
+                return this.getDateTimeText(property);
+            case "Edm.Time":
+                return this.getTimeText(property);
+            case "Edm.Byte":
+            case "Edm.SByte":
+            case "Edm.Int16":
+            case "Edm.Int32":
+            case "Edm.Int64":
+            case "Edm.Single":
+            case "Edm.Double":
+            case "Edm.Decimal":
+                return this.getNumberText(property);
+            default:
+                return this.getRegularText(property);
+        }
+    }
+
+    private getDateText(property: IProp) {
+        return new Text({
+            text: this.getDateBinding(property)
+        });
+    }
+
+    private getDateTimeText(property: IProp) {
+        return new Text({
+            text: this.getDateTimeBinding(property)
+        });
+    }
+
+    private getTimeText(property: IProp) {
+        return new Text({
+            text: this.getTimeBinding(property)
+        });
+    }
+
+    private getNumberText(property: IProp) {
+        return new Text({
+            text: this.getNumberBinding(property)
+        });
+    }
+
+    private getRegularText(property: IProp) {
+        return new Text({
+            text: {
+                path: property.name,
+                type: "sap.ui.model.odata.type." + property.type.substring(4)
+            }
+        });
+    }
+
+    private onFilter(event: FilterBar$SearchEvent) {
+
+    }
+
+    private onConfirm(event: ValueHelpDialog$OkEvent) {
+
+    }
+
+    private onCancel(event: ValueHelpDialog$CancelEvent) {
+        this.getValueHelpDialog().close();
+    }
+
+    private onAfterClose() {
+        this.getValueHelpDialog().destroy();
     }
 
     private setDefaultTitle() {
@@ -48,6 +511,34 @@ export default class ValueList extends ManagedObject {
         }
 
         const entitySet = this.getCollectionPath().substring(1);
-        this.setTitle(LibraryBundle.getText("ui5AntaresPro.title.select", [entitySet])!);
+        this.setTitle(entitySet);
+    }
+
+    private getCollectionMetaContext() {
+        return this.getAggregation("collectionMetaContext") as MetaContext;
+    }
+
+    private setCollectionMetaContext(collectionMetaContext: MetaContext) {
+        this.setAggregation("collectionMetaContext", collectionMetaContext);
+    }
+
+    private getValueHelpDialog() {
+        return this.getProperty("valueHelpDialog") as ValueHelpDialog;
+    }
+
+    private setValueHelpDialog(valueHelpDialog: ValueHelpDialog) {
+        this.setProperty("valueHelpDialog", valueHelpDialog);
+    }
+
+    private splitProperty(property: string) {
+        if (property.includes("/")) {
+            return property.split("/")[1];
+        } else {
+            return property;
+        }
+    }
+
+    private getValueHelpFilterModel() {
+        return this.getModel("valueHelpFilter") as JSONModel;
     }
 }

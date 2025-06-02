@@ -141,6 +141,10 @@ export default abstract class ContentGenerator extends Root {
         return this.getValueLists().find(list => list.getLocalDataProperty() === property);
     }
 
+    public getContext() {
+        return this.getProperty("context") as Context;
+    }    
+
     protected getOperation() {
         return this.getProperty("operation") as Operation;
     }
@@ -211,10 +215,6 @@ export default abstract class ContentGenerator extends Root {
 
     protected setContext(context: Context) {
         this.setProperty("context", context);
-    }
-
-    protected getContext() {
-        return this.getProperty("context") as Context;
     }
 
     protected async generate() {
