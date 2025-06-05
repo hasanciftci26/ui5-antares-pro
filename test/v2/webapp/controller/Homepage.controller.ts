@@ -28,8 +28,8 @@ export default class Homepage extends BaseController {
             formType: "SimpleForm",
             dateTimeSettings: {
                 datePattern: "dd MMMM y",
-                dateTimePattern: "dd MMMM y - hh:mm:ss a",
-                timePattern: "hh:mm:ss a"
+                dateTimePattern: "dd MMMM y - HH:mm",
+                timePattern: "HH:mm"
             },
             guidGenerationMode: "None",
             guidVisibilityMode: "All",
@@ -43,14 +43,19 @@ export default class Homepage extends BaseController {
                         localDataProperty: "employeeID",
                         valueListProperty: "ID"
                     }, {
-                        type: "DisplayOnly",
+                        type: "Out",
+                        localDataProperty: "contractType",
                         valueListProperty: "firstName"
                     }, {
                         type: "DisplayOnly",
                         valueListProperty: "lastName"
                     }, {
-                        type: "DisplayOnly",
+                        type: "Out",
+                        localDataProperty: "asdasdasd",
                         valueListProperty: "dateOfBirth"
+                    }, {
+                        type: "DisplayOnly",
+                        valueListProperty: "hireDate"
                     }, {
                         type: "FilterOnly",
                         valueListProperty: "level"

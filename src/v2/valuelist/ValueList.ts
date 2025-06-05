@@ -1,6 +1,4 @@
 import CheckBox from "sap/m/CheckBox";
-import DatePicker from "sap/m/DatePicker";
-import DateTimePicker from "sap/m/DateTimePicker";
 import Input from "sap/m/Input";
 import SearchField from "sap/m/SearchField";
 import TimePicker from "sap/m/TimePicker";
@@ -30,8 +28,9 @@ import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import { ValueState } from "sap/ui/core/library";
 import MessageBox from "sap/m/MessageBox";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
-import DynamicDateRange from "sap/m/DynamicDateRange";
+import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDateRange";
 import DynamicDateFormat from "sap/m/DynamicDateFormat";
+import Context from "sap/ui/model/odata/v2/Context";
 
 /**
  * @namespace ui5.antares.pro.v2.valuelist
@@ -193,21 +192,48 @@ export default class ValueList extends ManagedObject {
     }
 
     private getDynamicDateRange(property: IProp) {
+        const parent = this.getParent() as ContentGenerator;
         const dynamicDateRange = new DynamicDateRange({
             name: property.name,
             standardOptions: this.getDateRangeOptions()
         });
-        const formatter = DynamicDateFormat.getInstance();
+        const formatOptions: { date?: { pattern: string; }; datetime?: { pattern: string; }; } = {};
 
-        dynamicDateRange.setFormatter(formatter);
+        if (parent.getDateTimeSettings()?.datePattern) {
+            formatOptions.date = {
+                pattern: parent.getDateTimeSettings()!.datePattern!
+            };
+        }
+
+        if (parent.getDateTimeSettings()?.dateTimePattern) {
+            formatOptions.datetime = {
+                pattern: parent.getDateTimeSettings()!.dateTimePattern!
+            };
+        }
+
+        if (Object.keys(formatOptions).length) {
+            // @ts-ignore
+            const formatter = DynamicDateFormat.getInstance(formatOptions);
+            dynamicDateRange.setFormatter(formatter);
+        }
+
+        dynamicDateRange.attachChange(this.onDateRangeChange, this);
         return dynamicDateRange;
+    }
+
+    private onDateRangeChange(event: DynamicDateRange$ChangeEvent) {
+        if (event.getParameter("valid")) {
+            event.getSource().setValueState("None");
+        } else {
+            event.getSource().setValueState("Error");
+        }
     }
 
     private getDateBinding(property: IProp) {
         const parent = this.getParent() as ContentGenerator;
         const datePattern = parent.getDateTimeSettings()?.datePattern;
         const binding: IDateBinding = {
-            path: "valueHelpFilter>/" + property.name,
+            path: property.name,
             type: "sap.ui.model.odata.type." + property.type.substring(4),
             constraints: {
                 displayFormat: "Date"
@@ -227,7 +253,7 @@ export default class ValueList extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
         const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
         const binding: IDateTimeBinding = {
-            path: "valueHelpFilter>/" + property.name,
+            path: property.name,
             type: "sap.ui.model.odata.type." + property.type.substring(4)
         };
 
@@ -242,18 +268,19 @@ export default class ValueList extends ManagedObject {
 
     private getTimePicker(property: IProp) {
         const timePicker = new TimePicker({
-            value: this.getTimeBinding(property)
+            value: this.getTimeBinding(property, "Filterbar")
         });
 
         Messaging.registerObject(timePicker, true);
         return timePicker;
     }
 
-    private getTimeBinding(property: IProp) {
+    private getTimeBinding(property: IProp, source: "Filterbar" | "Table") {
         const parent = this.getParent() as ContentGenerator;
         const timePattern = parent.getDateTimeSettings()?.timePattern;
+        const path = source === "Filterbar" ? `valueHelpFilter>/${property.name}` : property.name;
         const binding: IDateTimeBinding = {
-            path: "valueHelpFilter>/" + property.name,
+            path: path,
             type: "sap.ui.model.odata.type." + property.type.substring(4)
         };
 
@@ -269,18 +296,19 @@ export default class ValueList extends ManagedObject {
     private getNumberInput(property: IProp) {
         const input = new Input({
             textAlign: "End",
-            value: this.getNumberBinding(property)
+            value: this.getNumberBinding(property, "Filterbar")
         });
 
         Messaging.registerObject(input, true);
         return input;
     }
 
-    private getNumberBinding(property: IProp) {
+    private getNumberBinding(property: IProp, source: "Filterbar" | "Table") {
         const parent = this.getParent() as ContentGenerator;
         const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
+        const path = source === "Filterbar" ? `valueHelpFilter>/${property.name}` : property.name;
         const binding: INumberBinding = {
-            path: "valueHelpFilter>/" + property.name,
+            path: path,
             type: "sap.ui.model.odata.type." + property.type.substring(4)
         };
 
@@ -469,13 +497,13 @@ export default class ValueList extends ManagedObject {
 
     private getTimeText(property: IProp) {
         return new Text({
-            text: this.getTimeBinding(property)
+            text: this.getTimeBinding(property, "Table")
         });
     }
 
     private getNumberText(property: IProp) {
         return new Text({
-            text: this.getNumberBinding(property)
+            text: this.getNumberBinding(property, "Table")
         });
     }
 
@@ -525,7 +553,7 @@ export default class ValueList extends ManagedObject {
         let valid = true;
 
         for (const item of filterBar.getFilterGroupItems()) {
-            const control = item.getControl() as Input | DatePicker | DateTimePicker | TimePicker | CheckBox;
+            const control = item.getControl() as Input | DynamicDateRange | TimePicker | CheckBox;
 
             if (control instanceof CheckBox === false) {
                 if (control.getValueState() === ValueState.Error) {
@@ -597,8 +625,35 @@ export default class ValueList extends ManagedObject {
         return filters;
     }
 
-    private onConfirm(event: ValueHelpDialog$OkEvent) {
+    private async onConfirm(event: ValueHelpDialog$OkEvent) {
+        const table = await event.getSource().getTableAsync();
 
+        if (table instanceof GridTable) {
+            const selectedIndex = table.getSelectedIndices()[0];
+            const context = table.getContextByIndex(selectedIndex) as Context;
+            this.setOutValues(context);
+        }
+
+        if (table instanceof ResponsiveTable) {
+            const selectedItem = table.getSelectedItem();
+            const context = selectedItem.getBindingContext() as Context;
+            this.setOutValues(context);
+        }
+
+        this.getValueHelpDialog().close();
+    }
+
+    private setOutValues(context: Context) {
+        const parent = this.getParent() as ContentGenerator;
+
+        for (const param of this.getParameters()) {
+            if (param.type !== "Out" && param.type !== "InOut") {
+                continue;
+            }
+
+            const value = context.getProperty(param.valueListProperty);
+            parent.getODataModel().setProperty(parent.getContext().getPath() + `/${param.localDataProperty}`, value);
+        }
     }
 
     private onCancel(event: ValueHelpDialog$CancelEvent) {
