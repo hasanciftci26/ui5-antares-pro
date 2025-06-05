@@ -14,6 +14,8 @@ declare module "ui5/antares/pro/v2/valuelist/ValueList" {
         setTitle: SetProperty<string>;
         getFilterBarErrorMessage: GetProperty<string>;
         setFilterBarErrorMessage: SetProperty<string>;
+        getDateRangeOptions: GetProperty<string[] | undefined>;
+        setDateRangeOptions: SetProperty<string[] | undefined>;
         getParameters: GetProperty<ValueListParameter[]>;
         setParameters: SetProperty<ValueListParameter[]>;
     }
@@ -26,6 +28,7 @@ export interface ISettings {
     searchSupported?: boolean;
     title?: string;
     filterBarErrorMessage?: string;
+    dateRangeOptions?: string[];
     parameters: ValueListParameter[];
 }
 

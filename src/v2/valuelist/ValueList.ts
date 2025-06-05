@@ -30,6 +30,8 @@ import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import { ValueState } from "sap/ui/core/library";
 import MessageBox from "sap/m/MessageBox";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import DynamicDateRange from "sap/m/DynamicDateRange";
+import DynamicDateFormat from "sap/m/DynamicDateFormat";
 
 /**
  * @namespace ui5.antares.pro.v2.valuelist
@@ -45,6 +47,7 @@ export default class ValueList extends ManagedObject {
             searchSupported: { type: "boolean", visibility: "public", defaultValue: false },
             title: { type: "string", visibility: "public" },
             filterBarErrorMessage: { type: "string", visibility: "public" },
+            dateRangeOptions: { type: "string", visibility: "public" },
             parameters: { type: "object[]", visibility: "public", defaultValue: [] },
             valueHelpDialog: { type: "object", visibility: "hidden" }
         },
@@ -148,7 +151,7 @@ export default class ValueList extends ManagedObject {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === this.splitProperty(parameter.valueListProperty));
+            const property = props.find(prop => prop.name === parameter.valueListProperty);
 
             if (!property) {
                 throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
@@ -169,13 +172,8 @@ export default class ValueList extends ManagedObject {
     private getFilterBarControl(property: IProp) {
         switch (property.type) {
             case "Edm.DateTime":
-                if (property.displayFormat === "Date") {
-                    return this.getDatePicker(property);
-                } else {
-                    return this.getDateTimePicker(property);
-                }
             case "Edm.DateTimeOffset":
-                return this.getDateTimePicker(property);
+                return this.getDynamicDateRange(property);
             case "Edm.Time":
                 return this.getTimePicker(property);
             case "Edm.Byte":
@@ -194,13 +192,15 @@ export default class ValueList extends ManagedObject {
         }
     }
 
-    private getDatePicker(property: IProp) {
-        const datePicker = new DatePicker({
-            value: this.getDateBinding(property)
+    private getDynamicDateRange(property: IProp) {
+        const dynamicDateRange = new DynamicDateRange({
+            name: property.name,
+            standardOptions: this.getDateRangeOptions()
         });
+        const formatter = DynamicDateFormat.getInstance();
 
-        Messaging.registerObject(datePicker, true);
-        return datePicker;
+        dynamicDateRange.setFormatter(formatter);
+        return dynamicDateRange;
     }
 
     private getDateBinding(property: IProp) {
@@ -221,15 +221,6 @@ export default class ValueList extends ManagedObject {
         }
 
         return binding;
-    }
-
-    private getDateTimePicker(property: IProp) {
-        const dateTimePicker = new DateTimePicker({
-            value: this.getDateTimeBinding(property)
-        });
-
-        Messaging.registerObject(dateTimePicker, true);
-        return dateTimePicker;
     }
 
     private getDateTimeBinding(property: IProp) {
@@ -382,7 +373,7 @@ export default class ValueList extends ManagedObject {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === this.splitProperty(parameter.valueListProperty));
+            const property = props.find(prop => prop.name === parameter.valueListProperty);
 
             if (!property) {
                 throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
@@ -422,7 +413,7 @@ export default class ValueList extends ManagedObject {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === this.splitProperty(parameter.valueListProperty));
+            const property = props.find(prop => prop.name === parameter.valueListProperty);
 
             if (!property) {
                 throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
@@ -562,7 +553,7 @@ export default class ValueList extends ManagedObject {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === this.splitProperty(param.valueListProperty));
+            const property = props.find(prop => prop.name === param.valueListProperty);
 
             if (!property) {
                 throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
@@ -651,14 +642,6 @@ export default class ValueList extends ManagedObject {
         this.setProperty("valueHelpDialog", valueHelpDialog);
     }
 
-    private splitProperty(property: string) {
-        if (property.includes("/")) {
-            return property.split("/")[1];
-        } else {
-            return property;
-        }
-    }
-
     private getValueHelpFilterModel() {
         return this.getModel("valueHelpFilter") as JSONModel;
     }
@@ -674,7 +657,7 @@ export default class ValueList extends ManagedObject {
             }
 
             const contextValue = context.getProperty(param.localDataProperty);
-            const property = props.find(prop => prop.name === this.splitProperty(param.valueListProperty));
+            const property = props.find(prop => prop.name === param.valueListProperty);
 
             if (!property) {
                 throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());

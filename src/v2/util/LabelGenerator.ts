@@ -167,12 +167,13 @@ export default class LabelGenerator extends ManagedObject {
     }
 
     private getOwnerContentGenerator() {
-        const parent = (this.getParent() as MetaContext).getParent()!;
+        const parent = this.getParent()!.getParent()!;
 
-        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.valuelist.ValueList") {
-            return parent.getParent() as ContentGenerator;
-        } else {
-            return parent as ContentGenerator;
+        switch (parent.getMetadata().getName()) {
+            case "ui5.antares.pro.v2.valuelist.ValueList":
+                return parent.getParent() as ContentGenerator;
+            default:
+                return parent as ContentGenerator;
         }
     }
 }
