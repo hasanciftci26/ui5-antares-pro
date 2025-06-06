@@ -29,7 +29,6 @@ import { ValueState } from "sap/ui/core/library";
 import MessageBox from "sap/m/MessageBox";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDateRange";
-import DynamicDateFormat from "sap/m/DynamicDateFormat";
 import Context from "sap/ui/model/odata/v2/Context";
 
 /**
@@ -192,30 +191,10 @@ export default class ValueList extends ManagedObject {
     }
 
     private getDynamicDateRange(property: IProp) {
-        const parent = this.getParent() as ContentGenerator;
         const dynamicDateRange = new DynamicDateRange({
             name: property.name,
             standardOptions: this.getDateRangeOptions()
         });
-        const formatOptions: { date?: { pattern: string; }; datetime?: { pattern: string; }; } = {};
-
-        if (parent.getDateTimeSettings()?.datePattern) {
-            formatOptions.date = {
-                pattern: parent.getDateTimeSettings()!.datePattern!
-            };
-        }
-
-        if (parent.getDateTimeSettings()?.dateTimePattern) {
-            formatOptions.datetime = {
-                pattern: parent.getDateTimeSettings()!.dateTimePattern!
-            };
-        }
-
-        if (Object.keys(formatOptions).length) {
-            // @ts-ignore
-            const formatter = DynamicDateFormat.getInstance(formatOptions);
-            dynamicDateRange.setFormatter(formatter);
-        }
 
         dynamicDateRange.attachChange(this.onDateRangeChange, this);
         return dynamicDateRange;
@@ -299,6 +278,7 @@ export default class ValueList extends ManagedObject {
             value: this.getNumberBinding(property, "Filterbar")
         });
 
+        input.attachSubmit(this.onEnterFilter, this);
         Messaging.registerObject(input, true);
         return input;
     }
@@ -349,6 +329,7 @@ export default class ValueList extends ManagedObject {
             maxLength: property.maxLength
         });
 
+        input.attachSubmit(this.onEnterFilter, this);
         Messaging.registerObject(input, true);
         return input;
     }
@@ -622,6 +603,37 @@ export default class ValueList extends ManagedObject {
             }
         }
 
+        filters.push(...this.getDateFilters());
+        return filters;
+    }
+
+    private getDateFilters() {
+        const filters: Filter[] = [];
+        const filterBar = this.getValueHelpDialog().getFilterBar();
+
+        for (const item of filterBar.getFilterGroupItems()) {
+            const control = item.getControl() as Input | DynamicDateRange | TimePicker | CheckBox;
+
+            if (control instanceof DynamicDateRange === false) {
+                continue;
+            }
+
+            const value = control.getValue();
+
+            if (value) {
+                const dates = DynamicDateRange.toDates(value, "Default");
+                const property = control.getName();
+
+                if (value.operator === "FROM" || value.operator === "FROMDATETIME") {
+                    filters.push(new Filter(property, "GT", dates[0]));
+                } else if (value.operator === "TO" || value.operator === "TODATETIME") {
+                    filters.push(new Filter(property, "LT", dates[0]));
+                } else {
+                    filters.push(new Filter(property, "BT", dates[0], dates[1]));
+                }
+            }
+        }
+
         return filters;
     }
 
@@ -706,6 +718,8 @@ export default class ValueList extends ManagedObject {
         const props = this.getCollectionMetaContext().getProps();
         let triggerSearch = false;
 
+        this.getValueHelpFilterModel().setData({ ui5AntaresProVHSearch: "" });
+
         for (const param of this.getParameters()) {
             if (param.type !== "In" && param.type !== "InOut") {
                 continue;
@@ -718,8 +732,25 @@ export default class ValueList extends ManagedObject {
                 throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
             }
 
-            this.getValueHelpFilterModel().setProperty("/" + property.name, contextValue || null);
-            triggerSearch = true;
+            if (contextValue != null && contextValue !== "") {
+                if (contextValue instanceof Date) {
+                    const dynamicDateRanges = this.getValueHelpDialog().getFilterBar().getFilterGroupItems()
+                        .map(item => item.getControl())
+                        .filter(item => item instanceof DynamicDateRange);
+                    const dynamicDateRange = dynamicDateRanges.find(control => control.getName() === property.name);
+
+                    if (dynamicDateRange) {
+                        dynamicDateRange.setValue({
+                            operator: "DATE",
+                            values: [contextValue]
+                        });
+                    }
+                } else {
+                    this.getValueHelpFilterModel().setProperty("/" + property.name, contextValue || null);
+                }
+
+                triggerSearch = true;
+            }
         }
 
         if (triggerSearch) {
@@ -737,5 +768,9 @@ export default class ValueList extends ManagedObject {
         if (table instanceof ResponsiveTable) {
             return table.getBinding("items") as ODataListBinding;
         }
+    }
+
+    private onEnterFilter() {
+        this.getValueHelpDialog().getFilterBar().search();
     }
 }

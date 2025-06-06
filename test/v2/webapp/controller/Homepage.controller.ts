@@ -43,22 +43,18 @@ export default class Homepage extends BaseController {
                         localDataProperty: "employeeID",
                         valueListProperty: "ID"
                     }, {
-                        type: "Out",
-                        localDataProperty: "contractType",
+                        type: "In",
+                        localDataProperty: "contractStart",
+                        valueListProperty: "dateOfBirth"
+                    }, {
+                        type: "DisplayOnly",
                         valueListProperty: "firstName"
                     }, {
                         type: "DisplayOnly",
                         valueListProperty: "lastName"
                     }, {
-                        type: "Out",
-                        localDataProperty: "asdasdasd",
-                        valueListProperty: "dateOfBirth"
-                    }, {
                         type: "DisplayOnly",
-                        valueListProperty: "hireDate"
-                    }, {
-                        type: "FilterOnly",
-                        valueListProperty: "level"
+                        valueListProperty: "dateOfBirth"
                     }]
                 })
             ]
