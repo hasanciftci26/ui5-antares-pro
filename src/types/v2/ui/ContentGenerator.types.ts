@@ -8,6 +8,7 @@ import {
     RemoveAllAggregation,
     SetProperty
 } from "ui5/antares/pro/types/Global.types";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
@@ -52,6 +53,10 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         removeValueList: RemoveAggregation<ValueList>;
         removeAllValueLists: RemoveAllAggregation;
         destroyValueLists: DestroyAggregation;
+        getValidationLogics: GetAggregation<ValidationLogic[]>;
+        removeValidationLogic: RemoveAggregation<ValidationLogic>;
+        removeAllValidationLogics: RemoveAllAggregation;
+        destroyValidationLogics: DestroyAggregation;
     }
 }
 

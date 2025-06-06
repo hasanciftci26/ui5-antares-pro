@@ -9,6 +9,7 @@ import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
@@ -68,6 +69,12 @@ export default abstract class ContentGenerator extends Root {
                 type: "ui5.antares.pro.v2.valuelist.ValueList",
                 multiple: true,
                 singularName: "valueList",
+                visibility: "public"
+            },
+            validationLogics: {
+                type: "ui5.antares.pro.v2.validation.ValidationLogic",
+                multiple: true,
+                singularName: "validationLogic",
                 visibility: "public"
             }
         }
@@ -141,9 +148,17 @@ export default abstract class ContentGenerator extends Root {
         return this.getValueLists().find(list => list.getLocalDataProperty() === property);
     }
 
+    public addValidationLogic(validationLogic: ValidationLogic) {
+        this.addAggregation("validationLogics", validationLogic);
+    }
+
+    public getValidationLogicByProperty(property: string) {
+        return this.getValidationLogics().find(logic => logic.getPropertyName() === property);
+    }
+
     public getContext() {
         return this.getProperty("context") as Context;
-    }    
+    }
 
     protected getOperation() {
         return this.getProperty("operation") as Operation;
