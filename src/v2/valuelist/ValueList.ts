@@ -150,11 +150,13 @@ export default class ValueList extends ManagedObject {
         const filterBar = new FilterBar({
             advancedMode: true,
             isRunningInValueHelpDialog: true,
-            filterGroupItems: this.getFilterGroupItems()
+            filterGroupItems: this.getFilterGroupItems(),
+            showClearOnFB: true
         });
 
         filterBar.setModel(this.getValueHelpFilterModel(), "valueHelpFilter");
         filterBar.attachSearch(this.onFilter, this);
+        filterBar.attachClear(this.onClearFilterBar, this);
 
         if (this.getSearchSupported()) {
             const searchField = this.getSearchField();
@@ -800,6 +802,11 @@ export default class ValueList extends ManagedObject {
     }
 
     private onEnterFilter() {
+        this.getValueHelpDialog().getFilterBar().search();
+    }
+
+    private onClearFilterBar() {
+        this.getValueHelpFilterModel().setData({ ui5AntaresProVHSearch: "" });
         this.getValueHelpDialog().getFilterBar().search();
     }
 }
