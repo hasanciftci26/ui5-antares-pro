@@ -79,6 +79,7 @@ export interface IString {
 
 export type Operator =
     CommonOperatorWithValue |
+    CommonOperatorWithMultiValue |
     CommonOperatorWithNoValue |
     NumericOperatorWithValue |
     NumericOperatorWithMultiValue |
