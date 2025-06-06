@@ -116,7 +116,7 @@ export default class ValidationLogic extends ManagedObject {
         const property = metaContext.getProps().find(prop => prop.name === childPropertyName);
 
         if (!property) {
-            throw new Error("Property: " + propertyName + " was not found in the Entity Set: " + metaContext.getEntitySet());
+            throw new Error("Property: " + childPropertyName + " was not found in the Entity Set: " + metaContext.getEntitySet());
         }
     }
 
