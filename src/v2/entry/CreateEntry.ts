@@ -95,7 +95,7 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
     }
 
     private onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
-        event.getParameter("dialog");
+        this.correctFixedValueListValues();
     }
 
     private onDialogClose(event: DialogGenerator$ClosedEvent) {
@@ -104,5 +104,15 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         }
 
         this.resetODataBindingMode();
+    }
+
+    private correctFixedValueListValues() {
+        const data = this.getContext().getObject() as Record<string, any>;
+
+        for (const property in data) {
+            if (data[property] === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+                this.getODataModel().setProperty(this.getContext().getPath() + `/${property}`, null);
+            }
+        }
     }
 }

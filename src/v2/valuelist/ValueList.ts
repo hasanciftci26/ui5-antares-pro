@@ -81,10 +81,19 @@ export default class ValueList extends ManagedObject {
     }
 
     public check() {
-        const consistent = this.getParameters().find(param => param.type === "InOut" || param.type === "Out");
+        if (this.getFixedValues()) {
+            const inOutParam = this.getParameters().find(param => param.type === "InOut");
+            const displayOnlyParam = this.getParameters().find(param => param.type === "DisplayOnly");
 
-        if (!consistent) {
-            throw new Error("ValueList must include InOut or Out parameter.");
+            if (this.getParameters().length !== 2 || !inOutParam || !displayOnlyParam) {
+                throw new Error("A ValueList with the Fixed Values option enabled can only have one InOut and one DisplayOnly parameter.");
+            }
+        } else {
+            const consistent = this.getParameters().find(param => param.type === "InOut" || param.type === "Out");
+
+            if (!consistent) {
+                throw new Error("ValueList must include InOut or Out parameter.");
+            }
         }
     }
 
@@ -115,6 +124,26 @@ export default class ValueList extends ManagedObject {
 
         this.setInitialFilters();
         BusyIndicator.hide();
+    }
+
+    public getFixedValueInOutParameter() {
+        const parameter = this.getParameters().find(param => param.type === "InOut");
+
+        if (parameter?.type !== "InOut") {
+            throw new Error("InOut parameter is missing for the fixed value enabled ValueList.");
+        }
+
+        return parameter;
+    }
+
+    public getFixedValueDisplayOnlyParameter() {
+        const parameter = this.getParameters().find(param => param.type === "DisplayOnly");
+
+        if (parameter?.type !== "DisplayOnly") {
+            throw new Error("DisplayOnly parameter is missing for the fixed value enabled ValueList.");
+        }
+
+        return parameter;
     }
 
     private addFilterBar() {

@@ -3,10 +3,12 @@ import DatePicker from "sap/m/DatePicker";
 import DateTimePicker from "sap/m/DateTimePicker";
 import Input, { Input$ValueHelpRequestEvent } from "sap/m/Input";
 import Label from "sap/m/Label";
+import Select from "sap/m/Select";
 import Text from "sap/m/Text";
 import TimePicker from "sap/m/TimePicker";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
+import Item from "sap/ui/core/Item";
 import Messaging from "sap/ui/core/Messaging";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
@@ -14,6 +16,7 @@ import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { IDateBinding, IDateTimeBinding, INumberBinding, ISettings } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -292,7 +295,7 @@ export default class SimpleFormGenerator extends ManagedObject {
         if (property.readonly) {
             return this.getStringText(property, navProperty);
         } else {
-            return this.getStringInput(property, navProperty);
+            return this.getStringEditableControl(property, navProperty);
         }
     }
 
@@ -308,10 +311,23 @@ export default class SimpleFormGenerator extends ManagedObject {
         });
     }
 
-    private getStringInput(property: IProp, navProperty?: string) {
+    private getStringEditableControl(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
         const valueList = parent.getValueListByProperty(path);
+
+        if (valueList) {
+            if (valueList.getFixedValues()) {
+                return this.getValueListSelect(property, valueList);
+            } else {
+                return this.getStringInput(property, path, valueList);
+            }
+        } else {
+            return this.getStringInput(property, path);
+        }
+    }
+
+    private getStringInput(property: IProp, path: string, valueList?: ValueList) {
         const input = new Input({
             name: path,
             visible: property.visible,
@@ -331,6 +347,47 @@ export default class SimpleFormGenerator extends ManagedObject {
 
         Messaging.registerObject(input, true);
         return input;
+    }
+
+    private getValueListSelect(property: IProp, valueList: ValueList) {
+        const inOutParam = valueList.getFixedValueInOutParameter();
+        const displayOnlyParam = valueList.getFixedValueDisplayOnlyParameter();
+        const select = new Select({
+            required: property.required,
+            visible: property.visible,
+            busy: true,
+            busyIndicatorDelay: 0,
+            selectedKey: {
+                path: inOutParam.localDataProperty,
+                type: "sap.ui.model.odata.type." + property.type.substring(4)
+            }
+        });
+
+        select.bindItems({
+            path: valueList.getCollectionPath(),
+            length: 500,
+            template: new Item({
+                key: {
+                    path: inOutParam.valueListProperty
+                },
+                text: {
+                    path: displayOnlyParam.valueListProperty
+                }
+            }),
+            events: {
+                dataReceived: () => {
+                    select.insertItem(new Item({
+                        key: "UI5_ANTARES_PRO_SELECT_EMPTY_KEY",
+                        text: ""
+                    }), 0);
+                    select.setSelectedKey("UI5_ANTARES_PRO_SELECT_EMPTY_KEY");
+                    select.setBusy(false);
+                }
+            }
+        });
+
+        Messaging.registerObject(select, true);
+        return select;
     }
 
     private onValueHelpRequest(event: Input$ValueHelpRequestEvent) {
