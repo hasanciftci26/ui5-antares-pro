@@ -32,7 +32,9 @@ export default class Homepage extends BaseController {
             propertyName: "level",
             operator: "LT",
             value1: 13,
-            errorMessage: "Level must be lower than 13"
+            errorMessage: "Level must be lower than 13",
+            allowEmptyValue: false,
+            emptyValueErrorMessage: "Level cannot be null"
         }));
 
         entry.execute();

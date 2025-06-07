@@ -19,6 +19,7 @@ export default class ValidationLogic extends ManagedObject {
             value2: { type: "any", visibility: "public" },
             allowEmptyValue: { type: "boolean", visibility: "public", defaultValue: true },
             errorMessage: { type: "string", visibility: "public", defaultValue: "" },
+            emptyValueErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             logicalOperator: { type: "string", visibility: "public", defaultValue: "And" },
             conditions: { type: "object[]", visibility: "public", defaultValue: [] }
         }
@@ -37,15 +38,32 @@ export default class ValidationLogic extends ManagedObject {
 
         this.check(this.getPropertyName());
 
-        const evaluation = this.evaluateSingleCondition(this.getOperator(), {
-            context: value,
-            value1: this.getValue1(),
-            value2: this.getValue2(),
-            allowEmptyValue: this.getAllowEmptyValue()
-        });
+        if (this.getAllowEmptyValue()) {
+            if (value != null && value !== "") {
+                const evaluation = this.evaluateSingleCondition(this.getOperator(), {
+                    context: value,
+                    value1: this.getValue1(),
+                    value2: this.getValue2()
+                });
 
-        if (!evaluation) {
-            throw new ValidateException(this.getErrorMessage());
+                if (!evaluation) {
+                    throw new ValidateException(this.getErrorMessage());
+                }
+            }
+        } else {
+            if (value == null || value === "") {
+                throw new ValidateException(this.getEmptyValueErrorMessage());
+            } else {
+                const evaluation = this.evaluateSingleCondition(this.getOperator(), {
+                    context: value,
+                    value1: this.getValue1(),
+                    value2: this.getValue2()
+                });
+
+                if (!evaluation) {
+                    throw new ValidateException(this.getErrorMessage());
+                }
+            }
         }
     }
 
@@ -64,12 +82,10 @@ export default class ValidationLogic extends ManagedObject {
             const contextValue = context.getProperty(condition.propertyName);
             const value1 = this.hasValue1(condition) ? condition.value1 : undefined;
             const value2 = this.hasValue2(condition) ? condition.value2 : undefined;
-            const allowEmptyValue = this.hasAllowEmptyValue(condition) ? condition.allowEmptyValue : undefined;
             const evaluation = this.evaluateSingleCondition(condition.operator, {
                 context: contextValue,
                 value1: value1,
-                value2: value2,
-                allowEmptyValue: allowEmptyValue
+                value2: value2
             });
 
             evaluations.push(evaluation);
@@ -129,11 +145,7 @@ export default class ValidationLogic extends ManagedObject {
         }
     }
 
-    private evaluateSingleCondition(operator: Operator, values: { context: any; value1: any; value2: any; allowEmptyValue?: boolean; }): boolean {
-        if (operator !== "IsNotEmpty" && values.allowEmptyValue && (values.context == null || values.context === "")) {
-            return true;
-        }
-
+    private evaluateSingleCondition(operator: Operator, values: { context: any; value1: any; value2: any; }): boolean {
         switch (operator) {
             case "NE":
                 return this.getCorrectedValue(values.context) !== this.getCorrectedValue(values.value1);
@@ -182,9 +194,5 @@ export default class ValidationLogic extends ManagedObject {
 
     private hasValue2(condition: Condition): condition is Extract<Condition, { value2: unknown; }> {
         return "value2" in condition;
-    }
-
-    private hasAllowEmptyValue(condition: Condition): condition is Extract<Condition, { allowEmptyValue?: boolean; }> {
-        return "allowEmptyValue" in condition;
     }
 }

@@ -15,6 +15,8 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
         setAllowEmptyValue: SetProperty<boolean>;
         getErrorMessage: GetProperty<string>;
         setErrorMessage: SetProperty<string>;
+        getEmptyValueErrorMessage: GetProperty<string>;
+        setEmptyValueErrorMessage: SetProperty<string>;
         getLogicalOperator: GetProperty<LogicalOperator>;
         setLogicalOperator: SetProperty<LogicalOperator>;
         getConditions: GetProperty<Condition[]>;
@@ -22,10 +24,31 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
     }
 }
 
-export type Settings = SettingsBase<Condition>;
+export type Settings =
+    SettingsBaseWithEmptyValueAllowed<Condition> |
+    SettingsBaseWithEmptyValueNotAllowed<Condition> |
+    SettingsBaseWithEmptyValueUndefined<Condition>;
 
-export type SettingsBase<T> = T & {
+export type SettingsBaseWithEmptyValueAllowed<T> = T & {
     errorMessage: string;
+    allowEmptyValue: true;
+    emptyValueErrorMessage?: never;
+    logicalOperator?: LogicalOperator;
+    conditions?: Condition[];
+};
+
+export type SettingsBaseWithEmptyValueNotAllowed<T> = T & {
+    errorMessage: string;
+    allowEmptyValue: false;
+    emptyValueErrorMessage: string;
+    logicalOperator?: LogicalOperator;
+    conditions?: Condition[];
+};
+
+export type SettingsBaseWithEmptyValueUndefined<T> = T & {
+    errorMessage: string;
+    allowEmptyValue?: undefined;
+    emptyValueErrorMessage?: undefined;
     logicalOperator?: LogicalOperator;
     conditions?: Condition[];
 };
@@ -36,14 +59,12 @@ export interface ICommonWithValue {
     propertyName: string;
     operator: CommonOperatorWithValue;
     value1: Value;
-    allowEmptyValue?: boolean;
 }
 
 export interface ICommonWithMultiValue {
     propertyName: string;
     operator: CommonOperatorWithMultiValue;
     value1: Array<string | number>;
-    allowEmptyValue?: boolean;
 }
 
 export interface ICommonWithNoValue {
@@ -55,7 +76,6 @@ export interface INumericWithValue {
     propertyName: string;
     operator: NumericOperatorWithValue;
     value1: number | Date;
-    allowEmptyValue?: boolean;
 }
 
 export type NumericWithMultiValue =
@@ -67,7 +87,6 @@ export interface INumericWithMultiValueNumber {
     operator: NumericOperatorWithMultiValue;
     value1: number;
     value2: number;
-    allowEmptyValue?: boolean;
 }
 
 export interface INumericWithMultiValueDate {
@@ -75,14 +94,12 @@ export interface INumericWithMultiValueDate {
     operator: NumericOperatorWithMultiValue;
     value1: Date;
     value2: Date;
-    allowEmptyValue?: boolean;
 }
 
 export interface IString {
     propertyName: string;
     operator: StringOperator;
     value1: string;
-    allowEmptyValue?: boolean;
 }
 
 export type Operator =
