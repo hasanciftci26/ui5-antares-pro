@@ -11,6 +11,8 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
         setValue1: SetProperty<Value | Array<string | number> | undefined>;
         getValue2: GetProperty<Value | undefined>;
         setValue2: SetProperty<Value | undefined>;
+        getAllowEmptyValue: GetProperty<boolean>;
+        setAllowEmptyValue: SetProperty<boolean>;
         getErrorMessage: GetProperty<string>;
         setErrorMessage: SetProperty<string>;
         getLogicalOperator: GetProperty<LogicalOperator>;
@@ -34,12 +36,14 @@ export interface ICommonWithValue {
     propertyName: string;
     operator: CommonOperatorWithValue;
     value1: Value;
+    allowEmptyValue?: boolean;
 }
 
 export interface ICommonWithMultiValue {
     propertyName: string;
     operator: CommonOperatorWithMultiValue;
     value1: Array<string | number>;
+    allowEmptyValue?: boolean;
 }
 
 export interface ICommonWithNoValue {
@@ -51,6 +55,7 @@ export interface INumericWithValue {
     propertyName: string;
     operator: NumericOperatorWithValue;
     value1: number | Date;
+    allowEmptyValue?: boolean;
 }
 
 export type NumericWithMultiValue =
@@ -62,6 +67,7 @@ export interface INumericWithMultiValueNumber {
     operator: NumericOperatorWithMultiValue;
     value1: number;
     value2: number;
+    allowEmptyValue?: boolean;
 }
 
 export interface INumericWithMultiValueDate {
@@ -69,12 +75,14 @@ export interface INumericWithMultiValueDate {
     operator: NumericOperatorWithMultiValue;
     value1: Date;
     value2: Date;
+    allowEmptyValue?: boolean;
 }
 
 export interface IString {
     propertyName: string;
     operator: StringOperator;
     value1: string;
+    allowEmptyValue?: boolean;
 }
 
 export type Operator =

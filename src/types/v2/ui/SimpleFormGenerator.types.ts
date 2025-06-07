@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
+import Type from "sap/ui/model/Type";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
 declare module "ui5/antares/pro/v2/ui/SimpleFormGenerator" {
@@ -36,15 +37,5 @@ export interface IDateTimeBinding {
 
 export interface INumberBinding {
     path: string;
-    type: string;
-    constraints?: {
-        precision?: number;
-        scale?: number;
-    };
-    formatOptions?: {
-        groupingEnabled?: boolean;
-        groupingSeparator?: string;
-        groupingSize?: number;
-        decimalSeparator?: string;
-    };
+    type?: Type;
 }

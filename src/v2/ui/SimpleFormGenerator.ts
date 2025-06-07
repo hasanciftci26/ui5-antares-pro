@@ -12,8 +12,18 @@ import Item from "sap/ui/core/Item";
 import Messaging from "sap/ui/core/Messaging";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
+import { INumberFormatOptions } from "ui5/antares/pro/types/v2/custom/type/FormatOptions.types";
 import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { IDateBinding, IDateTimeBinding, INumberBinding, ISettings } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
+import CustomByte from "ui5/antares/pro/v2/custom/type/CustomByte";
+import CustomDecimal from "ui5/antares/pro/v2/custom/type/CustomDecimal";
+import CustomDouble from "ui5/antares/pro/v2/custom/type/CustomDouble";
+import CustomInt16 from "ui5/antares/pro/v2/custom/type/CustomInt16";
+import CustomInt32 from "ui5/antares/pro/v2/custom/type/CustomInt32";
+import CustomInt64 from "ui5/antares/pro/v2/custom/type/CustomInt64";
+import CustomSByte from "ui5/antares/pro/v2/custom/type/CustomSByte";
+import CustomSingle from "ui5/antares/pro/v2/custom/type/CustomSingle";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
@@ -241,7 +251,6 @@ export default class SimpleFormGenerator extends ManagedObject {
             textAlign: "End",
             visible: property.visible,
             required: property.required,
-            valueLiveUpdate: true,
             value: this.getNumberBinding(property, navProperty)
         });
 
@@ -251,15 +260,24 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getNumberBinding(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
-        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
         const binding: INumberBinding = {
             path: path,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
+            type: this.getNumberBindingType(property, navProperty)
         };
 
+        return binding;
+    }
+
+    private getNumberBindingType(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
+        const validationLogic = parent.getValidationLogicByProperty(path);
+        let formatOptions: INumberFormatOptions | undefined;
+        let constraints: INumberConstraints | undefined;
+
         if (numberSettings) {
-            binding.formatOptions = {
+            formatOptions = {
                 groupingEnabled: numberSettings.groupingEnabled,
                 groupingSeparator: numberSettings.groupingSeparator,
                 groupingSize: numberSettings.groupingSize,
@@ -268,13 +286,30 @@ export default class SimpleFormGenerator extends ManagedObject {
         }
 
         if (property.precision && property.scale) {
-            binding.constraints = {
+            constraints = {
                 precision: property.precision,
                 scale: property.scale
             };
         }
 
-        return binding;
+        switch (property.type) {
+            case "Edm.Byte":
+                return new CustomByte(formatOptions, constraints, validationLogic);
+            case "Edm.SByte":
+                return new CustomSByte(formatOptions, constraints, validationLogic);
+            case "Edm.Int16":
+                return new CustomInt16(formatOptions, constraints, validationLogic);
+            case "Edm.Int32":
+                return new CustomInt32(formatOptions, constraints, validationLogic);
+            case "Edm.Int64":
+                return new CustomInt64(formatOptions, constraints, validationLogic);
+            case "Edm.Single":
+                return new CustomSingle(formatOptions, constraints, validationLogic);
+            case "Edm.Double":
+                return new CustomDouble(formatOptions, constraints, validationLogic);
+            case "Edm.Decimal":
+                return new CustomDecimal(formatOptions, constraints, validationLogic);
+        }
     }
 
     private getBooleanControl(property: IProp, navProperty?: string) {
@@ -332,7 +367,6 @@ export default class SimpleFormGenerator extends ManagedObject {
             name: path,
             visible: property.visible,
             required: property.required,
-            valueLiveUpdate: true,
             value: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4)
