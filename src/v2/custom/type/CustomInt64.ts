@@ -14,11 +14,11 @@ export default class CustomInt64 extends Int64 {
         this.validationLogic = validationLogic;
     }
 
-    public override validateValue(value: string): void {
+    public override async validateValue(value: string): Promise<void> {
         super.validateValue(value);
 
         if (this.validationLogic) {
-            this.validationLogic.evaluate(value);
+            return this.validationLogic.evaluate(value);
         }
     }
 }

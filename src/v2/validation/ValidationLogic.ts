@@ -1,4 +1,5 @@
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
+import BusyIndicator from "sap/ui/core/BusyIndicator";
 import ValidateException from "sap/ui/model/ValidateException";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Condition, Operator, Settings } from "ui5/antares/pro/types/v2/validation/ValidationLogic.types";
@@ -21,7 +22,8 @@ export default class ValidationLogic extends ManagedObject {
             errorMessage: { type: "string", visibility: "public", defaultValue: "" },
             emptyValueErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             logicalOperator: { type: "string", visibility: "public", defaultValue: "And" },
-            conditions: { type: "object[]", visibility: "public", defaultValue: [] }
+            conditions: { type: "object[]", visibility: "public", defaultValue: [] },
+            validator: { type: "function", visibility: "public" }
         }
     };
 
@@ -29,7 +31,23 @@ export default class ValidationLogic extends ManagedObject {
         super(settings as $ManagedObjectSettings);
     }
 
-    public evaluate(value: any) {
+    public async evaluate(value: any) {
+        const validator = this.getValidator();
+        const parent = this.getParent() as ContentGenerator;
+
+        if (validator) {
+            BusyIndicator.show(0);
+
+            const result = await Promise.resolve(validator.call(parent.getController(), value));
+            BusyIndicator.hide();
+
+            if (!result) {
+                throw new ValidateException(this.getErrorMessage());
+            }
+
+            return;
+        }
+
         const valid = this.evaluateConditions();
 
         if (!valid) {

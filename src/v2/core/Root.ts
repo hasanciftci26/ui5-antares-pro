@@ -71,7 +71,7 @@ export default abstract class Root extends ManagedObject {
         }
     }  
 
-    protected getController(): Controller {
+    public getController(): Controller {
         return this.getProperty("controller");
     }
 

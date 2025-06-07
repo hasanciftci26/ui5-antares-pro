@@ -21,10 +21,24 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
         setLogicalOperator: SetProperty<LogicalOperator>;
         getConditions: GetProperty<Condition[]>;
         setConditions: SetProperty<Condition[]>;
+        getValidator: GetProperty<Validator | undefined>;
+        setValidator: SetProperty<Validator | undefined>;
     }
 }
 
 export type Settings =
+  | (SettingsWithoutValidator & { validator?: undefined })
+  | ({
+      validator: Validator;
+      errorMessage: string;
+      propertyName: string;
+      allowEmptyValue?: undefined;
+      emptyValueErrorMessage?: undefined;
+      logicalOperator?: undefined;
+      conditions?: undefined;
+    });
+
+export type SettingsWithoutValidator =
     SettingsBaseWithEmptyValueAllowed<Condition> |
     SettingsBaseWithEmptyValueNotAllowed<Condition> |
     SettingsBaseWithEmptyValueUndefined<Condition>;
@@ -52,6 +66,8 @@ export type SettingsBaseWithEmptyValueUndefined<T> = T & {
     logicalOperator?: LogicalOperator;
     conditions?: Condition[];
 };
+
+export type Validator = (value: any) => boolean | Promise<boolean>;
 
 export type Condition = ICommonWithValue | ICommonWithMultiValue | ICommonWithNoValue | INumericWithValue | NumericWithMultiValue | IString;
 

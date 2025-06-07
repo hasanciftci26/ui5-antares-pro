@@ -14,11 +14,11 @@ export default class CustomSingle extends Single {
         this.validationLogic = validationLogic;
     }
 
-    public override validateValue(value: number): void {
+    public override async validateValue(value: number): Promise<void> {
         super.validateValue(value);
 
         if (this.validationLogic) {
-            this.validationLogic.evaluate(value);
+            return this.validationLogic.evaluate(value);
         }
     }
 }
