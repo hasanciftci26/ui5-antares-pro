@@ -3,3 +3,7 @@ export interface INumberConstraints {
     scale?: number;
     nullable?: string | boolean
 }
+
+export interface IDateTimeConstraints {
+    displayFormat: "Date";
+}

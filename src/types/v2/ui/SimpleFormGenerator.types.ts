@@ -16,6 +16,11 @@ export interface ISettings {
     entitySet: string;
 }
 
+export interface IBindingWithCustomType {
+    path: string;
+    type?: Type;
+}
+
 export interface IDateBinding {
     path: string;
     type: string;
@@ -37,5 +42,15 @@ export interface IDateTimeBinding {
 
 export interface INumberBinding {
     path: string;
-    type?: Type;
+    type: string;
+    constraints?: {
+        precision?: number;
+        scale?: number;
+    };
+    formatOptions?: {
+        groupingEnabled?: boolean;
+        groupingSeparator?: string;
+        groupingSize?: number;
+        decimalSeparator?: string;
+    };
 }

@@ -14,9 +14,12 @@ import SimpleForm from "sap/ui/layout/form/SimpleForm";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
 import { INumberFormatOptions } from "ui5/antares/pro/types/v2/custom/type/FormatOptions.types";
+import { IDateTimeSettings } from "ui5/antares/pro/types/v2/custom/type/Settings.types";
 import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import { IDateBinding, IDateTimeBinding, INumberBinding, ISettings } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
+import { IBindingWithCustomType, ISettings } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
 import CustomByte from "ui5/antares/pro/v2/custom/type/CustomByte";
+import CustomDateTime from "ui5/antares/pro/v2/custom/type/CustomDateTime";
+import CustomDateTimeOffset from "ui5/antares/pro/v2/custom/type/CustomDateTimeOffset";
 import CustomDecimal from "ui5/antares/pro/v2/custom/type/CustomDecimal";
 import CustomDouble from "ui5/antares/pro/v2/custom/type/CustomDouble";
 import CustomInt16 from "ui5/antares/pro/v2/custom/type/CustomInt16";
@@ -24,6 +27,7 @@ import CustomInt32 from "ui5/antares/pro/v2/custom/type/CustomInt32";
 import CustomInt64 from "ui5/antares/pro/v2/custom/type/CustomInt64";
 import CustomSByte from "ui5/antares/pro/v2/custom/type/CustomSByte";
 import CustomSingle from "ui5/antares/pro/v2/custom/type/CustomSingle";
+import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
@@ -126,20 +130,26 @@ export default class SimpleFormGenerator extends ManagedObject {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
         const datePattern = parent.getDateTimeSettings()?.datePattern;
-        const binding: IDateBinding = {
-            path: path,
-            type: "sap.ui.model.odata.type." + property.type.substring(4),
+        const validationLogic = parent.getValidationLogicByProperty(path);
+        const typeSettings: IDateTimeSettings = {
+            property: property,
+            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
             constraints: {
                 displayFormat: "Date"
-            }
+            },
+            validationLogic: validationLogic
+        };
+        const binding: IBindingWithCustomType = {
+            path: path
         };
 
         if (datePattern) {
-            binding.formatOptions = {
+            typeSettings.formatOptions = {
                 pattern: datePattern
             };
         }
 
+        binding.type = new CustomDateTime(typeSettings);
         return binding;
     }
 
@@ -173,15 +183,26 @@ export default class SimpleFormGenerator extends ManagedObject {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
         const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
-        const binding: IDateTimeBinding = {
-            path: path,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        const validationLogic = parent.getValidationLogicByProperty(path);
+        const typeSettings: IDateTimeSettings = {
+            property: property,
+            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+            validationLogic: validationLogic
+        };
+        const binding: IBindingWithCustomType = {
+            path: path
         };
 
         if (dateTimePattern) {
-            binding.formatOptions = {
+            typeSettings.formatOptions = {
                 pattern: dateTimePattern
             };
+        }
+
+        if (property.type === "Edm.DateTime") {
+            binding.type = new CustomDateTime(typeSettings);
+        } else {
+            binding.type = new CustomDateTimeOffset(typeSettings);
         }
 
         return binding;
@@ -217,17 +238,23 @@ export default class SimpleFormGenerator extends ManagedObject {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
         const timePattern = parent.getDateTimeSettings()?.timePattern;
-        const binding: IDateTimeBinding = {
-            path: path,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        const validationLogic = parent.getValidationLogicByProperty(path);
+        const typeSettings: IDateTimeSettings = {
+            property: property,
+            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+            validationLogic: validationLogic
+        };
+        const binding: IBindingWithCustomType = {
+            path: path
         };
 
         if (timePattern) {
-            binding.formatOptions = {
+            typeSettings.formatOptions = {
                 pattern: timePattern
             };
         }
 
+        binding.type = new CustomTime(typeSettings);
         return binding;
     }
 
@@ -260,7 +287,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getNumberBinding(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const binding: INumberBinding = {
+        const binding: IBindingWithCustomType = {
             path: path,
             type: this.getNumberBindingType(property, navProperty)
         };

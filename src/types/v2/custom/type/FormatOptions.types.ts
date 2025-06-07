@@ -5,3 +5,7 @@ export interface INumberFormatOptions {
     decimalSeparator?: string;
     parseEmptyValueToZero?: boolean
 }
+
+export interface IDateTimeFormatOptions {
+    pattern: string;
+}
