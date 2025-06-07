@@ -32,6 +32,7 @@ export interface ISettings {
     guidGenerationMode?: GuidMode;
     guidVisibilityMode?: GuidMode;
     metadataLabelEnabled?: boolean;
+    requiredPropertyErrorMessage?: string;
     dateTimeSettings?: IDateTimeSettings;
     numberSettings?: INumberSettings;
     excludedProperties?: string[];

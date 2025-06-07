@@ -1,24 +1,36 @@
 import Decimal from "sap/ui/model/odata/type/Decimal";
-import { INumberFormatOptions } from "ui5/antares/pro/types/v2/custom/type/FormatOptions.types";
-import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
+import { INumberSettings } from "ui5/antares/pro/types/v2/custom/type/Settings.types";
+import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import ValidateException from "sap/ui/model/ValidateException";
 
 /**
  * @namespace ui5.antares.pro.v2.custom.type
  */
 export default class CustomDecimal extends Decimal {
+    private property: IProp;
+    private requiredPropertyErrorMessage: string;
     private validationLogic?: ValidationLogic;
 
-    constructor(formatOptions?: INumberFormatOptions, constraints?: INumberConstraints, validationLogic?: ValidationLogic) {
-        super(formatOptions, constraints);
-        this.validationLogic = validationLogic;
+    constructor(settings: INumberSettings) {
+        super(settings.formatOptions, settings.constraints);
+        this.property = settings.property;
+        this.requiredPropertyErrorMessage = settings.requiredPropertyErrorMessage;
+        this.validationLogic = settings.validationLogic;
     }
 
-    public override async validateValue(value: string): Promise<void> {
-        super.validateValue(value);
+    public override async validateValue(value: string | null): Promise<void> {
+        super.validateValue(value!);
+        this.checkRequired(value);
 
         if (this.validationLogic) {
             return this.validationLogic.evaluate(value);
+        }
+    }
+
+    private checkRequired(value: string | null) {
+        if (this.property.required && (value == null || value === "")) {
+            throw new ValidateException(this.requiredPropertyErrorMessage.replace("{property}", this.property.label));
         }
     }
 }

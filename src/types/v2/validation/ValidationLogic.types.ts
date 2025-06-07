@@ -11,12 +11,8 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
         setValue1: SetProperty<Value | Array<string | number> | undefined>;
         getValue2: GetProperty<Value | undefined>;
         setValue2: SetProperty<Value | undefined>;
-        getAllowEmptyValue: GetProperty<boolean>;
-        setAllowEmptyValue: SetProperty<boolean>;
         getErrorMessage: GetProperty<string>;
         setErrorMessage: SetProperty<string>;
-        getEmptyValueErrorMessage: GetProperty<string>;
-        setEmptyValueErrorMessage: SetProperty<string>;
         getLogicalOperator: GetProperty<LogicalOperator>;
         setLogicalOperator: SetProperty<LogicalOperator>;
         getConditions: GetProperty<Condition[]>;
@@ -26,50 +22,24 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
     }
 }
 
-export type Settings =
-  | (SettingsWithoutValidator & { validator?: undefined })
-  | ({
-      validator: Validator;
-      errorMessage: string;
-      propertyName: string;
-      allowEmptyValue?: undefined;
-      emptyValueErrorMessage?: undefined;
-      logicalOperator?: undefined;
-      conditions?: undefined;
-    });
+export type Settings = SettingsWithValidator | SettingsWithoutValidator;
 
-export type SettingsWithoutValidator =
-    SettingsBaseWithEmptyValueAllowed<Condition> |
-    SettingsBaseWithEmptyValueNotAllowed<Condition> |
-    SettingsBaseWithEmptyValueUndefined<Condition>;
-
-export type SettingsBaseWithEmptyValueAllowed<T> = T & {
+export type SettingsWithValidator = {
+    validator: Validator;
     errorMessage: string;
-    allowEmptyValue: true;
-    emptyValueErrorMessage?: never;
-    logicalOperator?: LogicalOperator;
-    conditions?: Condition[];
+    propertyName: string;
 };
 
-export type SettingsBaseWithEmptyValueNotAllowed<T> = T & {
-    errorMessage: string;
-    allowEmptyValue: false;
-    emptyValueErrorMessage: string;
-    logicalOperator?: LogicalOperator;
-    conditions?: Condition[];
-};
+export type SettingsWithoutValidator = SettingsBase<Condition>;
 
-export type SettingsBaseWithEmptyValueUndefined<T> = T & {
+export type SettingsBase<T> = T & {
     errorMessage: string;
-    allowEmptyValue?: undefined;
-    emptyValueErrorMessage?: undefined;
     logicalOperator?: LogicalOperator;
     conditions?: Condition[];
 };
 
 export type Validator = (value: any) => boolean | Promise<boolean>;
-
-export type Condition = ICommonWithValue | ICommonWithMultiValue | ICommonWithNoValue | INumericWithValue | NumericWithMultiValue | IString;
+export type Condition = ICommonWithValue | ICommonWithMultiValue | ICommonWithNoValue | INumericWithValue | INumericWithMultiValue | IString;
 
 export interface ICommonWithValue {
     propertyName: string;
@@ -94,7 +64,7 @@ export interface INumericWithValue {
     value1: number | Date;
 }
 
-export type NumericWithMultiValue =
+export type INumericWithMultiValue =
     | INumericWithMultiValueNumber
     | INumericWithMultiValueDate;
 

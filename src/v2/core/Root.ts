@@ -32,6 +32,10 @@ export default abstract class Root extends ManagedObject {
     constructor(settings: ISettings) {
         const { controller, ...publicProperties } = settings;
 
+        if (publicProperties.requiredPropertyErrorMessage) {
+            publicProperties.requiredPropertyErrorMessage = ManagedObject.escapeSettingsValue(publicProperties.requiredPropertyErrorMessage);
+        }
+
         super(publicProperties as $ManagedObjectSettings);
         this.initController(controller);
         this.initComponent();
@@ -69,7 +73,7 @@ export default abstract class Root extends ManagedObject {
         if (bundle.hasText(key)) {
             return bundle.getText(key, parameters);
         }
-    }  
+    }
 
     public getController(): Controller {
         return this.getProperty("controller");

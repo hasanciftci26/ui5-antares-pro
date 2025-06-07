@@ -1,3 +1,4 @@
+import ManagedObject from "sap/ui/base/ManagedObject";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
@@ -32,6 +33,7 @@ export default abstract class ContentGenerator extends Root {
             guidGenerationMode: { type: "string", visibility: "public", defaultValue: "Key" },
             guidVisibilityMode: { type: "string", visibility: "public", defaultValue: "NonKey" },
             metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
+            requiredPropertyErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             dateTimeSettings: { type: "object", visibility: "public" },
             numberSettings: { type: "object", visibility: "public" },
             excludedProperties: { type: "string[]", visibility: "public", defaultValue: [] },
@@ -158,6 +160,11 @@ export default abstract class ContentGenerator extends Root {
 
     public getContext() {
         return this.getProperty("context") as Context;
+    }
+
+    public getRequiredPropertyErrorMessage() {
+        const message = this.getProperty("requiredPropertyErrorMessage") as string;
+        return message.replace(/\\\{/g, "{").replace(/\\\}/g, "}");
     }
 
     protected getOperation() {
@@ -322,6 +329,7 @@ export default abstract class ContentGenerator extends Root {
         this.setDefaultFormTitle();
         this.setDefaultSubmitButtonText();
         this.setDefaultCloseButtonText();
+        this.setDefaultRequiredPropertyMessage();
     }
 
     private setDefaultFormTitle() {
@@ -369,6 +377,15 @@ export default abstract class ContentGenerator extends Root {
         }
 
         this.setCloseButtonText(LibraryBundle.getText("ui5AntaresPro.button.close")!);
+    }
+
+    private setDefaultRequiredPropertyMessage() {
+        if (this.getRequiredPropertyErrorMessage()) {
+            return;
+        }
+
+        const message = LibraryBundle.getText("ui5AntaresPro.error.requiredField") as string;
+        this.setRequiredPropertyErrorMessage(ManagedObject.escapeSettingsValue(message));
     }
 
     private bindProperties(properties: string[]) {

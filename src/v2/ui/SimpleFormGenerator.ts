@@ -294,21 +294,69 @@ export default class SimpleFormGenerator extends ManagedObject {
 
         switch (property.type) {
             case "Edm.Byte":
-                return new CustomByte(formatOptions, constraints, validationLogic);
+                return new CustomByte({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
             case "Edm.SByte":
-                return new CustomSByte(formatOptions, constraints, validationLogic);
+                return new CustomSByte({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
             case "Edm.Int16":
-                return new CustomInt16(formatOptions, constraints, validationLogic);
+                return new CustomInt16({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
             case "Edm.Int32":
-                return new CustomInt32(formatOptions, constraints, validationLogic);
+                return new CustomInt32({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
             case "Edm.Int64":
-                return new CustomInt64(formatOptions, constraints, validationLogic);
+                return new CustomInt64({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
             case "Edm.Single":
-                return new CustomSingle(formatOptions, constraints, validationLogic);
+                return new CustomSingle({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
             case "Edm.Double":
-                return new CustomDouble(formatOptions, constraints, validationLogic);
+                return new CustomDouble({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
             case "Edm.Decimal":
-                return new CustomDecimal(formatOptions, constraints, validationLogic);
+                return new CustomDecimal({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
         }
     }
 

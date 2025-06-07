@@ -18,9 +18,7 @@ export default class ValidationLogic extends ManagedObject {
             operator: { type: "string", visibility: "public", defaultValue: "EQ" },
             value1: { type: "any", visibility: "public" },
             value2: { type: "any", visibility: "public" },
-            allowEmptyValue: { type: "boolean", visibility: "public", defaultValue: true },
             errorMessage: { type: "string", visibility: "public", defaultValue: "" },
-            emptyValueErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             logicalOperator: { type: "string", visibility: "public", defaultValue: "And" },
             conditions: { type: "object[]", visibility: "public", defaultValue: [] },
             validator: { type: "function", visibility: "public" }
@@ -54,36 +52,14 @@ export default class ValidationLogic extends ManagedObject {
             return;
         }
 
-        if (this.getAllowEmptyValue()) {
-            if (value == null || value === "") {
-                if (this.getOperator() === "IsNotEmpty") {
-                    throw new ValidateException(this.getErrorMessage());
-                }
-            } else {
-                const evaluation = this.evaluateSingleCondition(this.getOperator(), {
-                    context: value,
-                    value1: this.getValue1(),
-                    value2: this.getValue2()
-                });
+        const evaluation = this.evaluateSingleCondition(this.getOperator(), {
+            context: value,
+            value1: this.getValue1(),
+            value2: this.getValue2()
+        });
 
-                if (!evaluation) {
-                    throw new ValidateException(this.getErrorMessage());
-                }
-            }
-        } else {
-            if (value == null || value === "") {
-                throw new ValidateException(this.getEmptyValueErrorMessage());
-            } else {
-                const evaluation = this.evaluateSingleCondition(this.getOperator(), {
-                    context: value,
-                    value1: this.getValue1(),
-                    value2: this.getValue2()
-                });
-
-                if (!evaluation) {
-                    throw new ValidateException(this.getErrorMessage());
-                }
-            }
+        if (!evaluation) {
+            throw new ValidateException(this.getErrorMessage());
         }
     }
 
