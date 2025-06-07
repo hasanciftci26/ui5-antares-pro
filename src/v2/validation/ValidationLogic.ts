@@ -36,8 +36,6 @@ export default class ValidationLogic extends ManagedObject {
             return;
         }
 
-        this.check(this.getPropertyName());
-
         if (this.getAllowEmptyValue()) {
             if (value != null && value !== "") {
                 const evaluation = this.evaluateSingleCondition(this.getOperator(), {
