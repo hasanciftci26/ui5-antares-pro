@@ -30,9 +30,8 @@ export default class Homepage extends BaseController {
 
         entry.addValidationLogic(new ValidationLogic({
             propertyName: "level",
-            errorMessage: "Level must be lower than 100.",
-            // eslint-disable-next-line @typescript-eslint/unbound-method
-            validator: this.validateLevel
+            errorMessage: "Level cannot be empty.",
+            operator: "IsNotEmpty"
         }));
 
         entry.execute();
@@ -41,18 +40,5 @@ export default class Homepage extends BaseController {
     /* ======================================================================================================================= */
     /* Internal methods                                                                                                        */
     /* ======================================================================================================================= */
-
-    private async validateLevel(level: number) {
-        await this.getTimeOut();
-        return level < 100;
-    }
-
-    private getTimeOut(): Promise<void> {
-        return new Promise((resolve)=>{
-            setTimeout(()=>{
-                resolve();
-            }, 5000);
-        });
-    }
 
 }
