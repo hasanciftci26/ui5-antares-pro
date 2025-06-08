@@ -8,6 +8,7 @@ import Text from "sap/m/Text";
 import TimePicker from "sap/m/TimePicker";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
+import CustomData from "sap/ui/core/CustomData";
 import Item from "sap/ui/core/Item";
 import Messaging from "sap/ui/core/Messaging";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
@@ -30,6 +31,7 @@ import CustomSingle from "ui5/antares/pro/v2/custom/type/CustomSingle";
 import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
+import SimpleFormValidator from "ui5/antares/pro/v2/validation/SimpleFormValidator";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
@@ -42,11 +44,19 @@ export default class SimpleFormGenerator extends ManagedObject {
         properties: {
             entitySet: { type: "string", visibility: "public" },
             form: { type: "object", visibility: "public" }
+        },
+        aggregations: {
+            validator: {
+                type: "ui5.antares.pro.v2.validation.SimpleFormValidator",
+                multiple: false,
+                visibility: "hidden"
+            }
         }
     };
 
     constructor(settings: ISettings) {
         super(settings as $ManagedObjectSettings);
+        this.setValidator(new SimpleFormValidator());
     }
 
     public generate() {
@@ -56,6 +66,18 @@ export default class SimpleFormGenerator extends ManagedObject {
         });
 
         this.setForm(form);
+    }
+
+    public async validate() {
+        return this.getValidator().validate();
+    }
+
+    private getValidator() {
+        return this.getAggregation("validator") as SimpleFormValidator;
+    }
+
+    private setValidator(validator: SimpleFormValidator) {
+        this.setAggregation("validator", validator);
     }
 
     private getContent() {
@@ -110,6 +132,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getDateText(property: IProp, navProperty?: string) {
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: this.getDateBinding(property, navProperty)
         });
@@ -117,6 +140,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getDatePicker(property: IProp, navProperty?: string) {
         const datePicker = new DatePicker({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             value: this.getDateBinding(property, navProperty)
@@ -163,6 +187,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getDateTimeText(property: IProp, navProperty?: string) {
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: this.getDateTimeBinding(property, navProperty)
         });
@@ -170,6 +195,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getDateTimePicker(property: IProp, navProperty?: string) {
         const dateTimePicker = new DateTimePicker({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             value: this.getDateTimeBinding(property, navProperty)
@@ -218,6 +244,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getTimeText(property: IProp, navProperty?: string) {
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: this.getTimeBinding(property, navProperty)
         });
@@ -225,6 +252,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getTimePicker(property: IProp, navProperty?: string) {
         const timePicker = new TimePicker({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             value: this.getTimeBinding(property, navProperty)
@@ -268,6 +296,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getNumberText(property: IProp, navProperty?: string) {
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: this.getNumberBinding(property, navProperty)
         });
@@ -275,6 +304,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getNumberInput(property: IProp, navProperty?: string) {
         const input = new Input({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             textAlign: "End",
             visible: property.visible,
             required: property.required,
@@ -391,6 +421,7 @@ export default class SimpleFormGenerator extends ManagedObject {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
 
         return new CheckBox({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             selected: {
@@ -413,6 +444,7 @@ export default class SimpleFormGenerator extends ManagedObject {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
 
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: {
                 path: path,
@@ -439,6 +471,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getStringInput(property: IProp, path: string, valueList?: ValueList) {
         const input = new Input({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             name: path,
             visible: property.visible,
             required: property.required,
@@ -462,6 +495,7 @@ export default class SimpleFormGenerator extends ManagedObject {
         const inOutParam = valueList.getFixedValueInOutParameter();
         const displayOnlyParam = valueList.getFixedValueDisplayOnlyParameter();
         const select = new Select({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             required: property.required,
             visible: property.visible,
             busy: true,

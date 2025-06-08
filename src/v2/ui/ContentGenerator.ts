@@ -33,6 +33,7 @@ export default abstract class ContentGenerator extends Root {
             guidGenerationMode: { type: "string", visibility: "public", defaultValue: "Key" },
             guidVisibilityMode: { type: "string", visibility: "public", defaultValue: "NonKey" },
             metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
+            validationErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             requiredPropertyErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             dateTimeSettings: { type: "object", visibility: "public" },
             numberSettings: { type: "object", visibility: "public" },
@@ -329,6 +330,7 @@ export default abstract class ContentGenerator extends Root {
         this.setDefaultFormTitle();
         this.setDefaultSubmitButtonText();
         this.setDefaultCloseButtonText();
+        this.setDefaultValidationErrorMessage();
         this.setDefaultRequiredPropertyMessage();
     }
 
@@ -377,6 +379,14 @@ export default abstract class ContentGenerator extends Root {
         }
 
         this.setCloseButtonText(LibraryBundle.getText("ui5AntaresPro.button.close")!);
+    }
+
+    private setDefaultValidationErrorMessage() {
+        if (this.getValidationErrorMessage()) {
+            return;
+        }
+
+        this.setValidationErrorMessage(LibraryBundle.getText("ui5AntaresPro.error.validation")!);
     }
 
     private setDefaultRequiredPropertyMessage() {

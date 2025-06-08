@@ -37,16 +37,9 @@ export default class Homepage extends BaseController {
                 groupingSize: 3,
                 decimalSeparator: ",",
                 groupingSeparator: "."
-            }
+            },
+            propertyOrder: ["level"]
         });
-
-        entry.addValidationLogic(new ValidationLogic({
-            propertyName: "level",
-            operator: "BT",
-            value1: 15,
-            value2: 25,
-            errorMessage: "Level must be between 15 and 25."
-        }));
 
         entry.addValidationLogic(new ValidationLogic({
             propertyName: "dateOfBirth",

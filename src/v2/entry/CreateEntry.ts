@@ -1,3 +1,4 @@
+import MessageBox from "sap/m/MessageBox";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
@@ -94,8 +95,17 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         }
     }
 
-    private onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
+    private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
+        BusyIndicator.show(0);
+
         this.correctFixedValueListValues();
+        const validation = await this.validate();
+
+        if (!validation) {
+            BusyIndicator.hide();
+            MessageBox.error(this.getValidationErrorMessage());
+            return;
+        }
     }
 
     private onDialogClose(event: DialogGenerator$ClosedEvent) {
@@ -114,5 +124,17 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
                 this.getODataModel().setProperty(this.getContext().getPath() + `/${property}`, null);
             }
         }
+    }
+
+    private async validate() {
+        const validations: boolean[] = [];
+
+        if (this.getFormType() === "SimpleForm") {
+            for (const generator of this.getSimpleFormGenerators()) {
+                validations.push(await generator.validate());
+            }
+        }
+
+        return validations.every(validation => validation);
     }
 }

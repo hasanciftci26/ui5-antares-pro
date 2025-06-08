@@ -33,6 +33,8 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setGuidVisibilityMode: SetProperty<GuidMode>;
         getMetadataLabelEnabled: GetProperty<boolean>;
         setMetadataLabelEnabled: SetProperty<boolean>;
+        getValidationErrorMessage: GetProperty<string>;
+        setValidationErrorMessage: SetProperty<string>;
         setRequiredPropertyErrorMessage: SetProperty<string>;
         getDateTimeSettings: GetProperty<IDateTimeSettings | undefined>;
         setDateTimeSettings: SetProperty<IDateTimeSettings | undefined>;
