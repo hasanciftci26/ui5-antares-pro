@@ -18,3 +18,9 @@ export interface IDateTimeSettings {
     constraints?: IDateTimeConstraints;
     validationLogic?: ValidationLogic;
 }
+
+export interface IStringSettings {
+    property: IProp;
+    requiredPropertyErrorMessage: string;
+    validationLogic?: ValidationLogic;
+}

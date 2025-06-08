@@ -37,6 +37,7 @@ export default abstract class ContentGenerator extends Root {
             requiredPropertyErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             dateTimeSettings: { type: "object", visibility: "public" },
             numberSettings: { type: "object", visibility: "public" },
+            booleanSettings: { type: "object", visibility: "public", defaultValue: { trueText: "", falseText: "", autoFalse: true } },
             excludedProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             readonlyProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             requiredProperties: { type: "string[]", visibility: "public", defaultValue: [] },
@@ -332,6 +333,7 @@ export default abstract class ContentGenerator extends Root {
         this.setDefaultCloseButtonText();
         this.setDefaultValidationErrorMessage();
         this.setDefaultRequiredPropertyMessage();
+        this.setDefaultBooleanSettings();
     }
 
     private setDefaultFormTitle() {
@@ -396,6 +398,20 @@ export default abstract class ContentGenerator extends Root {
 
         const message = LibraryBundle.getText("ui5AntaresPro.error.requiredField") as string;
         this.setRequiredPropertyErrorMessage(ManagedObject.escapeSettingsValue(message));
+    }
+
+    private setDefaultBooleanSettings() {
+        const booleanSettings = this.getBooleanSettings();
+
+        if (!booleanSettings.trueText) {
+            booleanSettings.trueText = LibraryBundle.getText("ui5AntaresPro.text.true") as string;
+        }
+
+        if (!booleanSettings.falseText) {
+            booleanSettings.falseText = LibraryBundle.getText("ui5AntaresPro.text.false") as string;
+        }
+
+        this.setBooleanSettings(booleanSettings);
     }
 
     private bindProperties(properties: string[]) {

@@ -40,6 +40,8 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setDateTimeSettings: SetProperty<IDateTimeSettings | undefined>;
         getNumberSettings: GetProperty<INumberSettings | undefined>;
         setNumberSettings: SetProperty<INumberSettings | undefined>;
+        getBooleanSettings: GetProperty<Required<IBooleanSettings>>;
+        setBooleanSettings: SetProperty<IBooleanSettings>;
         getExcludedProperties: GetProperty<string[]>;
         setExcludedProperties: SetProperty<string[]>;
         getReadonlyProperties: GetProperty<string[]>;
@@ -84,4 +86,10 @@ export interface INumberSettings {
     groupingSeparator?: string;
     groupingSize?: number;
     decimalSeparator?: string;
+}
+
+export interface IBooleanSettings {
+    trueText?: string;
+    falseText?: string;
+    autoFalse?: boolean;
 }

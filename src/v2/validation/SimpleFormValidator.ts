@@ -1,6 +1,7 @@
 import DatePicker from "sap/m/DatePicker";
 import DateTimePicker from "sap/m/DateTimePicker";
 import Input from "sap/m/Input";
+import Select from "sap/m/Select";
 import TimePicker from "sap/m/TimePicker";
 import ManagedObject from "sap/ui/base/ManagedObject";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
@@ -38,12 +39,28 @@ export default class SimpleFormValidator extends ManagedObject {
                 case control instanceof DatePicker:
                 case control instanceof DateTimePicker:
                 case control instanceof TimePicker:
-                    const binding = control.getBinding("value") as PropertyBinding;
+                    const valueBinding = control.getBinding("value") as PropertyBinding;
                     const value = control.getProperty("value");
-                    const type = binding.getType() as SimpleType;
+                    const valueBindingType = valueBinding.getType() as SimpleType;
 
                     try {
-                        await type.validateValue(type.parseValue(value, "string"));
+                        await valueBindingType.validateValue(valueBindingType.parseValue(value, "string"));
+                        control.setValueState("None");
+                        control.setValueStateText("");
+                    } catch (error) {
+                        valid = false;
+                        control.setValueState("Error");
+                        control.setValueStateText((error as { message: string; }).message);
+                    }
+
+                    break;
+                case control instanceof Select:
+                    const selectedKeyBinding = control.getBinding("selectedKey") as PropertyBinding;
+                    const selectedKey = control.getProperty("selectedKey");
+                    const selectedKeyBindingType = selectedKeyBinding.getType() as SimpleType;
+
+                    try {
+                        await selectedKeyBindingType.validateValue(selectedKeyBindingType.parseValue(selectedKey, "string"));
                         control.setValueState("None");
                         control.setValueStateText("");
                     } catch (error) {

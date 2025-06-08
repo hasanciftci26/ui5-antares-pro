@@ -23,11 +23,13 @@ import CustomDateTime from "ui5/antares/pro/v2/custom/type/CustomDateTime";
 import CustomDateTimeOffset from "ui5/antares/pro/v2/custom/type/CustomDateTimeOffset";
 import CustomDecimal from "ui5/antares/pro/v2/custom/type/CustomDecimal";
 import CustomDouble from "ui5/antares/pro/v2/custom/type/CustomDouble";
+import CustomGuid from "ui5/antares/pro/v2/custom/type/CustomGuid";
 import CustomInt16 from "ui5/antares/pro/v2/custom/type/CustomInt16";
 import CustomInt32 from "ui5/antares/pro/v2/custom/type/CustomInt32";
 import CustomInt64 from "ui5/antares/pro/v2/custom/type/CustomInt64";
 import CustomSByte from "ui5/antares/pro/v2/custom/type/CustomSByte";
 import CustomSingle from "ui5/antares/pro/v2/custom/type/CustomSingle";
+import CustomString from "ui5/antares/pro/v2/custom/type/CustomString";
 import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
@@ -418,6 +420,35 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getBooleanControl(property: IProp, navProperty?: string) {
+        if (property.readonly) {
+            return this.getBooleanText(property, navProperty);
+        } else {
+            return this.getCheckBox(property, navProperty);
+        }
+    }
+
+    private getBooleanText(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const booleanSettings = parent.getBooleanSettings();
+
+        return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            visible: property.visible,
+            text: {
+                path: path,
+                formatter: (value: boolean | null) => {
+                    if (value == null) {
+                        return value;
+                    }
+
+                    return value === true ? booleanSettings.trueText : booleanSettings.falseText;
+                }
+            }
+        });
+    }
+
+    private getCheckBox(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
 
         return new CheckBox({
@@ -427,8 +458,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             selected: {
                 path: path,
                 type: "sap.ui.model.odata.type." + property.type.substring(4)
-            },
-            editable: property.readonly === false
+            }
         });
     }
 
@@ -459,6 +489,10 @@ export default class SimpleFormGenerator extends ManagedObject {
         const valueList = parent.getValueListByProperty(path);
 
         if (valueList) {
+            if (property.type !== "Edm.Guid" && property.type !== "Edm.String") {
+                throw new Error("ValueList feature is only available for Edm.Guid and Edm.String data types.");
+            }
+
             if (valueList.getFixedValues()) {
                 return this.getValueListSelect(property, valueList);
             } else {
@@ -477,7 +511,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             required: property.required,
             value: {
                 path: path,
-                type: "sap.ui.model.odata.type." + property.type.substring(4)
+                type: this.getStringBindingType(property, path)
             },
             maxLength: property.maxLength
         });
@@ -491,6 +525,29 @@ export default class SimpleFormGenerator extends ManagedObject {
         return input;
     }
 
+    private getStringBindingType(property: IProp, path: string) {
+        const parent = this.getParent() as ContentGenerator;
+        const validationLogic = parent.getValidationLogicByProperty(path);
+
+        switch (property.type) {
+            case "Edm.Binary":
+            case "Edm.Stream":
+                return "sap.ui.model.odata.type." + property.type.substring(4);
+            case "Edm.Guid":
+                return new CustomGuid({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    validationLogic: validationLogic
+                });
+            default:
+                return new CustomString({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    validationLogic: validationLogic
+                });
+        }
+    }
+
     private getValueListSelect(property: IProp, valueList: ValueList) {
         const inOutParam = valueList.getFixedValueInOutParameter();
         const displayOnlyParam = valueList.getFixedValueDisplayOnlyParameter();
@@ -502,7 +559,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             busyIndicatorDelay: 0,
             selectedKey: {
                 path: inOutParam.localDataProperty,
-                type: "sap.ui.model.odata.type." + property.type.substring(4)
+                type: this.getStringBindingType(property, inOutParam.localDataProperty)
             }
         });
 
