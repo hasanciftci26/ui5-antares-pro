@@ -23,7 +23,7 @@ export default class CustomInt16 extends Int16 {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (this.validationLogic) {
+        if (this.validationLogic && value != null) {
             return this.validationLogic.evaluate(value);
         }
     }

@@ -23,8 +23,9 @@ export default class CustomInt64 extends Int64 {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (this.validationLogic) {
-            return this.validationLogic.evaluate(value);
+        if (this.validationLogic && value != null && value !== "") {
+            const parsedValue = value == null ? value : BigInt(value);
+            return this.validationLogic.evaluate(parsedValue);
         }
     }
 

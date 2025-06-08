@@ -11,14 +11,6 @@
   </edmx:Reference>
   <edmx:DataServices m:DataServiceVersion="2.0">
     <Schema Namespace="CompanyManagement" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
-      <Annotation Term="Core.Links" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-        <Collection>
-          <Record>
-            <PropertyValue Property="rel" String="author"/>
-            <PropertyValue Property="href" String="https://cap.cloud.sap"/>
-          </Record>
-        </Collection>
-      </Annotation>
       <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
         <EntitySet Name="Employees" EntityType="CompanyManagement.Employees"/>
         <EntitySet Name="Departments" EntityType="CompanyManagement.Departments"/>
@@ -69,6 +61,11 @@
         <Property Name="salary" Type="Edm.Decimal" Precision="13" Scale="2"/>
         <Property Name="level" Type="Edm.Int32"/>
         <Property Name="isActive" Type="Edm.Boolean"/>
+        <Property Name="workingStartTime" Type="Edm.Time"/>
+        <Property Name="totalExperience" Type="Edm.Int64"/>
+        <Property Name="contractSignedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+        <Property Name="performanceRating" Type="Edm.Single"/>
+        <Property Name="annualBonusMultiplier" Type="Edm.Double"/>
         <NavigationProperty Name="toCountry" Relationship="CompanyManagement.Employees_toCountry" FromRole="Employees" ToRole="Countries"/>
         <NavigationProperty Name="toDepartment" Relationship="CompanyManagement.Employees_toDepartment" FromRole="Employees" ToRole="Departments"/>
         <NavigationProperty Name="toCertifications" Relationship="CompanyManagement.EmployeeCertifications_toEmployee" FromRole="Employees" ToRole="EmployeeCertifications"/>
@@ -248,6 +245,21 @@
       </Annotations>
       <Annotations Target="CompanyManagement.Employees/isActive" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="Common.Label" String="Active"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/workingStartTime" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Working Start Time"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/totalExperience" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Total Experience"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/contractSignedAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Contract Signed At"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/performanceRating" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Performance Rating"/>
+      </Annotations>
+      <Annotations Target="CompanyManagement.Employees/annualBonusMultiplier" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+        <Annotation Term="Common.Label" String="Annual Bonus Multiplier"/>
       </Annotations>
       <Annotations Target="CompanyManagement.Employees/toCountry" xmlns="http://docs.oasis-open.org/odata/ns/edm">
         <Annotation Term="Common.Label" String="Employee Country"/>

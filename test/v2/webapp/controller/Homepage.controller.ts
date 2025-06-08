@@ -53,7 +53,21 @@ export default class Homepage extends BaseController {
             operator: "LT",
             value1: new Date("2024-01-01"),
             errorMessage: "Date of Birth must be smaller than 2024"
-        }));        
+        }));   
+        
+        entry.addValidationLogic(new ValidationLogic({
+            propertyName: "workingStartTime",
+            operator: "LE",
+            value1: 57600000,
+            errorMessage: "Working start time can only be smaller than 16:00:00"
+        }));     
+        
+        entry.addValidationLogic(new ValidationLogic({
+            propertyName: "totalExperience",
+            operator: "LT",
+            value1: BigInt("4646848646846846846"),
+            errorMessage: "Total experience must be little than 4646848646846846846"
+        }));          
 
         entry.execute();
     }

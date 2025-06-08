@@ -23,8 +23,9 @@ export default class CustomDecimal extends Decimal {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (this.validationLogic) {
-            return this.validationLogic.evaluate(value);
+        if (this.validationLogic && value != null && value !== "") {
+            const parsedValue = value == null ? value : parseFloat(value);
+            return this.validationLogic.evaluate(parsedValue);
         }
     }
 

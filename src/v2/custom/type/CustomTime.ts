@@ -23,8 +23,8 @@ export default class CustomTime extends Time {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (this.validationLogic) {
-            return this.validationLogic.evaluate(value);
+        if (this.validationLogic && value != null) {
+            return this.validationLogic.evaluate((value as { ms: number; }).ms);
         }
     }
 

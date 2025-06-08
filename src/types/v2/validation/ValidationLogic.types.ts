@@ -7,8 +7,8 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
         setPropertyName: SetProperty<string>;
         getOperator: GetProperty<Operator>;
         setOperator: SetProperty<Operator>;
-        getValue1: GetProperty<Value | Array<string | number> | undefined>;
-        setValue1: SetProperty<Value | Array<string | number> | undefined>;
+        getValue1: GetProperty<Value | Array<string | number | bigint> | undefined>;
+        setValue1: SetProperty<Value | Array<string | number | bigint> | undefined>;
         getValue2: GetProperty<Value | undefined>;
         setValue2: SetProperty<Value | undefined>;
         getErrorMessage: GetProperty<string>;
@@ -50,7 +50,7 @@ export interface ICommonWithValue {
 export interface ICommonWithMultiValue {
     propertyName: string;
     operator: CommonOperatorWithMultiValue;
-    value1: Array<string | number>;
+    value1: Array<string | number | bigint>;
 }
 
 export interface ICommonWithNoValue {
@@ -61,7 +61,7 @@ export interface ICommonWithNoValue {
 export interface INumericWithValue {
     propertyName: string;
     operator: NumericOperatorWithValue;
-    value1: number | Date;
+    value1: number | bigint | Date;
 }
 
 export type INumericWithMultiValue =
@@ -71,8 +71,8 @@ export type INumericWithMultiValue =
 export interface INumericWithMultiValueNumber {
     propertyName: string;
     operator: NumericOperatorWithMultiValue;
-    value1: number;
-    value2: number;
+    value1: number | bigint;
+    value2: number | bigint;
 }
 
 export interface INumericWithMultiValueDate {
@@ -102,5 +102,5 @@ export type CommonOperatorWithNoValue = "IsEmpty" | "IsNotEmpty";
 export type NumericOperatorWithValue = "LE" | "LT" | "GE" | "GT";
 export type NumericOperatorWithMultiValue = "BT" | "NB";
 export type StringOperator = "Contains" | "NotContains" | "StartsWith" | "NotStartsWith" | "EndsWith" | "NotEndsWith";
-export type Value = string | number | boolean | Date;
+export type Value = string | number | bigint | boolean | Date;
 export type LogicalOperator = "And" | "Or";
