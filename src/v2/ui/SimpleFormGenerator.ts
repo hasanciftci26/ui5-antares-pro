@@ -551,6 +551,7 @@ export default class SimpleFormGenerator extends ManagedObject {
     private getValueListSelect(property: IProp, valueList: ValueList) {
         const inOutParam = valueList.getFixedValueInOutParameter();
         const displayOnlyParam = valueList.getFixedValueDisplayOnlyParameter();
+        const parent = this.getParent() as ContentGenerator;
         const select = new Select({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             required: property.required,
@@ -580,7 +581,11 @@ export default class SimpleFormGenerator extends ManagedObject {
                         key: "UI5_ANTARES_PRO_SELECT_EMPTY_KEY",
                         text: ""
                     }), 0);
-                    select.setSelectedKey("UI5_ANTARES_PRO_SELECT_EMPTY_KEY");
+
+                    if (!parent.getContext().getProperty(inOutParam.localDataProperty)) {
+                        select.setSelectedKey("UI5_ANTARES_PRO_SELECT_EMPTY_KEY");
+                    }
+
                     select.setBusy(false);
                 }
             }
