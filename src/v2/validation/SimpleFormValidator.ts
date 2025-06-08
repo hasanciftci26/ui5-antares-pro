@@ -39,10 +39,11 @@ export default class SimpleFormValidator extends ManagedObject {
                 case control instanceof DateTimePicker:
                 case control instanceof TimePicker:
                     const binding = control.getBinding("value") as PropertyBinding;
+                    const value = control.getProperty("value");
                     const type = binding.getType() as SimpleType;
 
                     try {
-                        await type.validateValue(binding.getInternalValue() ?? null);
+                        await type.validateValue(type.parseValue(value, "string"));
                         control.setValueState("None");
                         control.setValueStateText("");
                     } catch (error) {
