@@ -120,7 +120,7 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         const data = this.getContext().getObject() as Record<string, any>;
 
         for (const property in data) {
-            if (data[property] === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+            if (data[property] === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY" || data[property] === "00000000-0000-0000-0000-000000000000") {
                 this.getODataModel().setProperty(this.getContext().getPath() + `/${property}`, null);
             }
         }

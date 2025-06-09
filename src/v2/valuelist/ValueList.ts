@@ -490,6 +490,8 @@ export default class ValueList extends ManagedObject {
             case "Edm.Double":
             case "Edm.Decimal":
                 return this.getNumberText(property);
+            case "Edm.Boolean":
+                return this.getBooleanText(property);
             default:
                 return this.getRegularText(property);
         }
@@ -516,6 +518,24 @@ export default class ValueList extends ManagedObject {
     private getNumberText(property: IProp) {
         return new Text({
             text: this.getNumberBinding(property, "Table")
+        });
+    }
+
+    private getBooleanText(property: IProp) {
+        const parent = this.getParent() as ContentGenerator;
+        const booleanSettings = parent.getBooleanSettings();
+
+        return new Text({
+            text: {
+                path: property.name,
+                formatter: (value: boolean | null) => {
+                    if (value == null) {
+                        return value;
+                    }
+
+                    return value === true ? booleanSettings.trueText : booleanSettings.falseText;
+                }
+            }
         });
     }
 
@@ -606,7 +626,8 @@ export default class ValueList extends ManagedObject {
             filters.push(new Filter({
                 path: property.name,
                 operator: "Contains",
-                value1: value
+                value1: value,
+                caseSensitive: false
             }));
         }
 

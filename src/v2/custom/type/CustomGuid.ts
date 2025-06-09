@@ -25,23 +25,23 @@ export default class CustomGuid extends Guid {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (!this.runValidationLogic && value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+        if (!this.runValidationLogic) {
             this.runValidationLogic = true;
             return;
         }
 
-        if (this.validationLogic && value != null && value !== "") {
+        if (this.validationLogic && value != null && value !== "" && value !== "00000000-0000-0000-0000-000000000000") {
             return this.validationLogic.evaluate(value);
         }
     }
 
     private checkRequired(value: string | null) {
-        if (!this.runCheckRequired && value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+        if (!this.runCheckRequired) {
             this.runCheckRequired = true;
             return;
         }
 
-        if (this.property.required && (value == null || value === "" || value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY")) {
+        if (this.property.required && (value == null || value === "" || value === "00000000-0000-0000-0000-000000000000")) {
             throw new ValidateException(this.requiredPropertyErrorMessage.replace("{property}", this.property.label));
         }
     }

@@ -25,18 +25,18 @@ export default class CustomString extends String {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (!this.runValidationLogic && value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+        if (!this.runValidationLogic) {
             this.runValidationLogic = true;
             return;
         }
 
-        if (this.validationLogic && value != null && value !== "") {
+        if (this.validationLogic && value != null && value !== "" && value !== "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
             return this.validationLogic.evaluate(value);
         }
     }
 
     private checkRequired(value: string | null) {
-        if (!this.runCheckRequired && value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+        if (!this.runCheckRequired) {
             this.runCheckRequired = true;
             return;
         }

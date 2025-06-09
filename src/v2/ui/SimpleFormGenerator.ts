@@ -577,13 +577,15 @@ export default class SimpleFormGenerator extends ManagedObject {
             }),
             events: {
                 dataReceived: () => {
+                    const emptyItemKey = property.type === "Edm.Guid" ? "00000000-0000-0000-0000-000000000000" : "UI5_ANTARES_PRO_SELECT_EMPTY_KEY";
+
                     select.insertItem(new Item({
-                        key: "UI5_ANTARES_PRO_SELECT_EMPTY_KEY",
+                        key: emptyItemKey,
                         text: ""
                     }), 0);
 
                     if (!parent.getContext().getProperty(inOutParam.localDataProperty)) {
-                        select.setSelectedKey("UI5_ANTARES_PRO_SELECT_EMPTY_KEY");
+                        select.setSelectedKey(emptyItemKey);
                     }
 
                     select.setBusy(false);
