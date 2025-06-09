@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
+import { CreateEntry$SubmitSuccessEvent } from "ui5/antares/pro/types/v2/entry/CreateEntry.types";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
@@ -24,30 +23,9 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "EmployeeContracts",
-            metadataLabelEnabled: true,
-            formType: "SimpleForm",
-            guidGenerationMode: "None",
-            guidVisibilityMode: "All"
+            entitySet: "Countries",
+            metadataLabelEnabled: true
         });
-
-        entry.addValueList(new ValueList({
-            localDataProperty: "employeeID",
-            collectionPath: "Employees",
-            fixedValues: true,
-            fixedValueSeparator: " - ",
-            parameters: [{
-                localDataProperty: "employeeID",
-                type: "InOut",
-                valueListProperty: "ID"
-            }, {
-                type: "DisplayOnly",
-                valueListProperty: "firstName"
-            }, {
-                type: "DisplayOnly",
-                valueListProperty: "lastName"
-            }]
-        }));
 
         entry.execute();
     }
@@ -56,4 +34,7 @@ export default class Homepage extends BaseController {
     /* Internal methods                                                                                                        */
     /* ======================================================================================================================= */
 
+    private onSubmitSuccess(event: CreateEntry$SubmitSuccessEvent<{ testID: string; }>) {
+        event.getParameter("data");
+    }
 }

@@ -9,10 +9,26 @@ import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 /**
  * @namespace ui5.antares.pro.v2.entry
  */
-export default class CreateEntry<EntityT extends Record<string, any> = Record<string, any>> extends ContentGenerator {
+export default class CreateEntry extends ContentGenerator {
     static metadata: IClassMetadata = {
         library: "ui5.antares.pro",
-        final: true
+        final: true,
+        properties: {
+            beforeSubmit: { type: "function", visibility: "public" }
+        },
+        events: {
+            submitSuccess: {
+                parameters: {
+                    data: { type: "object" },
+                    response: { type: "object" }
+                }
+            },
+            submitError: {
+                parameters: {
+                    response: { type: "object" }
+                }
+            }
+        }
     };
 
     constructor(settings: ISettings) {
@@ -23,10 +39,10 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         this.getDialogGenerator().attachClosed(this.onDialogClose, this);
     }
 
-    public async execute(initialData?: EntityT) {
+    public async execute<EntityT extends Record<string, any> = Record<string, any>>(initialData?: EntityT) {
         BusyIndicator.show(0);
 
-        const context = await this.createContext(initialData);
+        const context = await this.createContext<EntityT>(initialData);
         this.setContext(context);
 
         await this.generate();
@@ -37,7 +53,7 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         BusyIndicator.hide();
     }
 
-    private async createContext(initialData?: EntityT) {
+    private async createContext<EntityT extends Record<string, any>>(initialData?: EntityT) {
         await this.getODataModel().getMetaModel().loaded();
 
         return this.getODataModel().createEntry(this.getEntitySetPath(), {
@@ -106,6 +122,18 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
             MessageBox.error(this.getValidationErrorMessage());
             return;
         }
+
+        const beforeSubmit = this.getBeforeSubmit();
+
+        if (beforeSubmit) {
+            const proceed = await Promise.resolve(beforeSubmit.call(this.getController(), this.getContext()));
+
+            if (!proceed) {
+                return;
+            }
+        }
+
+        this.submit();
     }
 
     private onDialogClose(event: DialogGenerator$ClosedEvent) {
@@ -127,7 +155,7 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
     }
 
     private async validate() {
-        const validations: boolean[] = [];
+        const validations: boolean[] = [true];
 
         if (this.getFormType() === "SimpleForm") {
             for (const generator of this.getSimpleFormGenerators()) {
@@ -140,5 +168,19 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
         }
 
         return validations.every(validation => validation);
+    }
+
+    private submit() {
+        if (this.getODataModel().hasPendingChanges(true)) {
+            this.getODataModel().submitChanges({
+                groupId: this.getDeferredGroupId(),
+                success: (response?: object) => {
+                    BusyIndicator.hide();
+                },
+                error: (err?: object) => {
+                    BusyIndicator.hide();
+                }
+            });
+        }
     }
 }

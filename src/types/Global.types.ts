@@ -84,7 +84,7 @@ export interface IClassMetadataEvent {
     [key: string]: {
         parameters?: {
             [key: string]: {
-                type: string;
+                type: MetadataPropertyDataType;
             };
         };
         allowPreventDefault?: boolean;
