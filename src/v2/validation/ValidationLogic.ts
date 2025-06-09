@@ -2,9 +2,10 @@ import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import ValidateException from "sap/ui/model/ValidateException";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { Condition, Operator, Settings } from "ui5/antares/pro/types/v2/validation/ValidationLogic.types";
+import { Condition, ITimeObject, Operator, Settings } from "ui5/antares/pro/types/v2/validation/ValidationLogic.types";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
+import TimeValidation from "ui5/antares/pro/v2/validation/TimeValidation";
 
 /**
  * @namespace ui5.antares.pro.v2.validation
@@ -136,6 +137,10 @@ export default class ValidationLogic extends ManagedObject {
     private getCorrectedValue(value: any) {
         if (value instanceof Date) {
             return value.getTime();
+        } else if (value instanceof TimeValidation) {
+            return value.getMilliseconds();
+        } else if (this.isTimeObject(value)) {
+            return value.ms;
         } else {
             return value;
         }
@@ -190,5 +195,14 @@ export default class ValidationLogic extends ManagedObject {
 
     private hasValue2(condition: Condition): condition is Extract<Condition, { value2: unknown; }> {
         return "value2" in condition;
+    }
+
+    private isTimeObject(value: any): value is ITimeObject {
+        return (
+            typeof value === "object" &&
+            value != null &&
+            "ms" in value &&
+            typeof value.ms === "number"
+        );
     }
 }

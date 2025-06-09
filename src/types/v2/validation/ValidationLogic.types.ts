@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
+import TimeValidation from "ui5/antares/pro/v2/validation/TimeValidation";
 
 declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
     export default interface ValidationLogic {
@@ -61,12 +62,13 @@ export interface ICommonWithNoValue {
 export interface INumericWithValue {
     propertyName: string;
     operator: NumericOperatorWithValue;
-    value1: number | bigint | Date;
+    value1: number | bigint | Date | TimeValidation;
 }
 
 export type INumericWithMultiValue =
-    | INumericWithMultiValueNumber
-    | INumericWithMultiValueDate;
+    INumericWithMultiValueNumber |
+    INumericWithMultiValueDate |
+    INumericWithMultiValueTime;
 
 export interface INumericWithMultiValueNumber {
     propertyName: string;
@@ -80,6 +82,13 @@ export interface INumericWithMultiValueDate {
     operator: NumericOperatorWithMultiValue;
     value1: Date;
     value2: Date;
+}
+
+export interface INumericWithMultiValueTime {
+    propertyName: string;
+    operator: NumericOperatorWithMultiValue;
+    value1: TimeValidation;
+    value2: TimeValidation;
 }
 
 export interface IString {
@@ -102,5 +111,9 @@ export type CommonOperatorWithNoValue = "IsEmpty" | "IsNotEmpty";
 export type NumericOperatorWithValue = "LE" | "LT" | "GE" | "GT";
 export type NumericOperatorWithMultiValue = "BT" | "NB";
 export type StringOperator = "Contains" | "NotContains" | "StartsWith" | "NotStartsWith" | "EndsWith" | "NotEndsWith";
-export type Value = string | number | bigint | boolean | Date;
+export type Value = string | number | bigint | boolean | Date | TimeValidation;
 export type LogicalOperator = "And" | "Or";
+
+export interface ITimeObject {
+    ms: number;
+}

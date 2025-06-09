@@ -11,9 +11,22 @@ import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
 import Messaging from "sap/ui/core/Messaging";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
+import { INumberFormatOptions } from "ui5/antares/pro/types/v2/custom/type/FormatOptions.types";
 import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import { INumberBinding } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
+import { IBindingWithCustomType } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
 import { ISettings } from "ui5/antares/pro/types/v2/ui/SmartFormGenerator.types";
+import CustomByte from "ui5/antares/pro/v2/custom/type/CustomByte";
+import CustomDateTime from "ui5/antares/pro/v2/custom/type/CustomDateTime";
+import CustomDateTimeOffset from "ui5/antares/pro/v2/custom/type/CustomDateTimeOffset";
+import CustomDecimal from "ui5/antares/pro/v2/custom/type/CustomDecimal";
+import CustomDouble from "ui5/antares/pro/v2/custom/type/CustomDouble";
+import CustomInt16 from "ui5/antares/pro/v2/custom/type/CustomInt16";
+import CustomInt32 from "ui5/antares/pro/v2/custom/type/CustomInt32";
+import CustomInt64 from "ui5/antares/pro/v2/custom/type/CustomInt64";
+import CustomSByte from "ui5/antares/pro/v2/custom/type/CustomSByte";
+import CustomSingle from "ui5/antares/pro/v2/custom/type/CustomSingle";
+import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
 
@@ -125,18 +138,23 @@ export default class SmartFormGenerator extends ManagedObject {
     private getDatePicker(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
+        const validationLogic = parent.getValidationLogicByProperty(path);
         const datePicker = new DatePicker({
             visible: property.visible,
             required: property.required,
             value: {
                 path: path,
-                type: "sap.ui.model.odata.type." + property.type.substring(4),
-                constraints: {
-                    displayFormat: "Date"
-                },
-                formatOptions: {
-                    pattern: parent.getDateTimeSettings()!.datePattern
-                }
+                type: new CustomDateTime({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    constraints: {
+                        displayFormat: "Date"
+                    },
+                    formatOptions: {
+                        pattern: parent.getDateTimeSettings()!.datePattern!
+                    },
+                    validationLogic: validationLogic
+                })
             }
         });
 
@@ -176,21 +194,43 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getDateTimePicker(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
         const dateTimePicker = new DateTimePicker({
             visible: property.visible,
             required: property.required,
             value: {
                 path: path,
-                type: "sap.ui.model.odata.type." + property.type.substring(4),
-                formatOptions: {
-                    pattern: parent.getDateTimeSettings()!.dateTimePattern
-                }
+                type: this.getDateTimeBindingType(property, path)
             }
         });
 
         Messaging.registerObject(dateTimePicker, true);
         return dateTimePicker;
+    }
+
+    private getDateTimeBindingType(property: IProp, path: string) {
+        const parent = this.getParent() as ContentGenerator;
+        const validationLogic = parent.getValidationLogicByProperty(path);
+
+        switch (property.type) {
+            case "Edm.DateTimeOffset":
+                return new CustomDateTimeOffset({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: {
+                        pattern: parent.getDateTimeSettings()!.datePattern!
+                    },
+                    validationLogic: validationLogic
+                });
+            default:
+                return new CustomDateTime({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: {
+                        pattern: parent.getDateTimeSettings()!.datePattern!
+                    },
+                    validationLogic: validationLogic
+                });
+        }
     }
 
     private getTimeControl(property: IProp, navProperty?: string) {
@@ -226,15 +266,20 @@ export default class SmartFormGenerator extends ManagedObject {
     private getTimePicker(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getParent() as ContentGenerator;
+        const validationLogic = parent.getValidationLogicByProperty(path);
         const timePicker = new TimePicker({
             visible: property.visible,
             required: property.required,
             value: {
                 path: path,
-                type: "sap.ui.model.odata.type." + property.type.substring(4),
-                formatOptions: {
-                    pattern: parent.getDateTimeSettings()!.timePattern
-                }
+                type: new CustomTime({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: {
+                        pattern: parent.getDateTimeSettings()!.timePattern!
+                    },
+                    validationLogic: validationLogic
+                })
             }
         });
 
@@ -278,15 +323,24 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getNumberBinding(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
-        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
-        const binding: INumberBinding = {
+        const binding: IBindingWithCustomType = {
             path: path,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
+            type: this.getNumberBindingType(property, navProperty)
         };
 
+        return binding;
+    }
+
+    private getNumberBindingType(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
+        const validationLogic = parent.getValidationLogicByProperty(path);
+        let formatOptions: INumberFormatOptions | undefined;
+        let constraints: INumberConstraints | undefined;
+
         if (numberSettings) {
-            binding.formatOptions = {
+            formatOptions = {
                 groupingEnabled: numberSettings.groupingEnabled,
                 groupingSeparator: numberSettings.groupingSeparator,
                 groupingSize: numberSettings.groupingSize,
@@ -295,13 +349,78 @@ export default class SmartFormGenerator extends ManagedObject {
         }
 
         if (property.precision && property.scale) {
-            binding.constraints = {
+            constraints = {
                 precision: property.precision,
                 scale: property.scale
             };
         }
 
-        return binding;
+        switch (property.type) {
+            case "Edm.Byte":
+                return new CustomByte({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+            case "Edm.SByte":
+                return new CustomSByte({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+            case "Edm.Int16":
+                return new CustomInt16({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+            case "Edm.Int32":
+                return new CustomInt32({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+            case "Edm.Int64":
+                return new CustomInt64({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+            case "Edm.Single":
+                return new CustomSingle({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+            case "Edm.Double":
+                return new CustomDouble({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+            case "Edm.Decimal":
+                return new CustomDecimal({
+                    property: property,
+                    requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
+                    formatOptions: formatOptions,
+                    constraints: constraints,
+                    validationLogic: validationLogic
+                });
+        }
     }
 
     private getSmartField(property: IProp, navProperty?: string) {
