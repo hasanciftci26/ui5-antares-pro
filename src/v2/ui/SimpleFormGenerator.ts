@@ -550,7 +550,7 @@ export default class SimpleFormGenerator extends ManagedObject {
 
     private getValueListSelect(property: IProp, valueList: ValueList) {
         const inOutParam = valueList.getFixedValueInOutParameter();
-        const displayOnlyParam = valueList.getFixedValueDisplayOnlyParameter();
+        const displayOnlyParams = valueList.getFixedValueDisplayOnlyParameters();
         const parent = this.getParent() as ContentGenerator;
         const select = new Select({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
@@ -571,9 +571,7 @@ export default class SimpleFormGenerator extends ManagedObject {
                 key: {
                     path: inOutParam.valueListProperty
                 },
-                text: {
-                    path: displayOnlyParam.valueListProperty
-                }
+                text: displayOnlyParams.map(param => `{${param.valueListProperty}}`).join(valueList.getFixedValueSeparator())
             }),
             events: {
                 dataReceived: () => {

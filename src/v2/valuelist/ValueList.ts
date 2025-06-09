@@ -42,6 +42,7 @@ export default class ValueList extends ManagedObject {
             localDataProperty: { type: "string", visibility: "public" },
             collectionPath: { type: "string", visibility: "public" },
             fixedValues: { type: "boolean", visibility: "public", defaultValue: false },
+            fixedValueSeparator: { type: "string", visibility: "public", defaultValue: " " },
             searchSupported: { type: "boolean", visibility: "public", defaultValue: false },
             title: { type: "string", visibility: "public" },
             filterBarErrorMessage: { type: "string", visibility: "public" },
@@ -83,10 +84,12 @@ export default class ValueList extends ManagedObject {
     public check() {
         if (this.getFixedValues()) {
             const inOutParam = this.getParameters().find(param => param.type === "InOut");
-            const displayOnlyParam = this.getParameters().find(param => param.type === "DisplayOnly");
+            const displayOnlyParams = this.getParameters().filter(param => param.type === "DisplayOnly");
 
-            if (this.getParameters().length !== 2 || !inOutParam || !displayOnlyParam) {
-                throw new Error("A ValueList with the Fixed Values option enabled can only have one InOut and one DisplayOnly parameter.");
+            if (!inOutParam || !displayOnlyParams.length) {
+                throw new Error(
+                    "A ValueList with the Fixed Values option enabled can only have one InOut and one-or-multiple DisplayOnly parameter."
+                );
             }
         } else {
             const consistent = this.getParameters().find(param => param.type === "InOut" || param.type === "Out");
@@ -136,14 +139,8 @@ export default class ValueList extends ManagedObject {
         return parameter;
     }
 
-    public getFixedValueDisplayOnlyParameter() {
-        const parameter = this.getParameters().find(param => param.type === "DisplayOnly");
-
-        if (parameter?.type !== "DisplayOnly") {
-            throw new Error("DisplayOnly parameter is missing for the fixed value enabled ValueList.");
-        }
-
-        return parameter;
+    public getFixedValueDisplayOnlyParameters() {
+        return this.getParameters().filter(param => param.type === "DisplayOnly");
     }
 
     private addFilterBar() {

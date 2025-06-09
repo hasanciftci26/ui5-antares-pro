@@ -8,6 +8,8 @@ declare module "ui5/antares/pro/v2/valuelist/ValueList" {
         getCollectionPath: GetProperty<string>;
         getFixedValues: GetProperty<boolean>;
         setFixedValues: SetProperty<boolean>;
+        getFixedValueSeparator: GetProperty<string>;
+        setFixedValueSeparator: SetProperty<string>;
         getSearchSupported: GetProperty<boolean>;
         setSearchSupported: SetProperty<boolean>;
         getTitle: GetProperty<string>;
@@ -25,6 +27,7 @@ export interface ISettings {
     localDataProperty: string;
     collectionPath: string;
     fixedValues?: boolean;
+    fixedValueSeparator?: string;
     searchSupported?: boolean;
     title?: string;
     filterBarErrorMessage?: string;

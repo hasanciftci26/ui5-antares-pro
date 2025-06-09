@@ -35,6 +35,7 @@ export default class Homepage extends BaseController {
             localDataProperty: "employeeID",
             collectionPath: "Employees",
             fixedValues: true,
+            fixedValueSeparator: " - ",
             parameters: [{
                 localDataProperty: "employeeID",
                 type: "InOut",
@@ -42,6 +43,9 @@ export default class Homepage extends BaseController {
             }, {
                 type: "DisplayOnly",
                 valueListProperty: "firstName"
+            }, {
+                type: "DisplayOnly",
+                valueListProperty: "lastName"
             }]
         }));
 
