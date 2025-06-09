@@ -9,6 +9,7 @@ import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
+import CustomData from "sap/ui/core/CustomData";
 import Messaging from "sap/ui/core/Messaging";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
@@ -29,6 +30,7 @@ import CustomSingle from "ui5/antares/pro/v2/custom/type/CustomSingle";
 import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
+import SmartFormValidator from "ui5/antares/pro/v2/validation/SmartFormValidator";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -40,24 +42,44 @@ export default class SmartFormGenerator extends ManagedObject {
         properties: {
             entitySet: { type: "string", visibility: "public" },
             form: { type: "object", visibility: "public" }
+        },
+        aggregations: {
+            validator: {
+                type: "ui5.antares.pro.v2.validation.SmartFormValidator",
+                multiple: false,
+                visibility: "hidden"
+            }
         }
     };
 
     constructor(settings: ISettings) {
         super(settings as $ManagedObjectSettings);
+        this.setValidator(new SmartFormValidator());
     }
 
     public generate() {
         const form = new SmartForm({
             editTogglable: false,
             editable: true,
-            validationMode: "Async",
+            validationMode: "Standard",
             groups: new Group({
                 groupElements: this.getGroupElements()
             })
         });
 
         this.setForm(form);
+    }
+
+    public async validate() {
+        return this.getValidator().validate();
+    }
+
+    private getValidator() {
+        return this.getAggregation("validator") as SmartFormValidator;
+    }
+
+    private setValidator(validator: SmartFormValidator) {
+        this.setAggregation("validator", validator);
     }
 
     private getGroupElements() {
@@ -121,6 +143,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
 
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: {
                 path: path,
@@ -140,6 +163,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
         const validationLogic = parent.getValidationLogicByProperty(path);
         const datePicker = new DatePicker({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             value: {
@@ -181,6 +205,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
 
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: {
                 path: path,
@@ -195,6 +220,7 @@ export default class SmartFormGenerator extends ManagedObject {
     private getDateTimePicker(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
         const dateTimePicker = new DateTimePicker({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             value: {
@@ -252,6 +278,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
 
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: {
                 path: path,
@@ -268,6 +295,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getParent() as ContentGenerator;
         const validationLogic = parent.getValidationLogicByProperty(path);
         const timePicker = new TimePicker({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             value: {
@@ -304,6 +332,7 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getNumberText(property: IProp, navProperty?: string) {
         return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: this.getNumberBinding(property, navProperty)
         });
@@ -311,6 +340,7 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getNumberInput(property: IProp, navProperty?: string) {
         const input = new Input({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             textAlign: "End",
             visible: property.visible,
             required: property.required,
@@ -425,8 +455,13 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getSmartField(property: IProp, navProperty?: string) {
         const value = navProperty ? `{${navProperty}/${property.name}}` : `{${property.name}}`;
+        const propertyName = navProperty ? `${navProperty}/${property.name}` : property.name;
 
         const field = new SmartField({
+            customData: [
+                new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+                new CustomData({ key: "UI5AntaresProPropertyName", value: propertyName })
+            ],
             value: value,
             mandatory: property.required,
             editable: property.readonly === false,

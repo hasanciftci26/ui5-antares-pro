@@ -133,6 +133,10 @@ export default class CreateEntry<EntityT extends Record<string, any> = Record<st
             for (const generator of this.getSimpleFormGenerators()) {
                 validations.push(await generator.validate());
             }
+        } else {
+            for (const generator of this.getSmartFormGenerators()) {
+                validations.push(await generator.validate());
+            }
         }
 
         return validations.every(validation => validation);
