@@ -11,8 +11,6 @@ export default class CustomString extends String {
     private property: IProp;
     private requiredPropertyErrorMessage: string;
     private validationLogic?: ValidationLogic;
-    private runCheckRequired = false;
-    private runValidationLogic = false;
 
     constructor(settings: IStringSettings) {
         super();
@@ -25,22 +23,12 @@ export default class CustomString extends String {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (!this.runValidationLogic) {
-            this.runValidationLogic = true;
-            return;
-        }
-
         if (this.validationLogic && value != null && value !== "" && value !== "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
             return this.validationLogic.evaluate(value);
         }
     }
 
     private checkRequired(value: string | null) {
-        if (!this.runCheckRequired) {
-            this.runCheckRequired = true;
-            return;
-        }
-
         if (this.property.required && (value == null || value === "" || value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY")) {
             throw new ValidateException(this.requiredPropertyErrorMessage.replace("{property}", this.property.label));
         }

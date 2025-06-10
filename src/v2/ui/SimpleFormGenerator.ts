@@ -1,11 +1,7 @@
 import CheckBox from "sap/m/CheckBox";
-import DatePicker from "sap/m/DatePicker";
-import DateTimePicker from "sap/m/DateTimePicker";
-import Input, { Input$ValueHelpRequestEvent } from "sap/m/Input";
+import { Input$ValueHelpRequestEvent } from "sap/m/Input";
 import Label from "sap/m/Label";
-import Select from "sap/m/Select";
 import Text from "sap/m/Text";
-import TimePicker from "sap/m/TimePicker";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
 import CustomData from "sap/ui/core/CustomData";
@@ -18,6 +14,11 @@ import { INumberFormatOptions } from "ui5/antares/pro/types/v2/custom/type/Forma
 import { IDateTimeSettings } from "ui5/antares/pro/types/v2/custom/type/Settings.types";
 import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { IBindingWithCustomType, ISettings } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
+import CustomDatePicker from "ui5/antares/pro/v2/custom/control/CustomDatePicker";
+import CustomDateTimePicker from "ui5/antares/pro/v2/custom/control/CustomDateTimePicker";
+import CustomInput from "ui5/antares/pro/v2/custom/control/CustomInput";
+import CustomSelect from "ui5/antares/pro/v2/custom/control/CustomSelect";
+import CustomTimePicker from "ui5/antares/pro/v2/custom/control/CustomTimePicker";
 import CustomByte from "ui5/antares/pro/v2/custom/type/CustomByte";
 import CustomDateTime from "ui5/antares/pro/v2/custom/type/CustomDateTime";
 import CustomDateTimeOffset from "ui5/antares/pro/v2/custom/type/CustomDateTimeOffset";
@@ -141,7 +142,7 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getDatePicker(property: IProp, navProperty?: string) {
-        const datePicker = new DatePicker({
+        const datePicker = new CustomDatePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
@@ -196,7 +197,7 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getDateTimePicker(property: IProp, navProperty?: string) {
-        const dateTimePicker = new DateTimePicker({
+        const dateTimePicker = new CustomDateTimePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
@@ -253,7 +254,7 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getTimePicker(property: IProp, navProperty?: string) {
-        const timePicker = new TimePicker({
+        const timePicker = new CustomTimePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
@@ -305,7 +306,7 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getNumberInput(property: IProp, navProperty?: string) {
-        const input = new Input({
+        const input = new CustomInput({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             textAlign: "End",
             visible: property.visible,
@@ -504,7 +505,7 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getStringInput(property: IProp, path: string, valueList?: ValueList) {
-        const input = new Input({
+        const input = new CustomInput({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             name: path,
             visible: property.visible,
@@ -552,7 +553,7 @@ export default class SimpleFormGenerator extends ManagedObject {
         const inOutParam = valueList.getFixedValueInOutParameter();
         const displayOnlyParams = valueList.getFixedValueDisplayOnlyParameters();
         const parent = this.getParent() as ContentGenerator;
-        const select = new Select({
+        const select = new CustomSelect({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             required: property.required,
             visible: property.visible,

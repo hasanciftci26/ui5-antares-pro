@@ -1,12 +1,10 @@
-import DatePicker from "sap/m/DatePicker";
-import DateTimePicker from "sap/m/DateTimePicker";
-import Input from "sap/m/Input";
-import Select from "sap/m/Select";
-import TimePicker from "sap/m/TimePicker";
 import ManagedObject from "sap/ui/base/ManagedObject";
-import PropertyBinding from "sap/ui/model/PropertyBinding";
-import SimpleType from "sap/ui/model/SimpleType";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import CustomDatePicker from "ui5/antares/pro/v2/custom/control/CustomDatePicker";
+import CustomDateTimePicker from "ui5/antares/pro/v2/custom/control/CustomDateTimePicker";
+import CustomInput from "ui5/antares/pro/v2/custom/control/CustomInput";
+import CustomSelect from "ui5/antares/pro/v2/custom/control/CustomSelect";
+import CustomTimePicker from "ui5/antares/pro/v2/custom/control/CustomTimePicker";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 
 /**
@@ -35,32 +33,13 @@ export default class SimpleFormValidator extends ManagedObject {
             }
 
             switch (true) {
-                case control instanceof Input:
-                case control instanceof DatePicker:
-                case control instanceof DateTimePicker:
-                case control instanceof TimePicker:
-                    const valueBinding = control.getBinding("value") as PropertyBinding;
-                    const value = control.getProperty("value");
-                    const valueBindingType = valueBinding.getType() as SimpleType;
-
+                case control instanceof CustomInput:
+                case control instanceof CustomDatePicker:
+                case control instanceof CustomDateTimePicker:
+                case control instanceof CustomTimePicker:
+                case control instanceof CustomSelect:
                     try {
-                        await valueBindingType.validateValue(valueBindingType.parseValue(value, "string"));
-                        control.setValueState("None");
-                        control.setValueStateText("");
-                    } catch (error) {
-                        valid = false;
-                        control.setValueState("Error");
-                        control.setValueStateText((error as { message: string; }).message);
-                    }
-
-                    break;
-                case control instanceof Select:
-                    const selectedKeyBinding = control.getBinding("selectedKey") as PropertyBinding;
-                    const selectedKey = control.getProperty("selectedKey");
-                    const selectedKeyBindingType = selectedKeyBinding.getType() as SimpleType;
-
-                    try {
-                        await selectedKeyBindingType.validateValue(selectedKeyBindingType.parseValue(selectedKey, "string"));
+                        await control.checkValuesValidity();
                         control.setValueState("None");
                         control.setValueStateText("");
                     } catch (error) {

@@ -11,8 +11,6 @@ export default class CustomGuid extends Guid {
     private property: IProp;
     private requiredPropertyErrorMessage: string;
     private validationLogic?: ValidationLogic;
-    private runCheckRequired = false;
-    private runValidationLogic = false;
 
     constructor(settings: IStringSettings) {
         super();
@@ -25,22 +23,12 @@ export default class CustomGuid extends Guid {
         super.validateValue(value!);
         this.checkRequired(value);
 
-        if (!this.runValidationLogic) {
-            this.runValidationLogic = true;
-            return;
-        }
-
         if (this.validationLogic && value != null && value !== "" && value !== "00000000-0000-0000-0000-000000000000") {
             return this.validationLogic.evaluate(value);
         }
     }
 
     private checkRequired(value: string | null) {
-        if (!this.runCheckRequired) {
-            this.runCheckRequired = true;
-            return;
-        }
-
         if (this.property.required && (value == null || value === "" || value === "00000000-0000-0000-0000-000000000000")) {
             throw new ValidateException(this.requiredPropertyErrorMessage.replace("{property}", this.property.label));
         }
