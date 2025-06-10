@@ -25,7 +25,15 @@ export default class Homepage extends BaseController {
             entitySet: "Employees",
             metadataLabelEnabled: true,
             requiredProperties: ["firstName", "lastName"],
-            formType: "SimpleForm"
+            dateTimeSettings: {
+                datePattern: "d MMMM y",
+                dateTimePattern: "d MMMM y - HH:mm",
+                timePattern: "HH:mm"
+            },
+            numberSettings: {
+                groupingSeparator: " ",
+                decimalSeparator: ","
+            }
         });
 
         entry.execute();

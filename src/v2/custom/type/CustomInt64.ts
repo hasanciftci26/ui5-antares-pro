@@ -11,17 +11,22 @@ export default class CustomInt64 extends Int64 {
     private property: IProp;
     private requiredPropertyErrorMessage: string;
     private validationLogic?: ValidationLogic;
+    private smartField: boolean;
 
     constructor(settings: INumberSettings) {
         super(settings.formatOptions || { parseEmptyValueToZero: false }, settings.constraints || { nullable: true });
         this.property = settings.property;
         this.requiredPropertyErrorMessage = settings.requiredPropertyErrorMessage;
         this.validationLogic = settings.validationLogic;
+        this.smartField = settings.smartField ?? false;
     }
 
     public override async validateValue(value: string | null): Promise<void> {
         super.validateValue(value!);
-        this.checkRequired(value);
+
+        if (!this.smartField) {
+            this.checkRequired(value);
+        }
 
         if (this.validationLogic && value != null && value !== "") {
             const parsedValue = value == null ? value : BigInt(value);

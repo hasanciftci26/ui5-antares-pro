@@ -11,17 +11,22 @@ export default class CustomInt16 extends Int16 {
     private property: IProp;
     private requiredPropertyErrorMessage: string;
     private validationLogic?: ValidationLogic;
+    private smartField: boolean;
 
     constructor(settings: INumberSettings) {
         super(settings.formatOptions, settings.constraints);
         this.property = settings.property;
         this.requiredPropertyErrorMessage = settings.requiredPropertyErrorMessage;
         this.validationLogic = settings.validationLogic;
+        this.smartField = settings.smartField ?? false;
     }
 
     public override async validateValue(value: number | null): Promise<void> {
         super.validateValue(value!);
-        this.checkRequired(value);
+
+        if (!this.smartField) {
+            this.checkRequired(value);
+        }
 
         if (this.validationLogic && value != null) {
             return this.validationLogic.evaluate(value);

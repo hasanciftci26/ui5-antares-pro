@@ -11,17 +11,22 @@ export default class CustomGuid extends Guid {
     private property: IProp;
     private requiredPropertyErrorMessage: string;
     private validationLogic?: ValidationLogic;
+    private smartField: boolean;
 
     constructor(settings: IStringSettings) {
         super();
         this.property = settings.property;
         this.requiredPropertyErrorMessage = settings.requiredPropertyErrorMessage;
         this.validationLogic = settings.validationLogic;
+        this.smartField = settings.smartField ?? false;
     }
 
     public override async validateValue(value: string | null): Promise<void> {
         super.validateValue(value!);
-        this.checkRequired(value);
+
+        if (!this.smartField) {
+            this.checkRequired(value);
+        }
 
         if (this.validationLogic && value != null && value !== "" && value !== "00000000-0000-0000-0000-000000000000") {
             return this.validationLogic.evaluate(value);

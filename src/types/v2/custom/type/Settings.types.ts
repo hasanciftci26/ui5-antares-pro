@@ -9,6 +9,7 @@ export interface INumberSettings {
     formatOptions?: INumberFormatOptions;
     constraints?: INumberConstraints;
     validationLogic?: ValidationLogic;
+    smartField?: boolean;
 }
 
 export interface IDateTimeSettings {
@@ -17,10 +18,12 @@ export interface IDateTimeSettings {
     formatOptions?: IDateTimeFormatOptions;
     constraints?: IDateTimeConstraints;
     validationLogic?: ValidationLogic;
+    smartField?: boolean;
 }
 
 export interface IStringSettings {
     property: IProp;
     requiredPropertyErrorMessage: string;
     validationLogic?: ValidationLogic;
+    smartField?: boolean;
 }

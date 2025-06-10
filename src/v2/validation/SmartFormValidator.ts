@@ -1,14 +1,7 @@
-import DatePicker from "sap/m/DatePicker";
-import DateTimePicker from "sap/m/DateTimePicker";
-import Input from "sap/m/Input";
-import TimePicker from "sap/m/TimePicker";
 import ManagedObject from "sap/ui/base/ManagedObject";
 import SmartField from "sap/ui/comp/smartfield/SmartField";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
-import PropertyBinding from "sap/ui/model/PropertyBinding";
-import SimpleType from "sap/ui/model/SimpleType";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 
 /**
@@ -26,7 +19,6 @@ export default class SmartFormValidator extends ManagedObject {
 
     public async validate() {
         const parent = this.getParent() as SmartFormGenerator;
-        const content = parent.getParent() as ContentGenerator;
         const form = parent.getForm();
         let valid = true;
 
@@ -39,53 +31,17 @@ export default class SmartFormValidator extends ManagedObject {
                     continue;
                 }
 
-                switch (true) {
-                    case control instanceof Input:
-                    case control instanceof DatePicker:
-                    case control instanceof DateTimePicker:
-                    case control instanceof TimePicker:
-                        const valueBinding = control.getBinding("value") as PropertyBinding;
-                        const value = control.getProperty("value");
-                        const valueBindingType = valueBinding.getType() as SimpleType;
+                if (control instanceof SmartField) {
+                    try {
+                        await control.checkValuesValidity();
+                    } catch (error) {
+                        valid = false;
 
-                        try {
-                            await valueBindingType.validateValue(valueBindingType.parseValue(value, "string"));
-                            control.setValueState("None");
-                            control.setValueStateText("");
-                        } catch (error) {
-                            valid = false;
+                        if (this.hasMessage(error)) {
                             control.setValueState("Error");
-                            control.setValueStateText((error as { message: string; }).message);
+                            control.setValueStateText(error.message);
                         }
-
-                        break;
-                    case control instanceof SmartField:
-                        try {
-                            const propertyName = control.getCustomData().find(data => data.getKey() === "UI5AntaresProPropertyName");
-                            await control.checkValuesValidity();
-
-                            if (propertyName) {
-                                const validationLogic = content.getValidationLogicByProperty(propertyName.getValue());
-
-                                if (validationLogic) {
-                                    const value = content.getContext().getProperty(propertyName.getValue());
-
-                                    if (value != null && value !== "") {
-                                        await validationLogic.evaluate(value);
-                                        control.setValueState("None");
-                                        control.setValueStateText("");
-                                    }
-                                }
-                            }
-                        } catch (error) {
-                            valid = false;
-
-                            if (this.hasMessage(error)) {
-                                control.setValueState("Error");
-                                control.setValueStateText(error.message);
-                            }
-                        }
-                        break;
+                    }
                 }
             }
         }
