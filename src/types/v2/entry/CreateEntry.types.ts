@@ -24,6 +24,7 @@ declare module "ui5/antares/pro/v2/entry/CreateEntry" {
 export type BeforeSubmit = (context: Context) => boolean | Promise<boolean>;
 
 export type CreateEntry$SubmitSuccessEventParameters<T extends Record<string, any> = Record<string, any>> = {
+    submitted: boolean;
     data?: T;
     response?: Record<string, any>;
 };

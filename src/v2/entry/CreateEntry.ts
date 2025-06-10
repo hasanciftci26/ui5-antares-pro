@@ -3,7 +3,9 @@ import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
+import { ISubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
 import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
+import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 
 /**
@@ -174,13 +176,44 @@ export default class CreateEntry extends ContentGenerator {
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().submitChanges({
                 groupId: this.getDeferredGroupId(),
-                success: (response?: object) => {
+                success: (response?: ISubmitChangesResponse) => {
                     BusyIndicator.hide();
+
+                    const parser = new ResponseParser(response);
+                    parser.parse();
+
+                    if (parser.status === "Success") {
+                        this.fireSubmitSuccess({
+                            submitted: true,
+                            data: parser.data,
+                            response: parser.response
+                        });
+
+                        this.getDialogGenerator().getDialog().close();
+                    } else {
+                        this.fireSubmitError({
+                            response: parser.response
+                        });
+
+                        if (parser.errorMessage) {
+                            MessageBox.error(parser.errorMessage);
+                        }
+                    }
                 },
-                error: (err?: object) => {
+                error: (err?: Record<string, any>) => {
                     BusyIndicator.hide();
+
+                    this.fireSubmitError({
+                        response: err
+                    });
                 }
             });
+        } else {
+            this.fireSubmitSuccess({
+                submitted: false
+            });
+
+            this.getDialogGenerator().getDialog().close();
         }
     }
 }
