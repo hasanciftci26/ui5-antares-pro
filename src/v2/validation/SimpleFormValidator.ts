@@ -5,6 +5,7 @@ import CustomDateTimePicker from "ui5/antares/pro/v2/custom/control/CustomDateTi
 import CustomInput from "ui5/antares/pro/v2/custom/control/CustomInput";
 import CustomSelect from "ui5/antares/pro/v2/custom/control/CustomSelect";
 import CustomTimePicker from "ui5/antares/pro/v2/custom/control/CustomTimePicker";
+import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 
 /**
@@ -28,27 +29,46 @@ export default class SimpleFormValidator extends ManagedObject {
         for (const control of form.getContent()) {
             const controlType = control.getCustomData().find(data => data.getKey() === "UI5AntaresProControlType");
 
-            if (!controlType || controlType?.getValue() !== "Standard") {
+            if (!controlType) {
                 continue;
             }
 
-            switch (true) {
-                case control instanceof CustomInput:
-                case control instanceof CustomDatePicker:
-                case control instanceof CustomDateTimePicker:
-                case control instanceof CustomTimePicker:
-                case control instanceof CustomSelect:
-                    try {
-                        await control.checkValuesValidity();
-                        control.setValueState("None");
-                        control.setValueStateText("");
-                    } catch (error) {
-                        valid = false;
-                        control.setValueState("Error");
-                        control.setValueStateText((error as { message: string; }).message);
-                    }
+            if (controlType.getValue() === "Standard") {
+                switch (true) {
+                    case control instanceof CustomInput:
+                    case control instanceof CustomDatePicker:
+                    case control instanceof CustomDateTimePicker:
+                    case control instanceof CustomTimePicker:
+                    case control instanceof CustomSelect:
+                        try {
+                            await control.checkValuesValidity();
+                            control.setValueState("None");
+                            control.setValueStateText("");
+                        } catch (error) {
+                            valid = false;
+                            control.setValueState("Error");
+                            control.setValueStateText((error as { message: string; }).message);
+                        }
 
-                    break;
+                        break;
+                }
+            } else if (controlType.getValue() === "Custom") {
+                const content = parent.getParent() as ContentGenerator;
+                const propertyName = control.getCustomData().find(data => data.getKey() === "UI5AntaresProPropertyName");
+
+                if (!propertyName) {
+                    continue;
+                }
+
+                const customElement = content.getCustomElementByProperty(propertyName.getValue());
+
+                if (customElement) {
+                    const result = await customElement.validate();
+
+                    if (!result) {
+                        valid = false;
+                    }
+                }
             }
         }
 

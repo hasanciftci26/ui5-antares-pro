@@ -1,4 +1,5 @@
 import ManagedObject from "sap/ui/base/ManagedObject";
+import CustomData from "sap/ui/core/CustomData";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
@@ -6,6 +7,7 @@ import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
 import Root from "ui5/antares/pro/v2/core/Root";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
+import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
@@ -80,6 +82,12 @@ export default abstract class ContentGenerator extends Root {
                 type: "ui5.antares.pro.v2.validation.ValidationLogic",
                 multiple: true,
                 singularName: "validationLogic",
+                visibility: "public"
+            },
+            customElements: {
+                type: "ui5.antares.pro.v2.ui.CustomElement",
+                multiple: true,
+                singularName: "customElement",
                 visibility: "public"
             }
         }
@@ -168,6 +176,28 @@ export default abstract class ContentGenerator extends Root {
     public getRequiredPropertyErrorMessage() {
         const message = this.getProperty("requiredPropertyErrorMessage") as string;
         return message.replace(/\\\{/g, "{").replace(/\\\}/g, "}");
+    }
+
+    public getSinglePropertySettings(propertyName: string) {
+        return this.getPropertySettings().find(settings => settings.name === propertyName);
+    }
+
+    public addCustomElement(customElement: CustomElement) {
+        customElement.getElement().addCustomData(new CustomData({
+            key: "UI5AntaresProControlType",
+            value: "Custom"
+        }));
+
+        customElement.getElement().addCustomData(new CustomData({
+            key: "UI5AntaresProPropertyName",
+            value: customElement.getPropertyName()
+        }));
+
+        this.addAggregation("customElements", customElement);
+    }
+
+    public getCustomElementByProperty(property: string) {
+        return this.getCustomElements().find(element => element.getPropertyName() === property);
     }
 
     protected getOperation() {

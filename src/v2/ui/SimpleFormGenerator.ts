@@ -98,6 +98,14 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getControl(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const customElement = parent.getCustomElementByProperty(path);
+
+        if (customElement) {
+            return customElement.getElement();
+        }
+
         switch (property.type) {
             case "Edm.DateTime":
                 if (property.displayFormat === "Date") {

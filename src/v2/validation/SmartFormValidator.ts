@@ -2,6 +2,7 @@ import ManagedObject from "sap/ui/base/ManagedObject";
 import SmartField from "sap/ui/comp/smartfield/SmartField";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 
 /**
@@ -27,19 +28,38 @@ export default class SmartFormValidator extends ManagedObject {
                 const control = (element as GroupElement).getElements()[0];
                 const controlType = control.getCustomData().find(data => data.getKey() === "UI5AntaresProControlType");
 
-                if (!controlType || controlType?.getValue() !== "Standard") {
+                if (!controlType) {
                     continue;
                 }
 
-                if (control instanceof SmartField) {
-                    try {
-                        await control.checkValuesValidity();
-                    } catch (error) {
-                        valid = false;
+                if (controlType.getValue() === "Standard") {
+                    if (control instanceof SmartField) {
+                        try {
+                            await control.checkValuesValidity();
+                        } catch (error) {
+                            valid = false;
 
-                        if (this.hasMessage(error)) {
-                            control.setValueState("Error");
-                            control.setValueStateText(error.message);
+                            if (this.hasMessage(error)) {
+                                control.setValueState("Error");
+                                control.setValueStateText(error.message);
+                            }
+                        }
+                    }
+                } else if (controlType.getValue() === "Custom") {
+                    const content = parent.getParent() as ContentGenerator;
+                    const propertyName = control.getCustomData().find(data => data.getKey() === "UI5AntaresProPropertyName");
+
+                    if (!propertyName) {
+                        continue;
+                    }
+
+                    const customElement = content.getCustomElementByProperty(propertyName.getValue());
+
+                    if (customElement) {
+                        const result = await customElement.validate();
+
+                        if (!result) {
+                            valid = false;
                         }
                     }
                 }

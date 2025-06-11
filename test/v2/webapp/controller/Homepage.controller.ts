@@ -1,6 +1,8 @@
+import TextArea from "sap/m/TextArea";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import { CreateEntry$SubmitSuccessEvent } from "ui5/antares/pro/types/v2/entry/CreateEntry.types";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
+import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -24,7 +26,6 @@ export default class Homepage extends BaseController {
             controller: this,
             entitySet: "Employees",
             metadataLabelEnabled: true,
-            requiredProperties: ["firstName", "lastName"],
             dateTimeSettings: {
                 datePattern: "d MMMM y",
                 dateTimePattern: "d MMMM y - HH:mm",
@@ -38,6 +39,18 @@ export default class Homepage extends BaseController {
                 name: "test"
             }]
         });
+
+        entry.addCustomElement(new CustomElement({
+            propertyName: "firstName",
+            element: new TextArea({
+                value: {
+                    path: "firstName"
+                }
+            }),
+            validator: () => {
+                return false;
+            }
+        }));
 
         entry.execute();
     }

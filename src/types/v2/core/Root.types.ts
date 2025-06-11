@@ -12,6 +12,7 @@ import {
     INumberSettings,
     IPropertySettings
 } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
+import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
@@ -51,7 +52,8 @@ export interface ISettings {
     propertyOrder?: string[];
     propertySettings?: IPropertySettings[];
     navProperties?: string[];
+    beforeSubmit?: BeforeSubmit;
     valueLists?: ValueList[];
     validationLogics?: ValidationLogic[];
-    beforeSubmit?: BeforeSubmit;
+    customElements?: CustomElement[];
 }

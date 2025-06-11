@@ -95,6 +95,14 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getSmartField(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const customElement = parent.getCustomElementByProperty(path);
+
+        if (customElement) {
+            return customElement.getElement();
+        }
+
         if (property.readonly) {
             return this.getReadonlySmartField(property, navProperty);
         } else {
@@ -118,6 +126,8 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getEditableSmartField(property: IProp, navProperty?: string) {
         const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const propertySettings = parent.getSinglePropertySettings(path);
 
         const field = new SmartField({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
@@ -129,6 +139,10 @@ export default class SmartFormGenerator extends ManagedObject {
             editable: true,
             visible: property.visible
         });
+
+        if (propertySettings?.textInEditModeSource) {
+            field.setTextInEditModeSource(propertySettings.textInEditModeSource);
+        }
 
         return field;
     }
