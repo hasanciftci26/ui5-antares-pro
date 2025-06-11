@@ -10,7 +10,7 @@ import {
     IBooleanSettings,
     IDateTimeSettings,
     INumberSettings,
-    IPropertyLabel
+    IPropertySettings
 } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
@@ -49,7 +49,7 @@ export interface ISettings {
     readonlyProperties?: string[];
     requiredProperties?: string[];
     propertyOrder?: string[];
-    propertyLabels?: IPropertyLabel[];
+    propertySettings?: IPropertySettings[];
     navProperties?: string[];
     valueLists?: ValueList[];
     validationLogics?: ValidationLogic[];

@@ -43,7 +43,7 @@ export default abstract class ContentGenerator extends Root {
             readonlyProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             requiredProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             propertyOrder: { type: "string[]", visibility: "public", defaultValue: [] },
-            propertyLabels: { type: "object[]", visibility: "public", defaultValue: [] },
+            propertySettings: { type: "object[]", visibility: "public", defaultValue: [] },
             navProperties: { type: "string[]", visibility: "public", defaultValue: [] }
         },
         aggregations: {

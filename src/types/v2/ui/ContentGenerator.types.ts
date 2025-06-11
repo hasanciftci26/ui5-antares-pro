@@ -52,8 +52,8 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setRequiredProperties: SetProperty<string[]>;
         getPropertyOrder: GetProperty<string[]>;
         setPropertyOrder: SetProperty<string[]>;
-        getPropertyLabels: GetProperty<IPropertyLabel[]>;
-        setPropertyLabels: SetProperty<IPropertyLabel[]>;
+        getPropertySettings: GetProperty<IPropertySettings[]>;
+        setPropertySettings: SetProperty<IPropertySettings[]>;
         getNavProperties: GetProperty<string[]>;
         setNavProperties: SetProperty<string[]>;
         getValueLists: GetAggregation<ValueList[]>;
@@ -70,10 +70,18 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
 export type Operation = "Create" | "Read" | "Update" | "Delete";
 export type GuidMode = "All" | "Key" | "NonKey" | "None";
 
-export interface IPropertyLabel {
+export interface IPropertySettings {
     name: string;
-    label: string;
+    label?: string;
+    textInEditModeSource?: TextInEditModeSource;
 }
+
+export type TextInEditModeSource =
+    "None" |
+    "NavigationProperty" |
+    "ValueList" |
+    "ValueListNoValidation" |
+    "ValueListWarning";
 
 export type FormType = "SmartForm" | "SimpleForm";
 

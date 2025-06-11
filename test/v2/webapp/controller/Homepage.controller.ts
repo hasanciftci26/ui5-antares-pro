@@ -33,7 +33,10 @@ export default class Homepage extends BaseController {
             numberSettings: {
                 groupingSeparator: " ",
                 decimalSeparator: ","
-            }
+            },
+            propertySettings: [{
+                name: "test"
+            }]
         });
 
         entry.execute();
