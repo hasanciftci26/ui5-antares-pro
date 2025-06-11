@@ -40,16 +40,14 @@ export default class Homepage extends BaseController {
             }]
         });
 
-        entry.addCustomElement(new CustomElement({
+        entry.addCustomElement(new CustomElement<TextArea>({
             propertyName: "firstName",
             element: new TextArea({
                 value: {
                     path: "firstName"
                 }
             }),
-            validator: () => {
-                return false;
-            }
+            validator: this.onValidateFirstName
         }));
 
         entry.execute();
@@ -61,5 +59,9 @@ export default class Homepage extends BaseController {
 
     private onSubmitSuccess(event: CreateEntry$SubmitSuccessEvent<{ testID: string; }>) {
         event.getParameter("data");
+    }
+
+    private onValidateFirstName(element: TextArea) {
+        return element.getValue() !== "";
     }
 }

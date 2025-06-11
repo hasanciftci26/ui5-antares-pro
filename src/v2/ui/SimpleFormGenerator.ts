@@ -103,7 +103,7 @@ export default class SimpleFormGenerator extends ManagedObject {
         const customElement = parent.getCustomElementByProperty(path);
 
         if (customElement) {
-            return customElement.getElement();
+            return customElement.getElement() as Control;
         }
 
         switch (property.type) {

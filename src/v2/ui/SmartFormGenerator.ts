@@ -4,6 +4,7 @@ import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
+import Control from "sap/ui/core/Control";
 import CustomData from "sap/ui/core/CustomData";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
@@ -100,7 +101,7 @@ export default class SmartFormGenerator extends ManagedObject {
         const customElement = parent.getCustomElementByProperty(path);
 
         if (customElement) {
-            return customElement.getElement();
+            return customElement.getElement() as Control;
         }
 
         if (property.readonly) {

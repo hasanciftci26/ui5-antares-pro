@@ -1,4 +1,5 @@
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
+import UI5Element from "sap/ui/core/Element";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/ui/CustomElement.types";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
@@ -6,7 +7,7 @@ import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 /**
  * @namespace ui5.antares.pro.v2.ui
  */
-export default class CustomElement extends ManagedObject {
+export default class CustomElement<T extends UI5Element = UI5Element> extends ManagedObject {
     static metadata: IClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
@@ -17,7 +18,7 @@ export default class CustomElement extends ManagedObject {
         }
     };
 
-    constructor(settings: ISettings) {
+    constructor(settings: ISettings<T>) {
         super(settings as $ManagedObjectSettings);
     }
 
