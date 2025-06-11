@@ -35,6 +35,7 @@ export default abstract class ContentGenerator extends Root {
             metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
             validationErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             requiredPropertyErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
+            showErrorMessageBox: { type: "boolean", visibility: "public", defaultValue: true },
             dateTimeSettings: { type: "object", visibility: "public" },
             numberSettings: { type: "object", visibility: "public" },
             booleanSettings: { type: "object", visibility: "public", defaultValue: { trueText: "", falseText: "", autoFalse: true } },

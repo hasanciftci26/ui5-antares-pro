@@ -6,6 +6,13 @@ export interface ISubmitChangesResponse {
 
 export interface IBatchResponse {
     __changeResponses?: IChangeResponse[];
+    response?: {
+        statusCode?: string;
+        statusText?: string;
+        headers?: Record<string, any>;
+        body?: string;
+    };
+    message?: string;
 }
 
 export interface IChangeResponse {

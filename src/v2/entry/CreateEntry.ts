@@ -189,13 +189,14 @@ export default class CreateEntry extends ContentGenerator {
                             response: parser.response
                         });
 
+                        this.resetODataBindingMode();
                         this.getDialogGenerator().getDialog().close();
                     } else {
                         this.fireSubmitError({
                             response: parser.response
                         });
 
-                        if (parser.errorMessage) {
+                        if (parser.errorMessage && this.getShowErrorMessageBox()) {
                             MessageBox.error(parser.errorMessage);
                         }
                     }
@@ -203,16 +204,20 @@ export default class CreateEntry extends ContentGenerator {
                 error: (err?: Record<string, any>) => {
                     BusyIndicator.hide();
 
+                    const parser = new ResponseParser();
+                    parser.parseError(err);
+
                     this.fireSubmitError({
                         response: err
                     });
+
+                    if (parser.errorMessage && this.getShowErrorMessageBox()) {
+                        MessageBox.error(parser.errorMessage);
+                    }
                 }
             });
         } else {
-            this.fireSubmitSuccess({
-                submitted: false
-            });
-
+            this.resetODataBindingMode();
             this.getDialogGenerator().getDialog().close();
         }
     }

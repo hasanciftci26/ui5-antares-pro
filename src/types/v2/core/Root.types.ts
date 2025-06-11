@@ -3,6 +3,7 @@ import { ButtonType } from "sap/m/library";
 import Controller from "sap/ui/core/mvc/Controller";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
+import { BeforeSubmit } from "ui5/antares/pro/types/v2/entry/CreateEntry.types";
 import {
     FormType,
     GuidMode,
@@ -40,6 +41,7 @@ export interface ISettings {
     guidVisibilityMode?: GuidMode;
     metadataLabelEnabled?: boolean;
     requiredPropertyErrorMessage?: string;
+    showErrorMessageBox?: boolean;
     dateTimeSettings?: IDateTimeSettings;
     numberSettings?: INumberSettings;
     booleanSettings?: IBooleanSettings;
@@ -51,4 +53,5 @@ export interface ISettings {
     navProperties?: string[];
     valueLists?: ValueList[];
     validationLogics?: ValidationLogic[];
+    beforeSubmit?: BeforeSubmit;
 }

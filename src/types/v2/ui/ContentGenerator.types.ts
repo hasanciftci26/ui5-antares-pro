@@ -36,6 +36,8 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         getValidationErrorMessage: GetProperty<string>;
         setValidationErrorMessage: SetProperty<string>;
         setRequiredPropertyErrorMessage: SetProperty<string>;
+        getShowErrorMessageBox: GetProperty<boolean>;
+        setShowErrorMessageBox: SetProperty<boolean>;
         getDateTimeSettings: GetProperty<IDateTimeSettings | undefined>;
         setDateTimeSettings: SetProperty<IDateTimeSettings | undefined>;
         getNumberSettings: GetProperty<INumberSettings | undefined>;

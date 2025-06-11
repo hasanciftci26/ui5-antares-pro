@@ -34,10 +34,28 @@ export default class ResponseParser extends BaseObject {
         this.setData();
     }
 
+    public parseError(error?: Record<string, any>) {
+        this.status = "Error";
+
+        if (!error) {
+            return;
+        }
+
+        if (this.hasErrorResponseText(error)) {
+            this.errorMessage = error.responseText;
+        } else if (this.hasErrorMessage(error)) {
+            this.errorMessage = error.message;
+        } else {
+            this.errorMessage = LibraryBundle.getText("ui5AntaresPro.error.submit");
+        }
+    }
+
     private setStatus() {
         let statusCode: string | undefined;
 
-        if (this.rawResponse?.__batchResponses[0].__changeResponses) {
+        if (this.rawResponse?.__batchResponses[0].response) {
+            statusCode = this.rawResponse?.__batchResponses[0].response.statusCode;
+        } else if (this.rawResponse?.__batchResponses[0].__changeResponses) {
             const changeResponses = this.rawResponse?.__batchResponses[0].__changeResponses;
 
             if (changeResponses.length) {
@@ -56,7 +74,9 @@ export default class ResponseParser extends BaseObject {
     }
 
     private setResponse() {
-        if (this.rawResponse?.__batchResponses[0].__changeResponses) {
+        if (this.rawResponse?.__batchResponses[0].response) {
+            this.response = this.rawResponse?.__batchResponses[0].response;
+        } else if (this.rawResponse?.__batchResponses[0].__changeResponses) {
             const changeResponses = this.rawResponse?.__batchResponses[0].__changeResponses;
 
             if (changeResponses.length) {
@@ -98,5 +118,13 @@ export default class ResponseParser extends BaseObject {
 
     private hasBody(response: Record<string, any>): response is { body: string; } {
         return "body" in response && typeof response.body === "string";
+    }
+
+    private hasErrorResponseText(error: Record<string, any>): error is { responseText: string; } {
+        return "responseText" in error && typeof error.responseText === "string";
+    }
+
+    private hasErrorMessage(error: Record<string, any>): error is { message: string; } {
+        return "message" in error && typeof error.message === "string";
     }
 }
