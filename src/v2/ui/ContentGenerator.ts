@@ -41,9 +41,6 @@ export default abstract class ContentGenerator extends Root {
             dateTimeSettings: { type: "object", visibility: "public" },
             numberSettings: { type: "object", visibility: "public" },
             booleanSettings: { type: "object", visibility: "public", defaultValue: { trueText: "", falseText: "", autoFalse: true } },
-            excludedProperties: { type: "string[]", visibility: "public", defaultValue: [] },
-            readonlyProperties: { type: "string[]", visibility: "public", defaultValue: [] },
-            requiredProperties: { type: "string[]", visibility: "public", defaultValue: [] },
             propertyOrder: { type: "string[]", visibility: "public", defaultValue: [] },
             propertySettings: { type: "object[]", visibility: "public", defaultValue: [] },
             navProperties: { type: "string[]", visibility: "public", defaultValue: [] }

@@ -21,7 +21,9 @@ export default class LabelGenerator extends ManagedObject {
         const parent = this.getParent() as MetaContext;
         const content = this.getOwnerContentGenerator();
         const entitySet = parent.getEntitySet();
-        const propertyLabel = content.getPropertySettings().find(prop => prop.name === property.name)?.label;
+        const entitySetType = parent.getEntitySetType();
+        const propertyName = entitySetType === "Parent" ? property.name : parent.getNavProperty()?.name + `/${property.name}`;
+        const propertyLabel = content.getPropertySettings().find(prop => prop.name === propertyName)?.label;
 
         if (content.getMetadataLabelEnabled()) {
             const labelExtension = property.extensions?.find(ext => ext.name === "label")?.value;

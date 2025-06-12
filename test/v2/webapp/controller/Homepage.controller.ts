@@ -25,7 +25,7 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            metadataLabelEnabled: true,
+            metadataLabelEnabled: false,
             dateTimeSettings: {
                 datePattern: "d MMMM y",
                 dateTimePattern: "d MMMM y - HH:mm",
@@ -36,19 +36,11 @@ export default class Homepage extends BaseController {
                 decimalSeparator: ","
             },
             propertySettings: [{
-                name: "test"
-            }]
+                name: "toContract/contractType",
+                required: true
+            }],
+            navProperties: ["toContract"]
         });
-
-        entry.addCustomElement(new CustomElement<TextArea>({
-            propertyName: "firstName",
-            element: new TextArea({
-                value: {
-                    path: "firstName"
-                }
-            }),
-            validator: this.onValidateFirstName
-        }));
 
         entry.execute();
     }

@@ -45,12 +45,6 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setNumberSettings: SetProperty<INumberSettings | undefined>;
         getBooleanSettings: GetProperty<Required<IBooleanSettings>>;
         setBooleanSettings: SetProperty<IBooleanSettings>;
-        getExcludedProperties: GetProperty<string[]>;
-        setExcludedProperties: SetProperty<string[]>;
-        getReadonlyProperties: GetProperty<string[]>;
-        setReadonlyProperties: SetProperty<string[]>;
-        getRequiredProperties: GetProperty<string[]>;
-        setRequiredProperties: SetProperty<string[]>;
         getPropertyOrder: GetProperty<string[]>;
         setPropertyOrder: SetProperty<string[]>;
         getPropertySettings: GetProperty<IPropertySettings[]>;
@@ -79,6 +73,9 @@ export interface IPropertySettings {
     name: string;
     label?: string;
     textInEditModeSource?: TextInEditModeSource;
+    required?: boolean;
+    readonly?: boolean;
+    excluded?: boolean;
 }
 
 export type TextInEditModeSource =

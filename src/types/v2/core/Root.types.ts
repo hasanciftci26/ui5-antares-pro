@@ -46,9 +46,6 @@ export interface ISettings {
     dateTimeSettings?: IDateTimeSettings;
     numberSettings?: INumberSettings;
     booleanSettings?: IBooleanSettings;
-    excludedProperties?: string[];
-    readonlyProperties?: string[];
-    requiredProperties?: string[];
     propertyOrder?: string[];
     propertySettings?: IPropertySettings[];
     navProperties?: string[];

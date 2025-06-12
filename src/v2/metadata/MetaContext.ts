@@ -253,43 +253,46 @@ export default class MetaContext extends ManagedObject {
 
     private getExcludedProperties() {
         const parent = this.getOwnerContentGenerator();
+        const propertySettings = parent.getPropertySettings();
 
         if (this.getEntitySetType() === "Parent") {
-            return parent.getExcludedProperties().filter(prop => prop.includes("/") === false);
+            return propertySettings.filter(prop => prop.excluded && prop.name.includes("/") === false).map(prop => prop.name);
         } else {
-            const excludedProperties = parent.getExcludedProperties().filter(
-                prop => prop.startsWith(this.getNavProperty()!.name + "/")
+            const excludedProperties = propertySettings.filter(
+                prop => prop.excluded && prop.name.startsWith(this.getNavProperty()!.name + "/")
             );
 
-            return excludedProperties.map(prop => prop.split("/")[1]);
+            return excludedProperties.map(prop => prop.name.split("/")[1]);
         }
     }
 
     private getReadonlyProperties() {
         const parent = this.getOwnerContentGenerator();
+        const propertySettings = parent.getPropertySettings();
 
         if (this.getEntitySetType() === "Parent") {
-            return parent.getReadonlyProperties().filter(prop => prop.includes("/") === false);
+            return propertySettings.filter(prop => prop.readonly && prop.name.includes("/") === false).map(prop => prop.name);
         } else {
-            const readonlyProperties = parent.getReadonlyProperties().filter(
-                prop => prop.startsWith(this.getNavProperty()!.name + "/")
+            const readonlyProperties = propertySettings.filter(
+                prop => prop.readonly && prop.name.startsWith(this.getNavProperty()!.name + "/")
             );
 
-            return readonlyProperties.map(prop => prop.split("/")[1]);
+            return readonlyProperties.map(prop => prop.name.split("/")[1]);
         }
     }
 
     private getRequiredProperties() {
         const parent = this.getOwnerContentGenerator();
+        const propertySettings = parent.getPropertySettings();
 
         if (this.getEntitySetType() === "Parent") {
-            return parent.getRequiredProperties().filter(prop => prop.includes("/") === false);
+            return propertySettings.filter(prop => prop.required && prop.name.includes("/") === false).map(prop => prop.name);
         } else {
-            const requiredProperties = parent.getRequiredProperties().filter(
-                prop => prop.startsWith(this.getNavProperty()!.name + "/")
+            const requiredProperties = propertySettings.filter(
+                prop => prop.required && prop.name.startsWith(this.getNavProperty()!.name + "/")
             );
 
-            return requiredProperties.map(prop => prop.split("/")[1]);
+            return requiredProperties.map(prop => prop.name.split("/")[1]);
         }
     }
 
