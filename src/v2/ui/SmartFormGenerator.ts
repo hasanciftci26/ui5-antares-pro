@@ -1,4 +1,5 @@
 import Label from "sap/m/Label";
+import Text from "sap/m/Text";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import SmartField from "sap/ui/comp/smartfield/SmartField";
 import Group from "sap/ui/comp/smartform/Group";
@@ -11,6 +12,7 @@ import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constra
 import { INumberFormatOptions } from "ui5/antares/pro/types/v2/custom/type/FormatOptions.types";
 import { IDateTimeSettings } from "ui5/antares/pro/types/v2/custom/type/Settings.types";
 import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import { IDateBinding, IDateTimeBinding, INumberBinding } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
 import { ISettings } from "ui5/antares/pro/types/v2/ui/SmartFormGenerator.types";
 import CustomByte from "ui5/antares/pro/v2/custom/type/CustomByte";
 import CustomDateTime from "ui5/antares/pro/v2/custom/type/CustomDateTime";
@@ -105,24 +107,183 @@ export default class SmartFormGenerator extends ManagedObject {
         }
 
         if (property.readonly) {
-            return this.getReadonlySmartField(property, navProperty);
+            return this.getReadonlyControl(property, navProperty);
         } else {
             return this.getEditableSmartField(property, navProperty);
         }
     }
 
-    private getReadonlySmartField(property: IProp, navProperty?: string) {
-        const value = navProperty ? `{${navProperty}/${property.name}}` : `{${property.name}}`;
+    private getReadonlyControl(property: IProp, navProperty?: string) {
+        switch (property.type) {
+            case "Edm.DateTime":
+                if (property.displayFormat === "Date") {
+                    return this.getDateText(property, navProperty);
+                } else {
+                    return this.getDateTimeText(property, navProperty);
+                }
+            case "Edm.DateTimeOffset":
+                return this.getDateTimeText(property, navProperty);
+            case "Edm.Time":
+                return this.getTimeText(property, navProperty);
+            case "Edm.Byte":
+            case "Edm.SByte":
+            case "Edm.Int16":
+            case "Edm.Int32":
+            case "Edm.Int64":
+            case "Edm.Single":
+            case "Edm.Double":
+            case "Edm.Decimal":
+                return this.getNumberText(property, navProperty);
+            case "Edm.Boolean":
+                return this.getBooleanText(property, navProperty);
+            default:
+                return this.getRegularText(property, navProperty);
+        }
+    }
 
-        const field = new SmartField({
+    private getDateText(property: IProp, navProperty?: string) {
+        return new Text({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
-            value: value,
-            mandatory: false,
-            editable: false,
-            visible: property.visible
+            visible: property.visible,
+            text: this.getDateBinding(property, navProperty)
         });
+    }
 
-        return field;
+    private getDateBinding(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const datePattern = parent.getDateTimeSettings()?.datePattern;
+        const binding: IDateBinding = {
+            path: path,
+            type: "sap.ui.model.odata.type." + property.type.substring(4),
+            constraints: {
+                displayFormat: "Date"
+            }
+        };
+
+        if (datePattern) {
+            binding.formatOptions = {
+                pattern: datePattern
+            };
+        }
+
+        return binding;
+    }
+
+    private getDateTimeText(property: IProp, navProperty?: string) {
+        return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            visible: property.visible,
+            text: this.getDateTimeBinding(property, navProperty)
+        });
+    }
+
+    private getDateTimeBinding(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
+        const binding: IDateTimeBinding = {
+            path: path,
+            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        };
+
+        if (dateTimePattern) {
+            binding.formatOptions = {
+                pattern: dateTimePattern
+            };
+        }
+
+        return binding;
+    }
+
+    private getTimeText(property: IProp, navProperty?: string) {
+        return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            visible: property.visible,
+            text: this.getTimeBinding(property, navProperty)
+        });
+    }
+
+    private getTimeBinding(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const timePattern = parent.getDateTimeSettings()?.timePattern;
+        const binding: IDateTimeBinding = {
+            path: path,
+            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        };
+
+        if (timePattern) {
+            binding.formatOptions = {
+                pattern: timePattern
+            };
+        }
+
+        return binding;
+    }
+
+    private getNumberText(property: IProp, navProperty?: string) {
+        return new Text({
+            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            visible: property.visible,
+            text: this.getNumberBinding(property, navProperty)
+        });
+    }
+
+    private getNumberBinding(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
+        const binding: INumberBinding = {
+            path: path,
+            type: "sap.ui.model.odata.type." + property.type.substring(4)
+        };
+
+        if (numberSettings) {
+            binding.formatOptions = {
+                groupingEnabled: numberSettings.groupingEnabled,
+                groupingSeparator: numberSettings.groupingSeparator,
+                groupingSize: numberSettings.groupingSize,
+                decimalSeparator: numberSettings.decimalSeparator
+            };
+        }
+
+        if (property.precision && property.scale) {
+            binding.constraints = {
+                precision: property.precision,
+                scale: property.scale
+            };
+        }
+
+        return binding;
+    }
+
+    private getBooleanText(property: IProp, navProperty?: string) {
+        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getParent() as ContentGenerator;
+        const booleanSettings = parent.getBooleanSettings();
+
+        return new Text({
+            text: {
+                path: path,
+                formatter: (value: boolean | null) => {
+                    if (value == null) {
+                        return value;
+                    }
+
+                    return value === true ? booleanSettings.trueText : booleanSettings.falseText;
+                }
+            }
+        });
+    }
+
+    private getRegularText(property: IProp, navProperty?: string) {
+        return new Text({
+            text: {
+                path: navProperty ? `${navProperty}/${property.name}` : property.name,
+                type: "sap.ui.model.odata.type." + property.type.substring(4)
+            }
+        });
     }
 
     private getEditableSmartField(property: IProp, navProperty?: string) {

@@ -25,8 +25,7 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            metadataLabelEnabled: false,
-            formType: "SimpleForm",
+            metadataLabelEnabled: true,
             dateTimeSettings: {
                 datePattern: "d MMMM y",
                 dateTimePattern: "d MMMM y - HH:mm",
@@ -36,14 +35,31 @@ export default class Homepage extends BaseController {
                 groupingSeparator: " ",
                 decimalSeparator: ","
             },
+            booleanSettings: {
+                trueText: "Evet",
+                falseText: "Hayir"
+            },
             propertySettings: [{
+                name: "salary",
+                required: true
+            },{
                 name: "toContract/contractType",
+                readonly: true
+            },{
+                name: "toContract/contractStart",
                 readonly: true
             }],
             navProperties: ["toContract"]
         });
 
-        entry.execute({toContract: {contractType: "test"}});
+        entry.execute({
+            isActive: true,
+            salary: 135468684.88,
+            toContract: {
+                contractType: "test",
+                contractStart: new Date()
+            }
+        });
     }
 
     /* ======================================================================================================================= */
