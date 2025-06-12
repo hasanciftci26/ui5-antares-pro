@@ -26,6 +26,7 @@ export default class Homepage extends BaseController {
             controller: this,
             entitySet: "Employees",
             metadataLabelEnabled: false,
+            formType: "SimpleForm",
             dateTimeSettings: {
                 datePattern: "d MMMM y",
                 dateTimePattern: "d MMMM y - HH:mm",
@@ -37,12 +38,12 @@ export default class Homepage extends BaseController {
             },
             propertySettings: [{
                 name: "toContract/contractType",
-                required: true
+                readonly: true
             }],
             navProperties: ["toContract"]
         });
 
-        entry.execute();
+        entry.execute({toContract: {contractType: "test"}});
     }
 
     /* ======================================================================================================================= */

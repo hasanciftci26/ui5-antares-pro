@@ -60,7 +60,8 @@ export default class CreateEntry extends ContentGenerator {
 
         return this.getODataModel().createEntry(this.getEntitySetPath(), {
             groupId: this.getDeferredGroupId(),
-            properties: initialData
+            properties: initialData,
+            expand: this.getNavProperties().join() || undefined
         }) as Context;
     }
 

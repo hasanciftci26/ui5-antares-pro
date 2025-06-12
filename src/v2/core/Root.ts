@@ -7,7 +7,6 @@ import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
-import Lib from "sap/ui/core/Lib";
 import BindingMode from "sap/ui/model/BindingMode";
 
 /**
@@ -166,6 +165,7 @@ export default abstract class Root extends ManagedObject {
     }
 
     private enableODataTwoWayBinding() {
+        this.getODataModel().setUseBatch(true);
         this.getODataModel().setDefaultBindingMode("TwoWay");
     }
 
