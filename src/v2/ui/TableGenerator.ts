@@ -194,6 +194,10 @@ export default class TableGenerator extends ManagedObject {
 
         switch (parent.getOperation()) {
             case "Create":
+                content.push(new ToolbarSpacer());
+                content.push(this.getTableCreateButton());
+                content.push(this.getTableDeleteButton());
+                break;
             case "Update":
                 content.push(new ToolbarSpacer());
                 content.push(this.getTableCreateButton());
