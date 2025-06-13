@@ -433,7 +433,7 @@ export default class TableGenerator extends ManagedObject {
 
         this.setButtonSettings("Delete");
         this.setDefaultFormTitle("Delete");
-        
+
         this.setNavDialogGenerator(new DialogGenerator({
             operation: "Delete"
         }));
@@ -495,7 +495,8 @@ export default class TableGenerator extends ManagedObject {
 
         if (parent.getFormType() === "SimpleForm") {
             this.setNavSimpleFormGenerator(new SimpleFormGenerator({
-                entitySet: this.getEntitySet()
+                entitySet: this.getEntitySet(),
+                includeNavPropertyToPath: false
             }));
             this.getNavSimpleFormGenerator().generate();
         } else {

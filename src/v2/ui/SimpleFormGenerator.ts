@@ -46,7 +46,8 @@ export default class SimpleFormGenerator extends ManagedObject {
         final: true,
         properties: {
             entitySet: { type: "string", visibility: "public" },
-            form: { type: "object", visibility: "public" }
+            form: { type: "object", visibility: "public" },
+            includeNavPropertyToPath: { type: "boolean", visibility: "public", defaultValue: true }
         },
         aggregations: {
             validator: {
@@ -98,9 +99,9 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getControl(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getOwnerContentGenerator();
-        const customElement = parent.getCustomElementByProperty(path);
+        const customElement = parent.getCustomElementByProperty(settingsPath);
 
         if (customElement) {
             return customElement.getElement() as Control;
@@ -162,10 +163,11 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getDateBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getOwnerContentGenerator();
         const datePattern = parent.getDateTimeSettings()?.datePattern;
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
         const typeSettings: IDateTimeSettings = {
             property: property,
             requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
@@ -175,7 +177,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             validationLogic: validationLogic
         };
         const binding: IBindingWithCustomType = {
-            path: path
+            path: bindingPath
         };
 
         if (datePattern) {
@@ -217,17 +219,18 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getDateTimeBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getOwnerContentGenerator();
         const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
         const typeSettings: IDateTimeSettings = {
             property: property,
             requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
             validationLogic: validationLogic
         };
         const binding: IBindingWithCustomType = {
-            path: path
+            path: bindingPath
         };
 
         if (dateTimePattern) {
@@ -274,17 +277,18 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getTimeBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getOwnerContentGenerator();
         const timePattern = parent.getDateTimeSettings()?.timePattern;
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
         const typeSettings: IDateTimeSettings = {
             property: property,
             requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
             validationLogic: validationLogic
         };
         const binding: IBindingWithCustomType = {
-            path: path
+            path: bindingPath
         };
 
         if (timePattern) {
@@ -327,9 +331,9 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getNumberBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
         const binding: IBindingWithCustomType = {
-            path: path,
+            path: bindingPath,
             type: this.getNumberBindingType(property, navProperty)
         };
 
@@ -337,10 +341,10 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getNumberBindingType(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getOwnerContentGenerator();
         const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
         let formatOptions: INumberFormatOptions | undefined;
         let constraints: INumberConstraints | undefined;
 
@@ -437,7 +441,7 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getBooleanText(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
         const parent = this.getOwnerContentGenerator();
         const booleanSettings = parent.getBooleanSettings();
 
@@ -445,7 +449,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: {
-                path: path,
+                path: bindingPath,
                 formatter: (value: boolean | null) => {
                     if (value == null) {
                         return value;
@@ -458,14 +462,14 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getCheckBox(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
 
         return new CheckBox({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
             selected: {
-                path: path,
+                path: bindingPath,
                 type: "sap.ui.model.odata.type." + property.type.substring(4)
             }
         });
@@ -480,22 +484,23 @@ export default class SimpleFormGenerator extends ManagedObject {
     }
 
     private getStringText(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
 
         return new Text({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             text: {
-                path: path,
+                path: bindingPath,
                 type: "sap.ui.model.odata.type." + property.type.substring(4)
             }
         });
     }
 
     private getStringEditableControl(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
         const parent = this.getOwnerContentGenerator();
-        const valueList = parent.getValueListByProperty(path);
+        const valueList = parent.getValueListByProperty(settingsPath);
 
         if (valueList) {
             if (property.type !== "Edm.Guid" && property.type !== "Edm.String") {
@@ -505,22 +510,22 @@ export default class SimpleFormGenerator extends ManagedObject {
             if (valueList.getFixedValues()) {
                 return this.getValueListSelect(property, valueList);
             } else {
-                return this.getStringInput(property, path, valueList);
+                return this.getStringInput(property, bindingPath, settingsPath, valueList);
             }
         } else {
-            return this.getStringInput(property, path);
+            return this.getStringInput(property, bindingPath, settingsPath);
         }
     }
 
-    private getStringInput(property: IProp, path: string, valueList?: ValueList) {
+    private getStringInput(property: IProp, bindingPath: string, settingsPath: string, valueList?: ValueList) {
         const input = new CustomInput({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
-            name: path,
+            name: settingsPath,
             visible: property.visible,
             required: property.required,
             value: {
-                path: path,
-                type: this.getStringBindingType(property, path)
+                path: bindingPath,
+                type: this.getStringBindingType(property, settingsPath)
             },
             maxLength: property.maxLength
         });
@@ -534,9 +539,9 @@ export default class SimpleFormGenerator extends ManagedObject {
         return input;
     }
 
-    private getStringBindingType(property: IProp, path: string) {
+    private getStringBindingType(property: IProp, settingsPath: string) {
         const parent = this.getOwnerContentGenerator();
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         switch (property.type) {
             case "Edm.Binary":
@@ -622,6 +627,18 @@ export default class SimpleFormGenerator extends ManagedObject {
                 return parent.getParent() as ContentGenerator;
             default:
                 return parent as ContentGenerator;
-        }      
+        }
+    }
+
+    private getPropertyPath(property: IProp, navProperty?: string) {
+        if (navProperty) {
+            if (this.getIncludeNavPropertyToPath()) {
+                return `${navProperty}/${property.name}`;
+            } else {
+                return property.name;
+            }
+        } else {
+            return property.name;
+        }
     }
 }

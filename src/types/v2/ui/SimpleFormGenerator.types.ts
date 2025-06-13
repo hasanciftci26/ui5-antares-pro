@@ -9,11 +9,14 @@ declare module "ui5/antares/pro/v2/ui/SimpleFormGenerator" {
         setEntitySet: SetProperty<string>;
         getForm: GetProperty<SimpleForm>;
         setForm: SetProperty<SimpleForm>;
+        getIncludeNavPropertyToPath: GetProperty<boolean>;
+        setIncludeNavPropertyToPath: SetProperty<boolean>;        
     }
 }
 
 export interface ISettings {
     entitySet: string;
+    includeNavPropertyToPath?: boolean;
 }
 
 export interface IBindingWithCustomType {

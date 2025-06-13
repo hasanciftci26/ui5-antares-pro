@@ -73,7 +73,7 @@ export default [
                 ]
             }],
             "no-var": "error",
-            "@typescript-eslint/max-params": ["error", { max: 3 }],
+            "@typescript-eslint/max-params": ["error", { max: 4 }],
             "max-len": ["error", {
                 code: 150,
                 ignoreUrls: true,
