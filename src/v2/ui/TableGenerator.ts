@@ -25,6 +25,7 @@ import Context from "sap/ui/model/odata/v2/Context";
 import MessageBox from "sap/m/MessageBox";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
+import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -390,6 +391,10 @@ export default class TableGenerator extends ManagedObject {
             operation: "Create"
         }));
 
+        // Attach events
+        this.getNavDialogGenerator().attachSubmitted(this.onDialogSubmit, this);
+        this.getNavDialogGenerator().attachClosed(this.onDialogClose, this);
+
         this.getNavDialogGenerator().generate();
         this.generateForm();
         this.addFormToDialog();
@@ -414,6 +419,10 @@ export default class TableGenerator extends ManagedObject {
             operation: "Update"
         }));
 
+        // Attach events
+        this.getNavDialogGenerator().attachSubmitted(this.onDialogSubmit, this);
+        this.getNavDialogGenerator().attachClosed(this.onDialogClose, this);        
+
         this.getNavDialogGenerator().generate();
         this.generateForm();
         this.addFormToDialog();
@@ -437,6 +446,10 @@ export default class TableGenerator extends ManagedObject {
         this.setNavDialogGenerator(new DialogGenerator({
             operation: "Delete"
         }));
+
+        // Attach events
+        this.getNavDialogGenerator().attachSubmitted(this.onDialogSubmit, this);
+        this.getNavDialogGenerator().attachClosed(this.onDialogClose, this);        
 
         this.getNavDialogGenerator().generate();
         this.generateForm();
@@ -515,6 +528,18 @@ export default class TableGenerator extends ManagedObject {
             this.getNavDialogGenerator().getDialog().addContent(this.getNavSimpleFormGenerator().getForm());
         } else {
             this.getNavDialogGenerator().getDialog().addContent(this.getNavSmartFormGenerator().getForm());
+        }
+    }
+
+    private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
+
+    }
+
+    private onDialogClose(event: DialogGenerator$ClosedEvent) {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (parent.getODataModel().hasPendingChanges(true)) {
+            parent.getODataModel().resetChanges([this.getContext().getPath()], true, true);
         }
     }
 

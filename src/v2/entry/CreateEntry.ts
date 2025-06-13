@@ -77,9 +77,7 @@ export default class CreateEntry extends ContentGenerator {
 
             const path = this.getContext().getPath() + "/" + navProperty.name;
 
-            if (navProperty.multiplicity === "Many") {
-                this.getODataModel().setProperty(path, []);
-            } else {
+            if (navProperty.multiplicity === "One") {
                 this.getODataModel().setProperty(path, {});
             }
         }
