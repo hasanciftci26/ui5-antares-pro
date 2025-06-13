@@ -156,6 +156,10 @@ export default abstract class ContentGenerator extends Root {
         return this.getAggregation("smartFormGenerators") as SmartFormGenerator[];
     }
 
+    public getTableGenerators() {
+        return this.getAggregation("tableGenerators") as TableGenerator[];
+    }
+
     public addValueList(valueList: ValueList) {
         valueList.check();
         this.addAggregation("valueLists", valueList);
@@ -214,7 +218,7 @@ export default abstract class ContentGenerator extends Root {
         this.setProperty("navProperties", navProperties);
     }
 
-    protected getOperation() {
+    public getOperation() {
         return this.getProperty("operation") as Operation;
     }
 
@@ -312,6 +316,7 @@ export default abstract class ContentGenerator extends Root {
 
         // Dialog related methods should not run for the reuse component
         this.addFormsToDialog();
+        this.addTablesToDialog();
         this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
         this.getDialogGenerator().getDialog().open();
     }
@@ -384,7 +389,7 @@ export default abstract class ContentGenerator extends Root {
             const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
             const tableGenerator = new TableGenerator({
                 entitySet: child.getEntitySet(),
-                tableClass: navProperty.tableClass
+                navProperty: navProperty
             });
 
             this.addTableGenerator(tableGenerator);
@@ -401,6 +406,12 @@ export default abstract class ContentGenerator extends Root {
             for (const generator of this.getSimpleFormGenerators()) {
                 this.getDialogGenerator().getDialog().addContent(generator.getForm());
             }
+        }
+    }
+
+    private addTablesToDialog() {
+        for (const generator of this.getTableGenerators()) {
+            this.getDialogGenerator().getDialog().addContent(generator.getTable());
         }
     }
 

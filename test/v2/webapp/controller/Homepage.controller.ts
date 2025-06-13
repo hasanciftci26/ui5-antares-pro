@@ -35,31 +35,13 @@ export default class Homepage extends BaseController {
                 groupingSeparator: " ",
                 decimalSeparator: ","
             },
-            booleanSettings: {
-                trueText: "Evet",
-                falseText: "Hayir"
-            },
-            propertySettings: [{
-                name: "salary",
-                required: true
-            },{
-                name: "toContract/contractType",
-                readonly: true
-            },{
-                name: "toContract/contractStart",
-                readonly: true
-            }],
-            navProperties: ["toContract"]
+            navProperties: [{
+                name: "toCertifications",
+                tableTitle: "Certifications"
+            }]
         });
 
-        entry.execute({
-            isActive: true,
-            salary: 135468684.88,
-            toContract: {
-                contractType: "test",
-                contractStart: new Date()
-            }
-        });
+        entry.execute();
     }
 
     /* ======================================================================================================================= */
