@@ -26,6 +26,8 @@ import MessageBox from "sap/m/MessageBox";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
+import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
+import { Binding$ChangeEvent } from "sap/ui/model/Binding";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -116,7 +118,13 @@ export default class TableGenerator extends ManagedObject {
             path: this.getNavProperty().name,
             template: new ColumnListItem({
                 cells: this.addResponsiveTableColumns(table)
-            })
+            }),
+            events: {
+                change: (event: Binding$ChangeEvent) => {
+                    const length = (event.getSource() as ODataListBinding).getLength();
+                    this.setCount(length);
+                }
+            }
         });
         table.addStyleClass("sapUiSmallMargin");
 
@@ -151,7 +159,13 @@ export default class TableGenerator extends ManagedObject {
 
         table.setModel(this.getModel("table"), "table");
         table.bindRows({
-            path: this.getNavProperty().name
+            path: this.getNavProperty().name,
+            events: {
+                change: (event: Binding$ChangeEvent) => {
+                    const length = (event.getSource() as ODataListBinding).getLength();
+                    this.setCount(length);
+                }
+            }
         });
         table.addStyleClass("sapUiSmallMargin");
 
@@ -421,7 +435,7 @@ export default class TableGenerator extends ManagedObject {
 
         // Attach events
         this.getNavDialogGenerator().attachSubmitted(this.onDialogSubmit, this);
-        this.getNavDialogGenerator().attachClosed(this.onDialogClose, this);        
+        this.getNavDialogGenerator().attachClosed(this.onDialogClose, this);
 
         this.getNavDialogGenerator().generate();
         this.generateForm();
@@ -449,7 +463,7 @@ export default class TableGenerator extends ManagedObject {
 
         // Attach events
         this.getNavDialogGenerator().attachSubmitted(this.onDialogSubmit, this);
-        this.getNavDialogGenerator().attachClosed(this.onDialogClose, this);        
+        this.getNavDialogGenerator().attachClosed(this.onDialogClose, this);
 
         this.getNavDialogGenerator().generate();
         this.generateForm();
@@ -469,11 +483,28 @@ export default class TableGenerator extends ManagedObject {
 
     private createNewEntry() {
         const parent = this.getParent() as ContentGenerator;
-        const context = parent.getODataModel().createEntry(this.getNavProperty().name, {
-            context: parent.getContext()
-        }) as Context;
 
-        this.setContext(context);
+        if (parent.getOperation() === "Create") {
+            const table = this.getTable();
+
+            if (table instanceof GridTable) {
+                const binding = table.getBinding("rows") as ODataListBinding;
+                const context = binding.create(undefined, true);
+
+                this.setContext(context);
+            } else {
+                const binding = table.getBinding("rows") as ODataListBinding;
+                const context = binding.create(undefined, true);
+
+                this.setContext(context);
+            }
+        } else {
+            const context = parent.getODataModel().createEntry(this.getNavProperty().name, {
+                context: parent.getContext()
+            }) as Context;
+
+            this.setContext(context);
+        }
         return true;
     }
 
@@ -532,7 +563,7 @@ export default class TableGenerator extends ManagedObject {
     }
 
     private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
-
+        this.getNavDialogGenerator().getDialog().close();
     }
 
     private onDialogClose(event: DialogGenerator$ClosedEvent) {
