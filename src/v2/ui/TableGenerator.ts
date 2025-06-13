@@ -19,6 +19,9 @@ import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import Text from "sap/m/Text";
 import { IDateBinding, IDateTimeBinding, INumberBinding } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
+import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
+import { Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
+import Context from "sap/ui/model/odata/v2/Context";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -33,6 +36,10 @@ export default class TableGenerator extends ManagedObject {
             tableTitle: { type: "string", visibility: "public" },
             formTitle: { type: "string", visibility: "public" },
             count: { type: "int", visibility: "public", defaultValue: 0 },
+            submitButtonText: { type: "string", visibility: "public" },
+            submitButtonType: { type: "string", visibility: "public", defaultValue: "Emphasized" },
+            closeButtonText: { type: "string", visibility: "public" },
+            closeButtonType: { type: "string", visibility: "public", defaultValue: "Default" },
             navProperty: { type: "object", visibility: "public" },
             context: { type: "object", visibility: "public" }
         },
@@ -61,7 +68,11 @@ export default class TableGenerator extends ManagedObject {
         const model = new JSONModel({
             tableTitle: this.getTableTitle(),
             formTitle: this.getFormTitle(),
-            count: this.getCount()
+            count: this.getCount(),
+            submitButtonText: this.getSubmitButtonText(),
+            submitButtonType: this.getSubmitButtonType(),
+            closeButtonText: this.getCloseButtonText(),
+            closeButtonType: this.getCloseButtonType()
         });
 
         model.setDefaultBindingMode("TwoWay");
@@ -70,12 +81,16 @@ export default class TableGenerator extends ManagedObject {
         this.bindProperties([
             "tableTitle",
             "formTitle",
-            "count"
+            "count",
+            "submitButtonText",
+            "submitButtonType",
+            "closeButtonText",
+            "closeButtonType"
         ]);
     }
 
     public generate() {
-        this.setDefaultTableFormTitle();
+        this.setDefaultTableTitle();
 
         if (this.getNavProperty().tableClass === "sap.m.Table") {
             this.generateResponsiveTable();
@@ -181,6 +196,7 @@ export default class TableGenerator extends ManagedObject {
             icon: "sap-icon://add"
         });
 
+        button.attachPress(this.onCreate, this);
         return button;
     }
 
@@ -189,6 +205,7 @@ export default class TableGenerator extends ManagedObject {
             icon: "sap-icon://edit"
         });
 
+        button.attachPress(this.onUpdate, this);
         return button;
     }
 
@@ -197,6 +214,7 @@ export default class TableGenerator extends ManagedObject {
             icon: "sap-icon://delete"
         });
 
+        button.attachPress(this.onDelete, this);
         return button;
     }
 
@@ -360,26 +378,125 @@ export default class TableGenerator extends ManagedObject {
         return binding;
     }
 
-    private setDefaultTableFormTitle() {
-        const navProperty = this.getNavProperty();
-        const parent = this.getParent() as ContentGenerator;
+    private onCreate() {
+        this.setButtonSettings("Create");
+        this.setDefaultFormTitle("Create");
+        this.createContext("Create");
+        this.setNavDialogGenerator(new DialogGenerator({
+            operation: "Create"
+        }));
+        this.getNavDialogGenerator().generate();
 
-        this.setTableTitle(navProperty.tableTitle || this.getEntitySet());
+        this.getNavDialogGenerator().getDialog().setBindingContext(this.getContext());
+        this.getNavDialogGenerator().getDialog().open();
+    }
 
-        switch (parent.getOperation()) {
+    private onUpdate() {
+        this.setButtonSettings("Update");
+        this.setDefaultFormTitle("Update");
+        this.setNavDialogGenerator(new DialogGenerator({
+            operation: "Update"
+        }));
+        this.getNavDialogGenerator().generate();
+
+        this.getNavDialogGenerator().getDialog().setBindingContext(this.getContext());
+        this.getNavDialogGenerator().getDialog().open();
+    }
+
+    private onDelete() {
+        this.setButtonSettings("Delete");
+        this.setDefaultFormTitle("Delete");
+        this.setNavDialogGenerator(new DialogGenerator({
+            operation: "Delete"
+        }));
+        this.getNavDialogGenerator().generate();
+
+        this.getNavDialogGenerator().getDialog().setBindingContext(this.getContext());
+        this.getNavDialogGenerator().getDialog().open();
+    }
+
+    private createContext(operation: Operation) {
+        switch (operation) {
             case "Create":
-                this.setFormTitle(navProperty.formTitle || LibraryBundle.getText("ui5AntaresPro.title.createEntry", [this.getEntitySet()])!);
-                break;
-            case "Update":
-                this.setFormTitle(navProperty.formTitle || LibraryBundle.getText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()])!);
-                break;
-            case "Delete":
-                this.setFormTitle(navProperty.formTitle || LibraryBundle.getText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()])!);
-                break;
-            case "Read":
-                this.setFormTitle(navProperty.formTitle || LibraryBundle.getText("ui5AntaresPro.title.readEntry", [this.getEntitySet()])!);
+                this.createNewEntry();
                 break;
         }
+    }
+
+    private createNewEntry() {
+        const parent = this.getParent() as ContentGenerator;
+        const context = parent.getODataModel().createEntry(this.getNavProperty().name, {
+            context: parent.getContext()
+        }) as Context;
+
+        this.setContext(context);
+    }
+
+    private setButtonSettings(operation: Operation) {
+        const navProperty = this.getNavProperty();
+
+        switch (operation) {
+            case "Create":
+                this.setSubmitButtonText(navProperty.createButtonText || LibraryBundle.getText("ui5AntaresPro.button.create")!);
+
+                if (navProperty.createButtonType) {
+                    this.setSubmitButtonType(navProperty.createButtonType);
+                }
+                break;
+            case "Update":
+                this.setSubmitButtonText(navProperty.updateButtonText || LibraryBundle.getText("ui5AntaresPro.button.update")!);
+
+                if (navProperty.updateButtonType) {
+                    this.setSubmitButtonType(navProperty.updateButtonType);
+                }
+                break;
+            case "Delete":
+                this.setSubmitButtonText(navProperty.updateButtonType || LibraryBundle.getText("ui5AntaresPro.button.delete")!);
+
+                if (navProperty.deleteButtonType) {
+                    this.setSubmitButtonType(navProperty.deleteButtonType);
+                }
+                break;
+        }
+
+        this.setCloseButtonText(navProperty.closeButtonText || LibraryBundle.getText("ui5AntaresPro.button.close")!);
+
+        if (navProperty.closeButtonType) {
+            this.setCloseButtonType(navProperty.closeButtonType);
+        }
+    }
+
+    private setDefaultFormTitle(operation: Operation) {
+        const navProperty = this.getNavProperty();
+
+        switch (operation) {
+            case "Create":
+                this.setFormTitle(navProperty.createFormTitle || LibraryBundle.getText("ui5AntaresPro.title.createEntry", [this.getEntitySet()])!);
+                break;
+            case "Update":
+                this.setFormTitle(navProperty.updateFormTitle || LibraryBundle.getText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()])!);
+                break;
+            case "Delete":
+                this.setFormTitle(navProperty.deleteFormTitle || LibraryBundle.getText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()])!);
+                break;
+        }        
+    }
+
+    private setDefaultTableTitle() {
+        const navProperty = this.getNavProperty();
+        this.setTableTitle(navProperty.tableTitle || this.getEntitySet());
+    }
+
+    private getNavDialogGenerator() {
+        return this.getAggregation("navDialogGenerator") as DialogGenerator;
+    }
+
+    private setNavDialogGenerator(navDialogGenerator: DialogGenerator) {
+        this.setAggregation("navDialogGenerator", navDialogGenerator);
+    }
+
+    private destroyNavDialogGenerator() {
+        this.destroyAggregation("navDialogGenerator");
     }
 
     private bindProperties(properties: string[]) {

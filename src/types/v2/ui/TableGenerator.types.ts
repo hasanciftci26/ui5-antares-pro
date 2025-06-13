@@ -1,4 +1,5 @@
 /* eslint-disable semi */
+import { ButtonType } from "sap/m/library";
 import ResponsiveTable from "sap/m/Table";
 import Context from "sap/ui/model/odata/v2/Context";
 import GridTable from "sap/ui/table/Table";
@@ -17,6 +18,14 @@ declare module "ui5/antares/pro/v2/ui/TableGenerator" {
         setFormTitle: SetProperty<string>;
         getCount: GetProperty<number>;
         setCount: SetProperty<number>;
+        getSubmitButtonText: GetProperty<string>;
+        setSubmitButtonText: SetProperty<string>;
+        getSubmitButtonType: GetProperty<ButtonType>;
+        setSubmitButtonType: SetProperty<ButtonType>;
+        getCloseButtonText: GetProperty<string>;
+        setCloseButtonText: SetProperty<string>;
+        getCloseButtonType: GetProperty<ButtonType>;
+        setCloseButtonType: SetProperty<ButtonType>;        
         getNavProperty: GetProperty<MakeRequired<INavProperty, "tableClass">>;
         setNavProperty: SetProperty<MakeRequired<INavProperty, "tableClass">>;
         getContext: GetProperty<Context>;

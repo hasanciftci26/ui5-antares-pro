@@ -109,7 +109,17 @@ export interface IBooleanSettings {
 
 export interface INavProperty {
     name: string;
-    formTitle?: string;
     tableTitle?: string;
     tableClass?: TableClass;
+    createFormTitle?: string;
+    createButtonText?: string;
+    createButtonType?: ButtonType;
+    updateFormTitle?: string;
+    updateButtonText?: string;
+    updateButtonType?: ButtonType;
+    deleteFormTitle?: string;
+    deleteButtonText?: string;
+    deleteButtonType?: ButtonType;
+    closeButtonText?: string;
+    closeButtonType?: ButtonType;
 }

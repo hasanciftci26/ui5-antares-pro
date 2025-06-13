@@ -4,6 +4,7 @@ import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
+import TableGenerator from "ui5/antares/pro/v2/ui/TableGenerator";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -31,20 +32,21 @@ export default class DialogGenerator extends ManagedObject {
     }
 
     public generate() {
-        const parent = this.getParent() as ContentGenerator;
-        
+        const content = this.getOwnerContentGenerator();
+        const parent = this.getOwnerParent();
+
         const dialog = new Dialog({
             draggable: true,
             resizable: true,
             title: {
-                path: "content>/formTitle"
+                path: this.getParentModelName() + ">/formTitle"
             },
             endButton: this.getEndButton(),
             escapeHandler: this.onEscape as EscapeHandler
         });
 
-        dialog.setModel(parent.getODataModel());
-        dialog.setModel(parent.getModel("content"), "content");
+        dialog.setModel(content.getODataModel());
+        dialog.setModel(parent.getModel(this.getParentModelName()), this.getParentModelName());
 
         if (this.getOperation() !== "Read") {
             dialog.setBeginButton(this.getBeginButton());
@@ -56,10 +58,10 @@ export default class DialogGenerator extends ManagedObject {
     private getBeginButton() {
         return new Button({
             text: {
-                path: "content>/submitButtonText"
+                path: this.getParentModelName() + ">/submitButtonText"
             },
             type: {
-                path: "content>/submitButtonType"
+                path: this.getParentModelName() + ">/submitButtonType"
             },
             press: () => {
                 this.fireSubmitted({ dialog: this.getDialog() });
@@ -70,10 +72,10 @@ export default class DialogGenerator extends ManagedObject {
     private getEndButton() {
         return new Button({
             text: {
-                path: "content>/closeButtonText"
+                path: this.getParentModelName() + ">/closeButtonText"
             },
             type: {
-                path: "content>/closeButtonType"
+                path: this.getParentModelName() + ">/closeButtonType"
             },
             press: () => {
                 this.getDialog().close();
@@ -85,5 +87,38 @@ export default class DialogGenerator extends ManagedObject {
     private onEscape(event: { resolve: Function; reject: Function; }) {
         event.resolve();
         this.fireClosed({ dialog: this.getDialog() });
+    }
+
+    private getOwnerParent() {
+        const parent = this.getParent() as ManagedObject;
+
+        switch (parent.getMetadata().getName()) {
+            case "ui5.antares.pro.v2.ui.TableGenerator":
+                return parent as TableGenerator;
+            default:
+                return parent as ContentGenerator;
+        }
+    }
+
+    private getOwnerContentGenerator() {
+        const parent = this.getParent() as ManagedObject;
+
+        switch (parent.getMetadata().getName()) {
+            case "ui5.antares.pro.v2.ui.TableGenerator":
+                return parent.getParent() as ContentGenerator;
+            default:
+                return parent as ContentGenerator;
+        }
+    }
+
+    private getParentModelName() {
+        const parent = this.getParent() as ManagedObject;
+
+        switch (parent.getMetadata().getName()) {
+            case "ui5.antares.pro.v2.ui.TableGenerator":
+                return "table";
+            default:
+                return "content";
+        }
     }
 }
