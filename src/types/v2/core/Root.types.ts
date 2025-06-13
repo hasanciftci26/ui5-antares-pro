@@ -9,6 +9,7 @@ import {
     GuidMode,
     IBooleanSettings,
     IDateTimeSettings,
+    INavProperty,
     INumberSettings,
     IPropertySettings
 } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
@@ -48,7 +49,7 @@ export interface ISettings {
     booleanSettings?: IBooleanSettings;
     propertyOrder?: string[];
     propertySettings?: IPropertySettings[];
-    navProperties?: string[];
+    navProperties?: INavProperty[];
     beforeSubmit?: BeforeSubmit;
     valueLists?: ValueList[];
     validationLogics?: ValidationLogic[];

@@ -4,13 +4,14 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
-import { Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
+import { INavProperty, Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
 import Root from "ui5/antares/pro/v2/core/Root";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
+import TableGenerator from "ui5/antares/pro/v2/ui/TableGenerator";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
@@ -43,7 +44,7 @@ export default abstract class ContentGenerator extends Root {
             booleanSettings: { type: "object", visibility: "public", defaultValue: { trueText: "", falseText: "", autoFalse: true } },
             propertyOrder: { type: "string[]", visibility: "public", defaultValue: [] },
             propertySettings: { type: "object[]", visibility: "public", defaultValue: [] },
-            navProperties: { type: "string[]", visibility: "public", defaultValue: [] }
+            navProperties: { type: "object[]", visibility: "public", defaultValue: [] }
         },
         aggregations: {
             metaContexts: {
@@ -67,6 +68,12 @@ export default abstract class ContentGenerator extends Root {
                 type: "ui5.antares.pro.v2.ui.SmartFormGenerator",
                 multiple: true,
                 singularName: "smartFormGenerator",
+                visibility: "hidden"
+            },
+            tableGenerators: {
+                type: "ui5.antares.pro.v2.ui.TableGenerator",
+                multiple: true,
+                singularName: "tableGenerator",
                 visibility: "hidden"
             },
             valueLists: {
@@ -197,6 +204,16 @@ export default abstract class ContentGenerator extends Root {
         return this.getCustomElements().find(element => element.getPropertyName() === property);
     }
 
+    public setNavProperties(navProperties: INavProperty[]) {
+        for (const property of navProperties) {
+            if (!property.tableClass) {
+                property.tableClass = "sap.ui.table.Table";
+            }
+        }
+
+        this.setProperty("navProperties", navProperties);
+    }
+
     protected getOperation() {
         return this.getProperty("operation") as Operation;
     }
@@ -265,6 +282,22 @@ export default abstract class ContentGenerator extends Root {
         this.destroyAggregation("smartFormGenerators");
     }
 
+    protected addTableGenerator(tableGenerator: TableGenerator) {
+        this.addAggregation("tableGenerators", tableGenerator);
+    }
+
+    protected removeTableGenerator(reference: number | string | TableGenerator) {
+        this.removeAggregation("tableGenerators", reference);
+    }
+
+    protected removeAllTableGenerators() {
+        this.removeAllAggregation("tableGenerators");
+    }
+
+    protected destroyTableGenerators() {
+        this.destroyAggregation("tableGenerators");
+    }
+
     protected setContext(context: Context) {
         this.setProperty("context", context);
     }
@@ -275,6 +308,7 @@ export default abstract class ContentGenerator extends Root {
         this.getDialogGenerator().generate();
         this.generateParentForm();
         this.generateChildForm();
+        this.generateChildTable();
 
         // Dialog related methods should not run for the reuse component
         this.addFormsToDialog();
@@ -290,7 +324,7 @@ export default abstract class ContentGenerator extends Root {
         const navProperties = await MetaContext.extractNavProperties({
             model: this.getODataModel(),
             entitySet: this.getEntitySet(),
-            navProperties: this.getNavProperties()
+            navProperties: this.getNavProperties().map(prop => prop.name)
         });
 
         this.addMetaContext(parent);
@@ -340,6 +374,21 @@ export default abstract class ContentGenerator extends Root {
                 this.addSimpleFormGenerator(simpleFormGenerator);
                 simpleFormGenerator.generate();
             }
+        }
+    }
+
+    private generateChildTable() {
+        const children = this.getChildMetaContexts().filter(child => child.getNavProperty()!.multiplicity === "Many");
+
+        for (const child of children) {
+            const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
+            const tableGenerator = new TableGenerator({
+                entitySet: child.getEntitySet(),
+                tableClass: navProperty.tableClass
+            });
+
+            this.addTableGenerator(tableGenerator);
+            tableGenerator.generate();
         }
     }
 

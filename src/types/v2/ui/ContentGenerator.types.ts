@@ -4,10 +4,12 @@ import {
     DestroyAggregation,
     GetAggregation,
     GetProperty,
+    MakeRequired,
     RemoveAggregation,
     RemoveAllAggregation,
     SetProperty
 } from "ui5/antares/pro/types/Global.types";
+import { TableClass } from "ui5/antares/pro/types/v2/ui/TableGenerator.types";
 import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
@@ -49,8 +51,7 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         setPropertyOrder: SetProperty<string[]>;
         getPropertySettings: GetProperty<IPropertySettings[]>;
         setPropertySettings: SetProperty<IPropertySettings[]>;
-        getNavProperties: GetProperty<string[]>;
-        setNavProperties: SetProperty<string[]>;
+        getNavProperties: GetProperty<MakeRequired<INavProperty, "tableClass">[]>;
         getValueLists: GetAggregation<ValueList[]>;
         removeValueList: RemoveAggregation<ValueList>;
         removeAllValueLists: RemoveAllAggregation;
@@ -104,4 +105,11 @@ export interface IBooleanSettings {
     trueText?: string;
     falseText?: string;
     autoFalse?: boolean;
+}
+
+export interface INavProperty {
+    name: string;
+    formTitle?: string;
+    tableTitle?: string;
+    tableClass?: TableClass;
 }
