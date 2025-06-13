@@ -38,6 +38,7 @@ export default abstract class ContentGenerator extends Root {
             metadataLabelEnabled: { type: "boolean", visibility: "public", defaultValue: false },
             validationErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             requiredPropertyErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
+            selectRowErrorMessage: { type: "string", visibility: "public", defaultValue: "" },
             showErrorMessageBox: { type: "boolean", visibility: "public", defaultValue: true },
             dateTimeSettings: { type: "object", visibility: "public" },
             numberSettings: { type: "object", visibility: "public" },
@@ -421,6 +422,7 @@ export default abstract class ContentGenerator extends Root {
         this.setDefaultCloseButtonText();
         this.setDefaultValidationErrorMessage();
         this.setDefaultRequiredPropertyMessage();
+        this.setDefaultSelectRowErrorMessage();
         this.setDefaultBooleanSettings();
     }
 
@@ -486,6 +488,14 @@ export default abstract class ContentGenerator extends Root {
 
         const message = LibraryBundle.getText("ui5AntaresPro.error.requiredField") as string;
         this.setRequiredPropertyErrorMessage(ManagedObject.escapeSettingsValue(message));
+    }
+
+    private setDefaultSelectRowErrorMessage() {
+        if (this.getSelectRowErrorMessage()) {
+            return;
+        }
+
+        this.setSelectRowErrorMessage(LibraryBundle.getText("ui5AntaresPro.error.selectRow")!);
     }
 
     private setDefaultBooleanSettings() {

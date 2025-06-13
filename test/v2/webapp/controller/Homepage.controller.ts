@@ -25,7 +25,9 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            metadataLabelEnabled: true,
+            metadataLabelEnabled: false,
+            formType: "SimpleForm",
+            requiredPropertyErrorMessage: "{property} is a required field please fill.",
             dateTimeSettings: {
                 datePattern: "d MMMM y",
                 dateTimePattern: "d MMMM y - HH:mm",
@@ -35,6 +37,11 @@ export default class Homepage extends BaseController {
                 groupingSeparator: " ",
                 decimalSeparator: ","
             },
+            propertySettings: [{
+                name: "lastName",
+                label: "Tarik Auth",
+                required: true
+            }],
             navProperties: [{
                 name: "toCertifications",
                 tableTitle: "Certifications"

@@ -43,6 +43,7 @@ export interface ISettings {
     guidVisibilityMode?: GuidMode;
     metadataLabelEnabled?: boolean;
     requiredPropertyErrorMessage?: string;
+    selectRowErrorMessage?: string;
     showErrorMessageBox?: boolean;
     dateTimeSettings?: IDateTimeSettings;
     numberSettings?: INumberSettings;

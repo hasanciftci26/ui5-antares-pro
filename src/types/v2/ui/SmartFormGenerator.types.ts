@@ -8,9 +8,12 @@ declare module "ui5/antares/pro/v2/ui/SmartFormGenerator" {
         setEntitySet: SetProperty<string>;        
         getForm: GetProperty<SmartForm>;
         setForm: SetProperty<SmartForm>;
+        getIncludeNavPropertyToPath: GetProperty<boolean>;
+        setIncludeNavPropertyToPath: SetProperty<boolean>;
     }
 }
 
 export interface ISettings {
     entitySet: string;
+    includeNavPropertyToPath?: boolean;
 }

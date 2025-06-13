@@ -22,6 +22,9 @@ import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import { Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
 import Context from "sap/ui/model/odata/v2/Context";
+import MessageBox from "sap/m/MessageBox";
+import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
+import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -379,47 +382,75 @@ export default class TableGenerator extends ManagedObject {
     }
 
     private onCreate() {
+        this.createContext("Create");
         this.setButtonSettings("Create");
         this.setDefaultFormTitle("Create");
-        this.createContext("Create");
+
         this.setNavDialogGenerator(new DialogGenerator({
             operation: "Create"
         }));
+
         this.getNavDialogGenerator().generate();
+        this.generateForm();
+        this.addFormToDialog();
 
         this.getNavDialogGenerator().getDialog().setBindingContext(this.getContext());
         this.getNavDialogGenerator().getDialog().open();
     }
 
     private onUpdate() {
+        const success = this.createContext("Update");
+        const parent = this.getParent() as ContentGenerator;
+
+        if (!success) {
+            MessageBox.error(parent.getSelectRowErrorMessage());
+            return;
+        }
+
         this.setButtonSettings("Update");
         this.setDefaultFormTitle("Update");
+
         this.setNavDialogGenerator(new DialogGenerator({
             operation: "Update"
         }));
+
         this.getNavDialogGenerator().generate();
+        this.generateForm();
+        this.addFormToDialog();
 
         this.getNavDialogGenerator().getDialog().setBindingContext(this.getContext());
         this.getNavDialogGenerator().getDialog().open();
     }
 
     private onDelete() {
+        const success = this.createContext("Delete");
+        const parent = this.getParent() as ContentGenerator;
+
+        if (!success) {
+            MessageBox.error(parent.getSelectRowErrorMessage());
+            return;
+        }
+
         this.setButtonSettings("Delete");
         this.setDefaultFormTitle("Delete");
+        
         this.setNavDialogGenerator(new DialogGenerator({
             operation: "Delete"
         }));
+
         this.getNavDialogGenerator().generate();
+        this.generateForm();
+        this.addFormToDialog();
 
         this.getNavDialogGenerator().getDialog().setBindingContext(this.getContext());
         this.getNavDialogGenerator().getDialog().open();
     }
 
     private createContext(operation: Operation) {
-        switch (operation) {
-            case "Create":
-                this.createNewEntry();
-                break;
+        if (operation === "Create") {
+            return this.createNewEntry();
+        } else {
+            return this.extractBindingContext();
         }
     }
 
@@ -430,6 +461,60 @@ export default class TableGenerator extends ManagedObject {
         }) as Context;
 
         this.setContext(context);
+        return true;
+    }
+
+    private extractBindingContext() {
+        const table = this.getTable();
+
+        if (table instanceof GridTable) {
+            const selectedIndices = table.getSelectedIndices();
+
+            if (!selectedIndices.length) {
+                return false;
+            }
+
+            const context = table.getContextByIndex(selectedIndices[0]) as Context;
+            this.setContext(context);
+            return true;
+        } else {
+            const selectedItem = table.getSelectedItem();
+
+            if (!selectedItem) {
+                return false;
+            }
+
+            const context = selectedItem.getBindingContext() as Context;
+            this.setContext(context);
+            return true;
+        }
+    }
+
+    private generateForm() {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (parent.getFormType() === "SimpleForm") {
+            this.setNavSimpleFormGenerator(new SimpleFormGenerator({
+                entitySet: this.getEntitySet()
+            }));
+            this.getNavSimpleFormGenerator().generate();
+        } else {
+            this.setNavSmartFormGenerator(new SmartFormGenerator({
+                entitySet: this.getEntitySet(),
+                includeNavPropertyToPath: false
+            }));
+            this.getNavSmartFormGenerator().generate();
+        }
+    }
+
+    private addFormToDialog() {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (parent.getFormType() === "SimpleForm") {
+            this.getNavDialogGenerator().getDialog().addContent(this.getNavSimpleFormGenerator().getForm());
+        } else {
+            this.getNavDialogGenerator().getDialog().addContent(this.getNavSmartFormGenerator().getForm());
+        }
     }
 
     private setButtonSettings(operation: Operation) {
@@ -479,7 +564,7 @@ export default class TableGenerator extends ManagedObject {
             case "Delete":
                 this.setFormTitle(navProperty.deleteFormTitle || LibraryBundle.getText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()])!);
                 break;
-        }        
+        }
     }
 
     private setDefaultTableTitle() {
@@ -497,6 +582,30 @@ export default class TableGenerator extends ManagedObject {
 
     private destroyNavDialogGenerator() {
         this.destroyAggregation("navDialogGenerator");
+    }
+
+    private getNavSimpleFormGenerator() {
+        return this.getAggregation("navSimpleFormGenerator") as SimpleFormGenerator;
+    }
+
+    private setNavSimpleFormGenerator(navSimpleFormGenerator: SimpleFormGenerator) {
+        this.setAggregation("navSimpleFormGenerator", navSimpleFormGenerator);
+    }
+
+    private destroyNavSimpleFormGenerator() {
+        this.destroyAggregation("navSimpleFormGenerator");
+    }
+
+    private getNavSmartFormGenerator() {
+        return this.getAggregation("navSmartFormGenerator") as SmartFormGenerator;
+    }
+
+    private setNavSmartFormGenerator(navSmartFormGenerator: SmartFormGenerator) {
+        this.setAggregation("navSmartFormGenerator", navSmartFormGenerator);
+    }
+
+    private destroyNavSmartFormGenerator() {
+        this.destroyAggregation("navSmartFormGenerator");
     }
 
     private bindProperties(properties: string[]) {

@@ -40,7 +40,8 @@ export default class SmartFormGenerator extends ManagedObject {
         final: true,
         properties: {
             entitySet: { type: "string", visibility: "public" },
-            form: { type: "object", visibility: "public" }
+            form: { type: "object", visibility: "public" },
+            includeNavPropertyToPath: { type: "boolean", visibility: "public", defaultValue: true }
         },
         aggregations: {
             validator: {
@@ -83,7 +84,7 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getGroupElements() {
         const elements: GroupElement[] = [];
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const metaContext = parent.getMetaContextByEntitySet(this.getEntitySet());
         const properties = metaContext.getProps();
 
@@ -98,9 +99,9 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getSmartField(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
-        const customElement = parent.getCustomElementByProperty(path);
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getOwnerContentGenerator();
+        const customElement = parent.getCustomElementByProperty(settingsPath);
 
         if (customElement) {
             return customElement.getElement() as Control;
@@ -150,11 +151,11 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getDateBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const parent = this.getOwnerContentGenerator();
         const datePattern = parent.getDateTimeSettings()?.datePattern;
         const binding: IDateBinding = {
-            path: path,
+            path: bindingPath,
             type: "sap.ui.model.odata.type." + property.type.substring(4),
             constraints: {
                 displayFormat: "Date"
@@ -179,11 +180,11 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getDateTimeBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const parent = this.getOwnerContentGenerator();
         const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
         const binding: IDateTimeBinding = {
-            path: path,
+            path: bindingPath,
             type: "sap.ui.model.odata.type." + property.type.substring(4)
         };
 
@@ -205,11 +206,11 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getTimeBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const parent = this.getOwnerContentGenerator();
         const timePattern = parent.getDateTimeSettings()?.timePattern;
         const binding: IDateTimeBinding = {
-            path: path,
+            path: bindingPath,
             type: "sap.ui.model.odata.type." + property.type.substring(4)
         };
 
@@ -231,11 +232,11 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getNumberBinding(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const parent = this.getOwnerContentGenerator();
         const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
         const binding: INumberBinding = {
-            path: path,
+            path: bindingPath,
             type: "sap.ui.model.odata.type." + property.type.substring(4)
         };
 
@@ -259,13 +260,13 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getBooleanText(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const parent = this.getOwnerContentGenerator();
         const booleanSettings = parent.getBooleanSettings();
 
         return new Text({
             text: {
-                path: path,
+                path: bindingPath,
                 formatter: (value: boolean | null) => {
                     if (value == null) {
                         return value;
@@ -280,22 +281,23 @@ export default class SmartFormGenerator extends ManagedObject {
     private getRegularText(property: IProp, navProperty?: string) {
         return new Text({
             text: {
-                path: navProperty ? `${navProperty}/${property.name}` : property.name,
+                path: this.getPropertyPath(property, navProperty),
                 type: "sap.ui.model.odata.type." + property.type.substring(4)
             }
         });
     }
 
     private getEditableSmartField(property: IProp, navProperty?: string) {
-        const path = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getParent() as ContentGenerator;
-        const propertySettings = parent.getSinglePropertySettings(path);
+        const bindingPath = this.getPropertyPath(property, navProperty);
+        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
+        const parent = this.getOwnerContentGenerator();
+        const propertySettings = parent.getSinglePropertySettings(settingsPath);
 
         const field = new SmartField({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             value: {
-                path: path,
-                type: this.getSmartFieldBindingType(property, path)
+                path: bindingPath,
+                type: this.getSmartFieldBindingType(property, bindingPath, settingsPath)
             },
             mandatory: property.required,
             editable: true,
@@ -309,43 +311,43 @@ export default class SmartFormGenerator extends ManagedObject {
         return field;
     }
 
-    private getSmartFieldBindingType(property: IProp, path: string) {
+    private getSmartFieldBindingType(property: IProp, bindingPath: string, settingsPath: string) {
         switch (property.type) {
             case "Edm.Byte":
-                return this.getByteType(property, path);
+                return this.getByteType(property, settingsPath);
             case "Edm.SByte":
-                return this.getSByteType(property, path);
+                return this.getSByteType(property, settingsPath);
             case "Edm.Int16":
-                return this.getInt16Type(property, path);
+                return this.getInt16Type(property, settingsPath);
             case "Edm.Int32":
-                return this.getInt32Type(property, path);
+                return this.getInt32Type(property, settingsPath);
             case "Edm.Int64":
-                return this.getInt64Type(property, path);
+                return this.getInt64Type(property, settingsPath);
             case "Edm.Single":
-                return this.getSingleType(property, path);
+                return this.getSingleType(property, settingsPath);
             case "Edm.Double":
-                return this.getDoubleType(property, path);
+                return this.getDoubleType(property, settingsPath);
             case "Edm.Decimal":
-                return this.getDecimalType(property, path);
+                return this.getDecimalType(property, settingsPath);
             case "Edm.DateTime":
-                return this.getDateTimeType(property, path);
+                return this.getDateTimeType(property, settingsPath);
             case "Edm.DateTimeOffset":
-                return this.getDateTimeOffsetType(property, path);
+                return this.getDateTimeOffsetType(property, settingsPath);
             case "Edm.Time":
-                return this.getTimeType(property, path);
+                return this.getTimeType(property, settingsPath);
             case "Edm.Guid":
-                return this.getGuidType(property, path);
+                return this.getGuidType(property, settingsPath);
             case "Edm.String":
-                return this.getStringType(property, path);
+                return this.getStringType(property, settingsPath);
             default:
                 return "sap.ui.model.odata.type." + property.type.substring(4);
         }
     }
 
-    private getByteType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getByteType(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomByte({
             property: property,
@@ -357,10 +359,10 @@ export default class SmartFormGenerator extends ManagedObject {
         });
     }
 
-    private getSByteType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getSByteType(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomSByte({
             property: property,
@@ -372,10 +374,10 @@ export default class SmartFormGenerator extends ManagedObject {
         });
     }
 
-    private getInt16Type(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getInt16Type(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomInt16({
             property: property,
@@ -387,10 +389,10 @@ export default class SmartFormGenerator extends ManagedObject {
         });
     }
 
-    private getInt32Type(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getInt32Type(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomInt32({
             property: property,
@@ -402,10 +404,10 @@ export default class SmartFormGenerator extends ManagedObject {
         });
     }
 
-    private getInt64Type(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getInt64Type(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomInt64({
             property: property,
@@ -417,10 +419,10 @@ export default class SmartFormGenerator extends ManagedObject {
         });
     }
 
-    private getSingleType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getSingleType(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomSingle({
             property: property,
@@ -432,10 +434,10 @@ export default class SmartFormGenerator extends ManagedObject {
         });
     }
 
-    private getDoubleType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getDoubleType(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomDouble({
             property: property,
@@ -447,10 +449,10 @@ export default class SmartFormGenerator extends ManagedObject {
         });
     }
 
-    private getDecimalType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+    private getDecimalType(property: IProp, settingsPath: string) {
+        const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(path);
+        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
         return new CustomDecimal({
             property: property,
@@ -463,7 +465,7 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getNumberSettings(property: IProp) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
         let formatOptions: INumberFormatOptions | undefined;
         let constraints: INumberConstraints | undefined;
@@ -491,7 +493,7 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getDateTimeType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const validationLogic = parent.getValidationLogicByProperty(path);
         const dateTimeSettings = parent.getDateTimeSettings();
         const typeSettings: IDateTimeSettings = {
@@ -523,7 +525,7 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getDateTimeOffsetType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const validationLogic = parent.getValidationLogicByProperty(path);
         const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
         const typeSettings: IDateTimeSettings = {
@@ -543,7 +545,7 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getTimeType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const timePattern = parent.getDateTimeSettings()?.timePattern;
         const validationLogic = parent.getValidationLogicByProperty(path);
         const typeSettings: IDateTimeSettings = {
@@ -563,7 +565,7 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getGuidType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const validationLogic = parent.getValidationLogicByProperty(path);
 
         return new CustomGuid({
@@ -575,7 +577,7 @@ export default class SmartFormGenerator extends ManagedObject {
     }
 
     private getStringType(property: IProp, path: string) {
-        const parent = this.getParent() as ContentGenerator;
+        const parent = this.getOwnerContentGenerator();
         const validationLogic = parent.getValidationLogicByProperty(path);
 
         return new CustomString({
@@ -584,5 +586,28 @@ export default class SmartFormGenerator extends ManagedObject {
             validationLogic: validationLogic,
             smartField: true
         });
+    }
+
+    private getOwnerContentGenerator() {
+        const parent = this.getParent() as ManagedObject;
+
+        switch (parent.getMetadata().getName()) {
+            case "ui5.antares.pro.v2.ui.TableGenerator":
+                return parent.getParent() as ContentGenerator;
+            default:
+                return parent as ContentGenerator;
+        }
+    }
+
+    private getPropertyPath(property: IProp, navProperty?: string) {
+        if (navProperty) {
+            if (this.getIncludeNavPropertyToPath()) {
+                return `${navProperty}/${property.name}`;
+            } else {
+                return property.name;
+            }
+        } else {
+            return property.name;
+        }
     }
 }
