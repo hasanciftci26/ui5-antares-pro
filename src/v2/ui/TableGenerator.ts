@@ -28,6 +28,7 @@ import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import { Binding$ChangeEvent } from "sap/ui/model/Binding";
+import BusyIndicator from "sap/ui/core/BusyIndicator";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -572,6 +573,19 @@ export default class TableGenerator extends ManagedObject {
     }
 
     private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
+        BusyIndicator.show(0);
+
+        this.correctFixedValueListValues();
+        const parent = this.getParent() as ContentGenerator;
+        const validation = await this.validateForm();
+
+        if (!validation) {
+            BusyIndicator.hide();
+            MessageBox.error(parent.getValidationErrorMessage());
+            return;
+        }
+
+        BusyIndicator.hide();
         this.getNavDialogGenerator().getDialog().close();
     }
 
@@ -580,6 +594,27 @@ export default class TableGenerator extends ManagedObject {
 
         if (parent.getODataModel().hasPendingChanges(true)) {
             parent.getODataModel().resetChanges([this.getContext().getPath()], true, true);
+        }
+    }
+
+    private correctFixedValueListValues() {
+        const parent = this.getParent() as ContentGenerator;
+        const data = this.getContext().getObject() as Record<string, any>;
+
+        for (const property in data) {
+            if (data[property] === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY" || data[property] === "00000000-0000-0000-0000-000000000000") {
+                parent.getODataModel().setProperty(this.getContext().getPath() + `/${property}`, null);
+            }
+        }
+    }
+
+    private async validateForm() {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (parent.getFormType() === "SimpleForm") {
+            return this.getNavSimpleFormGenerator().validate();
+        } else {
+            return this.getNavSmartFormGenerator().validate();
         }
     }
 

@@ -34,13 +34,20 @@ export default class Homepage extends BaseController {
                 dateTimePattern: "d MMMM y - HH:mm",
                 timePattern: "HH:mm"
             },
+            guidGenerationMode: "None",
+            guidVisibilityMode: "All",
             numberSettings: {
                 groupingSeparator: " ",
                 decimalSeparator: ","
             },
             propertySettings: [{
                 name: "lastName",
-                label: "Tarik Auth",
+                required: true
+            }, {
+                name: "toCertifications/authority",
+                required: true
+            },{
+                name: "toCertifications/title",
                 required: true
             }],
             navProperties: [{
@@ -50,15 +57,10 @@ export default class Homepage extends BaseController {
         });
 
         entry.addValidationLogic(new ValidationLogic({
-            propertyName: "toCertifications/authority",
+            propertyName: "toCertifications/title",
             operator: "NE",
-            value1: "Test",
-            errorMessage: "Authority cannot be Test",
-            conditions: [{
-                propertyName: "toCertifications/title",
-                operator: "EQ",
-                value1: "My Title"
-            }]
+            value1: "CEO",
+            errorMessage: "Title cannot be CEO."
         }));
 
         entry.execute();

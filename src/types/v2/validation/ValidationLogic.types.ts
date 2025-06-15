@@ -20,6 +20,8 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
         setConditions: SetProperty<Condition[]>;
         getValidator: GetProperty<Validator | undefined>;
         setValidator: SetProperty<Validator | undefined>;
+        getUseChildContext: GetProperty<boolean>;
+        setUseChildContext: SetProperty<boolean>;
     }
 }
 
@@ -45,7 +47,7 @@ export type Condition = ICommonWithValue | ICommonWithMultiValue | ICommonWithNo
 export interface ICommonWithValue {
     propertyName: string;
     operator: CommonOperatorWithValue;
-    value1: Value;
+    value1: Value | IPropertyRef;
 }
 
 export interface ICommonWithMultiValue {
@@ -62,7 +64,7 @@ export interface ICommonWithNoValue {
 export interface INumericWithValue {
     propertyName: string;
     operator: NumericOperatorWithValue;
-    value1: number | bigint | Date | TimeValidation;
+    value1: number | bigint | Date | TimeValidation | IPropertyRef;
 }
 
 export type INumericWithMultiValue =
@@ -73,28 +75,28 @@ export type INumericWithMultiValue =
 export interface INumericWithMultiValueNumber {
     propertyName: string;
     operator: NumericOperatorWithMultiValue;
-    value1: number | bigint;
-    value2: number | bigint;
+    value1: number | bigint | IPropertyRef;
+    value2: number | bigint | IPropertyRef;
 }
 
 export interface INumericWithMultiValueDate {
     propertyName: string;
     operator: NumericOperatorWithMultiValue;
-    value1: Date;
-    value2: Date;
+    value1: Date | IPropertyRef;
+    value2: Date | IPropertyRef;
 }
 
 export interface INumericWithMultiValueTime {
     propertyName: string;
     operator: NumericOperatorWithMultiValue;
-    value1: TimeValidation;
-    value2: TimeValidation;
+    value1: TimeValidation | IPropertyRef;
+    value2: TimeValidation | IPropertyRef;
 }
 
 export interface IString {
     propertyName: string;
     operator: StringOperator;
-    value1: string;
+    value1: string | IPropertyRef;
 }
 
 export type Operator =
@@ -116,4 +118,8 @@ export type LogicalOperator = "And" | "Or";
 
 export interface ITimeObject {
     ms: number;
+}
+
+export interface IPropertyRef {
+    propertyName: string;
 }

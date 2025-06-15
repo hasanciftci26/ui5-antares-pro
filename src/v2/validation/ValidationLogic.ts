@@ -2,7 +2,7 @@ import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import ValidateException from "sap/ui/model/ValidateException";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { Condition, ITimeObject, Operator, Settings } from "ui5/antares/pro/types/v2/validation/ValidationLogic.types";
+import { Condition, IPropertyRef, ITimeObject, Operator, Settings } from "ui5/antares/pro/types/v2/validation/ValidationLogic.types";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import TimeValidation from "ui5/antares/pro/v2/validation/TimeValidation";
@@ -54,10 +54,13 @@ export default class ValidationLogic extends ManagedObject {
             return;
         }
 
+        const value1 = this.getValue1();
+        const value2 = this.getValue2();
+
         const evaluation = this.evaluateSingleCondition(this.getOperator(), {
             context: value,
-            value1: this.getValue1(),
-            value2: this.getValue2()
+            value1: this.isPropertyRef(value1) ? this.getPropertyRefValue(value1) : value1,
+            value2: this.isPropertyRef(value2) ? this.getPropertyRefValue(value2) : value2
         });
 
         if (!evaluation) {
@@ -81,8 +84,8 @@ export default class ValidationLogic extends ManagedObject {
             const value2 = this.hasValue2(condition) ? condition.value2 : undefined;
             const evaluation = this.evaluateSingleCondition(condition.operator, {
                 context: contextValue,
-                value1: value1,
-                value2: value2
+                value1: this.isPropertyRef(value1) ? this.getPropertyRefValue(value1) : value1,
+                value2: this.isPropertyRef(value2) ? this.getPropertyRefValue(value2) : value2
             });
 
             evaluations.push(evaluation);
@@ -222,5 +225,19 @@ export default class ValidationLogic extends ManagedObject {
             "ms" in value &&
             typeof value.ms === "number"
         );
+    }
+
+    private isPropertyRef(value: any): value is IPropertyRef {
+        return (
+            typeof value === "object" &&
+            value != null &&
+            "propertyName" in value &&
+            typeof value.propertyName === "string"
+        );
+    }
+
+    private getPropertyRefValue(propertyRef: IPropertyRef) {
+        const context = this.getRelevantContext();
+        return context.getProperty(this.getPropertyPath(propertyRef.propertyName));
     }
 }
