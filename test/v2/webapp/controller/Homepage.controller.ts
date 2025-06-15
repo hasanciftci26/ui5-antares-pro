@@ -3,6 +3,7 @@ import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import { CreateEntry$SubmitSuccessEvent } from "ui5/antares/pro/types/v2/entry/CreateEntry.types";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
 import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -47,6 +48,18 @@ export default class Homepage extends BaseController {
                 tableTitle: "Certifications"
             }]
         });
+
+        entry.addValidationLogic(new ValidationLogic({
+            propertyName: "toCertifications/authority",
+            operator: "NE",
+            value1: "Test",
+            errorMessage: "Authority cannot be Test",
+            conditions: [{
+                propertyName: "toCertifications/title",
+                operator: "EQ",
+                value1: "My Title"
+            }]
+        }));
 
         entry.execute();
     }

@@ -401,7 +401,10 @@ export default class TableGenerator extends ManagedObject {
     }
 
     private onCreate() {
+        const parent = this.getParent() as ContentGenerator;
+
         this.createContext("Create");
+        parent.setChildContext(this.getContext());
         this.setButtonSettings("Create");
         this.setDefaultFormTitle("Create");
 
@@ -430,6 +433,7 @@ export default class TableGenerator extends ManagedObject {
             return;
         }
 
+        parent.setChildContext(this.getContext());
         this.setButtonSettings("Update");
         this.setDefaultFormTitle("Update");
 
@@ -458,6 +462,7 @@ export default class TableGenerator extends ManagedObject {
             return;
         }
 
+        parent.setChildContext(this.getContext());
         this.setButtonSettings("Delete");
         this.setDefaultFormTitle("Delete");
 

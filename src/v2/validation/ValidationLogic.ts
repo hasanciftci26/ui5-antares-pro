@@ -22,7 +22,8 @@ export default class ValidationLogic extends ManagedObject {
             errorMessage: { type: "string", visibility: "public", defaultValue: "" },
             logicalOperator: { type: "string", visibility: "public", defaultValue: "And" },
             conditions: { type: "object[]", visibility: "public", defaultValue: [] },
-            validator: { type: "function", visibility: "public" }
+            validator: { type: "function", visibility: "public" },
+            useChildContext: { type: "boolean", visibility: "public", defaultValue: false }
         }
     };
 
@@ -70,13 +71,12 @@ export default class ValidationLogic extends ManagedObject {
         }
 
         const evaluations: boolean[] = [];
-        const parent = this.getParent() as ContentGenerator;
-        const context = parent.getContext();
+        const context = this.getRelevantContext();
 
         for (const condition of this.getConditions()) {
             this.check(condition.propertyName);
 
-            const contextValue = context.getProperty(condition.propertyName);
+            const contextValue = context.getProperty(this.getPropertyPath(condition.propertyName));
             const value1 = this.hasValue1(condition) ? condition.value1 : undefined;
             const value2 = this.hasValue2(condition) ? condition.value2 : undefined;
             const evaluation = this.evaluateSingleCondition(condition.operator, {
@@ -186,6 +186,24 @@ export default class ValidationLogic extends ManagedObject {
                 return values.value1.includes(values.context) === false;
             default:
                 return this.getCorrectedValue(values.context) === this.getCorrectedValue(values.value1);
+        }
+    }
+
+    private getRelevantContext() {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (this.getUseChildContext()) {
+            return parent.getChildContext() || parent.getContext();
+        } else {
+            return parent.getContext();
+        }
+    }
+
+    private getPropertyPath(propertyName: string) {
+        if (this.getUseChildContext() && propertyName.includes("/")) {
+            return propertyName.split("/")[1];
+        } else {
+            return propertyName;
         }
     }
 

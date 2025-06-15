@@ -30,6 +30,7 @@ import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
 import SmartFormValidator from "ui5/antares/pro/v2/validation/SmartFormValidator";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -349,6 +350,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
+        this.setValidationLogicContextSettings(validationLogic);
+
         return new CustomByte({
             property: property,
             requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
@@ -363,6 +366,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
+
+        this.setValidationLogicContextSettings(validationLogic);
 
         return new CustomSByte({
             property: property,
@@ -379,6 +384,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
+        this.setValidationLogicContextSettings(validationLogic);
+
         return new CustomInt16({
             property: property,
             requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
@@ -393,6 +400,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
+
+        this.setValidationLogicContextSettings(validationLogic);
 
         return new CustomInt32({
             property: property,
@@ -409,6 +418,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
+        this.setValidationLogicContextSettings(validationLogic);
+
         return new CustomInt64({
             property: property,
             requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
@@ -423,6 +434,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
+
+        this.setValidationLogicContextSettings(validationLogic);
 
         return new CustomSingle({
             property: property,
@@ -439,6 +452,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
+        this.setValidationLogicContextSettings(validationLogic);
+
         return new CustomDouble({
             property: property,
             requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
@@ -453,6 +468,8 @@ export default class SmartFormGenerator extends ManagedObject {
         const parent = this.getOwnerContentGenerator();
         const settings = this.getNumberSettings(property);
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
+
+        this.setValidationLogicContextSettings(validationLogic);
 
         return new CustomDecimal({
             property: property,
@@ -521,6 +538,7 @@ export default class SmartFormGenerator extends ManagedObject {
             }
         }
 
+        this.setValidationLogicContextSettings(validationLogic);
         return new CustomDateTime(typeSettings);
     }
 
@@ -541,6 +559,7 @@ export default class SmartFormGenerator extends ManagedObject {
             };
         }
 
+        this.setValidationLogicContextSettings(validationLogic);
         return new CustomDateTimeOffset(typeSettings);
     }
 
@@ -561,12 +580,15 @@ export default class SmartFormGenerator extends ManagedObject {
             };
         }
 
+        this.setValidationLogicContextSettings(validationLogic);
         return new CustomTime(typeSettings);
     }
 
     private getGuidType(property: IProp, path: string) {
         const parent = this.getOwnerContentGenerator();
         const validationLogic = parent.getValidationLogicByProperty(path);
+
+        this.setValidationLogicContextSettings(validationLogic);
 
         return new CustomGuid({
             property: property,
@@ -579,6 +601,8 @@ export default class SmartFormGenerator extends ManagedObject {
     private getStringType(property: IProp, path: string) {
         const parent = this.getOwnerContentGenerator();
         const validationLogic = parent.getValidationLogicByProperty(path);
+
+        this.setValidationLogicContextSettings(validationLogic);
 
         return new CustomString({
             property: property,
@@ -610,4 +634,16 @@ export default class SmartFormGenerator extends ManagedObject {
             return property.name;
         }
     }
+
+    private setValidationLogicContextSettings(validationLogic?: ValidationLogic) {
+        if (!validationLogic) {
+            return;
+        }
+
+        const parent = this.getParent() as ManagedObject;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.ui.TableGenerator") {
+            validationLogic.setUseChildContext(true);
+        }
+    }    
 }

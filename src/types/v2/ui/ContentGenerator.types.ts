@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
+import Context from "sap/ui/model/odata/v2/Context";
 import {
     DestroyAggregation,
     GetAggregation,
@@ -16,6 +17,8 @@ import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
     export default interface ContentGenerator {
+        getChildContext: GetProperty<Context | undefined>;
+        setChildContext: SetProperty<Context>;
         getFormType: GetProperty<FormType>;
         setFormType: SetProperty<FormType>;
         getFormTitle: GetProperty<string>;

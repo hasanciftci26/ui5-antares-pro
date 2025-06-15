@@ -26,6 +26,7 @@ export default abstract class ContentGenerator extends Root {
         properties: {
             operation: { type: "string", visibility: "hidden" },
             context: { type: "object", visibility: "hidden" },
+            childContext: { type: "object", visibility: "hidden" },
             formType: { type: "string", visibility: "public", defaultValue: "SmartForm" },
             formTitle: { type: "string", visibility: "public" },
             submitButtonText: { type: "string", visibility: "public" },
@@ -180,6 +181,14 @@ export default abstract class ContentGenerator extends Root {
 
     public getContext() {
         return this.getProperty("context") as Context;
+    }
+
+    public getChildContext() {
+        return this.getProperty("childContext") as Context | undefined;
+    }
+
+    public setChildContext(context: Context) {
+        this.setProperty("childContext", context);
     }
 
     public getRequiredPropertyErrorMessage() {

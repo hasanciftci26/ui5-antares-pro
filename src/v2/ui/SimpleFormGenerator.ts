@@ -35,6 +35,7 @@ import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
 import SimpleFormValidator from "ui5/antares/pro/v2/validation/SimpleFormValidator";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
@@ -186,6 +187,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             };
         }
 
+        this.setValidationLogicContextSettings(validationLogic);
         binding.type = new CustomDateTime(typeSettings);
         return binding;
     }
@@ -245,6 +247,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             binding.type = new CustomDateTimeOffset(typeSettings);
         }
 
+        this.setValidationLogicContextSettings(validationLogic);
         return binding;
     }
 
@@ -297,6 +300,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             };
         }
 
+        this.setValidationLogicContextSettings(validationLogic);
         binding.type = new CustomTime(typeSettings);
         return binding;
     }
@@ -363,6 +367,8 @@ export default class SimpleFormGenerator extends ManagedObject {
                 scale: property.scale
             };
         }
+
+        this.setValidationLogicContextSettings(validationLogic);
 
         switch (property.type) {
             case "Edm.Byte":
@@ -543,6 +549,8 @@ export default class SimpleFormGenerator extends ManagedObject {
         const parent = this.getOwnerContentGenerator();
         const validationLogic = parent.getValidationLogicByProperty(settingsPath);
 
+        this.setValidationLogicContextSettings(validationLogic);
+
         switch (property.type) {
             case "Edm.Binary":
             case "Edm.Stream":
@@ -639,6 +647,18 @@ export default class SimpleFormGenerator extends ManagedObject {
             }
         } else {
             return property.name;
+        }
+    }
+
+    private setValidationLogicContextSettings(validationLogic?: ValidationLogic) {
+        if (!validationLogic) {
+            return;
+        }
+
+        const parent = this.getParent() as ManagedObject;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.ui.TableGenerator") {
+            validationLogic.setUseChildContext(true);
         }
     }
 }
