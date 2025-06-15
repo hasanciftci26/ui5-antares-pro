@@ -44,6 +44,7 @@ export default class ValueList extends ManagedObject {
             fixedValues: { type: "boolean", visibility: "public", defaultValue: false },
             fixedValueSeparator: { type: "string", visibility: "public", defaultValue: " " },
             searchSupported: { type: "boolean", visibility: "public", defaultValue: false },
+            caseSensitiveSearch: { type: "boolean", visibility: "public", defaultValue: false },
             title: { type: "string", visibility: "public" },
             filterBarErrorMessage: { type: "string", visibility: "public" },
             dateRangeOptions: { type: "string", visibility: "public" },
@@ -625,7 +626,7 @@ export default class ValueList extends ManagedObject {
                 path: property.name,
                 operator: "Contains",
                 value1: value,
-                caseSensitive: false
+                caseSensitive: this.getCaseSensitiveSearch()
             }));
         }
 

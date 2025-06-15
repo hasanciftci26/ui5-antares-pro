@@ -12,6 +12,8 @@ declare module "ui5/antares/pro/v2/valuelist/ValueList" {
         setFixedValueSeparator: SetProperty<string>;
         getSearchSupported: GetProperty<boolean>;
         setSearchSupported: SetProperty<boolean>;
+        getCaseSensitiveSearch: GetProperty<boolean>;
+        setCaseSensitiveSearch: SetProperty<boolean>;
         getTitle: GetProperty<string>;
         setTitle: SetProperty<string>;
         getFilterBarErrorMessage: GetProperty<string>;
@@ -31,6 +33,7 @@ export interface ISettings {
     fixedValues?: boolean;
     fixedValueSeparator?: string;
     searchSupported?: boolean;
+    caseSensitiveSearch?: boolean;
     title?: string;
     filterBarErrorMessage?: string;
     dateRangeOptions?: string[];
