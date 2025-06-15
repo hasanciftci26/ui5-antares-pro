@@ -7,6 +7,7 @@ import { ISubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseP
 import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
 import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
  * @namespace ui5.antares.pro.v2.entry
@@ -116,11 +117,18 @@ export default class CreateEntry extends ContentGenerator {
         BusyIndicator.show(0);
 
         this.correctFixedValueListValues();
-        const validation = await this.validate();
+        const formValidation = await this.validateForms();
 
-        if (!validation) {
+        if (!formValidation) {
             BusyIndicator.hide();
             MessageBox.error(this.getValidationErrorMessage());
+            return;
+        }
+
+        const tableValidation = this.validateTables();
+
+        if (!tableValidation) {
+            BusyIndicator.hide();
             return;
         }
 
@@ -155,7 +163,7 @@ export default class CreateEntry extends ContentGenerator {
         }
     }
 
-    private async validate() {
+    private async validateForms() {
         const validations: boolean[] = [true];
 
         if (this.getFormType() === "SimpleForm") {
@@ -169,6 +177,23 @@ export default class CreateEntry extends ContentGenerator {
         }
 
         return validations.every(validation => validation);
+    }
+
+    private validateTables() {
+        let valid = true;
+
+        for (const generator of this.getTableGenerators()) {
+            if (generator.getNavProperty().allowNoItem === false && !generator.getCount()) {
+                valid = false;
+                MessageBox.error(
+                    generator.getNavProperty().noItemErrorMessage ||
+                    LibraryBundle.getText("ui5AntaresPro.error.noItem", [generator.getTableTitle()])!
+                );
+                break;
+            }
+        }
+
+        return valid;
     }
 
     private submit() {

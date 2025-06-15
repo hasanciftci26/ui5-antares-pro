@@ -127,4 +127,6 @@ export interface INavProperty {
     deleteButtonType?: ButtonType;
     closeButtonText?: string;
     closeButtonType?: ButtonType;
+    allowNoItem?: boolean;
+    noItemErrorMessage?: string;
 }

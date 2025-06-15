@@ -503,7 +503,7 @@ export default class TableGenerator extends ManagedObject {
 
                 this.setContext(context);
             } else {
-                const binding = table.getBinding("rows") as ODataListBinding;
+                const binding = table.getBinding("items") as ODataListBinding;
                 const context = binding.create(undefined, true);
 
                 this.setContext(context);

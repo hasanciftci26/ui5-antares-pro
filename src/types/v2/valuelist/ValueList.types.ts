@@ -20,6 +20,8 @@ declare module "ui5/antares/pro/v2/valuelist/ValueList" {
         setDateRangeOptions: SetProperty<string[] | undefined>;
         getParameters: GetProperty<ValueListParameter[]>;
         setParameters: SetProperty<ValueListParameter[]>;
+        getUseChildContext: GetProperty<boolean>;
+        setUseChildContext: SetProperty<boolean>;        
     }
 }
 

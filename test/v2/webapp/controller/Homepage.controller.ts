@@ -2,8 +2,7 @@ import TextArea from "sap/m/TextArea";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import { CreateEntry$SubmitSuccessEvent } from "ui5/antares/pro/types/v2/entry/CreateEntry.types";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
-import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
-import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -26,41 +25,33 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            metadataLabelEnabled: false,
+            metadataLabelEnabled: true,
             formType: "SimpleForm",
-            requiredPropertyErrorMessage: "{property} is a required field please fill.",
-            dateTimeSettings: {
-                datePattern: "d MMMM y",
-                dateTimePattern: "d MMMM y - HH:mm",
-                timePattern: "HH:mm"
-            },
             guidGenerationMode: "None",
             guidVisibilityMode: "All",
-            numberSettings: {
-                groupingSeparator: " ",
-                decimalSeparator: ","
-            },
-            propertySettings: [{
-                name: "lastName",
-                required: true
-            }, {
-                name: "toCertifications/authority",
-                required: true
-            },{
-                name: "toCertifications/title",
-                required: true
-            }],
             navProperties: [{
                 name: "toCertifications",
-                tableTitle: "Certifications"
+                tableTitle: "Certifications",
+                tableClass: "sap.m.Table",
+                allowNoItem: false
             }]
         });
 
-        entry.addValidationLogic(new ValidationLogic({
-            propertyName: "toCertifications/title",
-            operator: "NE",
-            value1: "CEO",
-            errorMessage: "Title cannot be CEO."
+        entry.addValueList(new ValueList({
+            localDataProperty: "toCertifications/employeeID",
+            collectionPath: "Employees",
+            fixedValues: true,
+            parameters: [{
+                localDataProperty: "toCertifications/employeeID",
+                type: "InOut",
+                valueListProperty: "ID"
+            }, {
+                type: "DisplayOnly",
+                valueListProperty: "firstName"
+            }, {
+                type: "DisplayOnly",
+                valueListProperty: "lastName"
+            }]
         }));
 
         entry.execute();

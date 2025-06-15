@@ -48,7 +48,8 @@ export default class ValueList extends ManagedObject {
             filterBarErrorMessage: { type: "string", visibility: "public" },
             dateRangeOptions: { type: "string", visibility: "public" },
             parameters: { type: "object[]", visibility: "public", defaultValue: [] },
-            valueHelpDialog: { type: "object", visibility: "hidden" }
+            valueHelpDialog: { type: "object", visibility: "hidden" },
+            useChildContext: { type: "boolean", visibility: "public", defaultValue: false }
         },
         aggregations: {
             collectionMetaContext: {
@@ -713,7 +714,7 @@ export default class ValueList extends ManagedObject {
             }
 
             const value = context.getProperty(param.valueListProperty);
-            parent.getODataModel().setProperty(parent.getContext().getPath() + `/${param.localDataProperty}`, value);
+            parent.getODataModel().setProperty(this.getRelevantContext().getPath() + `/${this.getPropertyPath(param.localDataProperty)}`, value);
         }
     }
 
@@ -763,7 +764,7 @@ export default class ValueList extends ManagedObject {
     }
 
     private setInitialFilters() {
-        const context = (this.getParent() as ContentGenerator).getContext();
+        const context = this.getRelevantContext();
         const props = this.getCollectionMetaContext().getProps();
         let triggerSearch = false;
 
@@ -774,7 +775,7 @@ export default class ValueList extends ManagedObject {
                 continue;
             }
 
-            const contextValue = context.getProperty(param.localDataProperty);
+            const contextValue = context.getProperty(this.getPropertyPath(param.localDataProperty));
             const property = props.find(prop => prop.name === param.valueListProperty);
 
             if (!property) {
@@ -826,5 +827,23 @@ export default class ValueList extends ManagedObject {
     private onClearFilterBar() {
         this.getValueHelpFilterModel().setData({ ui5AntaresProVHSearch: "" });
         this.getValueHelpDialog().getFilterBar().search();
+    }
+
+    private getRelevantContext() {
+        const parent = this.getParent() as ContentGenerator;
+
+        if (this.getUseChildContext()) {
+            return parent.getChildContext() || parent.getContext();
+        } else {
+            return parent.getContext();
+        }
+    }
+
+    private getPropertyPath(propertyName: string) {
+        if (this.getUseChildContext() && propertyName.includes("/")) {
+            return propertyName.split("/")[1];
+        } else {
+            return propertyName;
+        }
     }
 }

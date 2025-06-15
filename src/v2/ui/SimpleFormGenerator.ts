@@ -508,6 +508,8 @@ export default class SimpleFormGenerator extends ManagedObject {
         const parent = this.getOwnerContentGenerator();
         const valueList = parent.getValueListByProperty(settingsPath);
 
+        this.setValueListContextSettings(valueList);
+
         if (valueList) {
             if (property.type !== "Edm.Guid" && property.type !== "Edm.String") {
                 throw new Error("ValueList feature is only available for Edm.Guid and Edm.String data types.");
@@ -573,7 +575,6 @@ export default class SimpleFormGenerator extends ManagedObject {
     private getValueListSelect(property: IProp, valueList: ValueList) {
         const inOutParam = valueList.getFixedValueInOutParameter();
         const displayOnlyParams = valueList.getFixedValueDisplayOnlyParameters();
-        const parent = this.getOwnerContentGenerator();
         const select = new CustomSelect({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             required: property.required,
@@ -581,7 +582,7 @@ export default class SimpleFormGenerator extends ManagedObject {
             busy: true,
             busyIndicatorDelay: 0,
             selectedKey: {
-                path: inOutParam.localDataProperty,
+                path: this.getValueListPropertyPath(inOutParam.localDataProperty),
                 type: this.getStringBindingType(property, inOutParam.localDataProperty)
             }
         });
@@ -604,7 +605,7 @@ export default class SimpleFormGenerator extends ManagedObject {
                         text: ""
                     }), 0);
 
-                    if (!parent.getContext().getProperty(inOutParam.localDataProperty)) {
+                    if (!this.getRelevantContext().getProperty(this.getValueListPropertyPath(inOutParam.localDataProperty))) {
                         select.setSelectedKey(emptyItemKey);
                     }
 
@@ -659,6 +660,38 @@ export default class SimpleFormGenerator extends ManagedObject {
 
         if (parent.getMetadata().getName() === "ui5.antares.pro.v2.ui.TableGenerator") {
             validationLogic.setUseChildContext(true);
+        }
+    }
+
+    private setValueListContextSettings(valueList?: ValueList) {
+        if (!valueList) {
+            return;
+        }
+
+        const parent = this.getParent() as ManagedObject;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.ui.TableGenerator") {
+            valueList.setUseChildContext(true);
+        }
+    }
+
+    private getValueListPropertyPath(propertyName: string) {
+        const parent = this.getParent() as ManagedObject;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.ui.TableGenerator" && propertyName.includes("/")) {
+            return propertyName.split("/")[1];
+        } else {
+            return propertyName;
+        }
+    }
+
+    private getRelevantContext() {
+        const parent = this.getParent() as ManagedObject;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.ui.TableGenerator") {
+            return this.getOwnerContentGenerator().getChildContext() || this.getOwnerContentGenerator().getContext();
+        } else {
+            return this.getOwnerContentGenerator().getContext();
         }
     }
 }
