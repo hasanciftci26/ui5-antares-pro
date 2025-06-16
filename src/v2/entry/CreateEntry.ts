@@ -4,6 +4,7 @@ import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
 import { ISubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
+import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
 import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
 import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
@@ -51,7 +52,8 @@ export default class CreateEntry extends ContentGenerator {
         await this.generate();
 
         this.addNavPropertiesToContext();
-        this.generateGuid();
+        this.generateParentGuid();
+        this.generateChildGuid();
 
         BusyIndicator.hide();
     }
@@ -84,7 +86,7 @@ export default class CreateEntry extends ContentGenerator {
         }
     }
 
-    private generateGuid() {
+    private generateParentGuid() {
         const parent = this.getParentMetaContext();
         const guidProperties = parent.getProps().filter(prop => prop.type === "Edm.Guid");
 
@@ -94,22 +96,56 @@ export default class CreateEntry extends ContentGenerator {
             }
 
             const path = this.getContext().getPath() + "/" + property.name;
+            this.generateGuid(property, path);
+        }
+    }
 
-            switch (this.getGuidGenerationMode()) {
-                case "All":
-                    this.getODataModel().setProperty(path, window.crypto.randomUUID());
-                    break;
-                case "Key":
-                    if (property.key) {
-                        this.getODataModel().setProperty(path, window.crypto.randomUUID());
+    private generateChildGuid() {
+        const children = this.getMetaContexts().filter(meta => meta.getNavProperty()?.multiplicity === "One");
+
+        for (const child of children) {
+            const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
+            const guidProperties = child.getProps().filter(prop => prop.type === "Edm.Guid");
+
+            for (const property of guidProperties) {
+                const propertyPath = navProperty.name + "/" + property.name;
+
+                if (this.getContext().getProperty(propertyPath)) {
+                    continue;
+                }
+
+                const valueInheritance = navProperty.valueInheritance?.find(inherit => inherit.property === property.name);
+                const path = this.getContext().getPath() + "/" + propertyPath;
+
+                if (valueInheritance) {
+                    const parentValue = this.getContext().getProperty(valueInheritance.parentProperty);
+
+                    if (parentValue) {
+                        this.getODataModel().setProperty(path, parentValue);
+                        continue;
                     }
-                    break;
-                case "NonKey":
-                    if (!property.key) {
-                        this.getODataModel().setProperty(path, window.crypto.randomUUID());
-                    }
-                    break;
+                }
+
+                this.generateGuid(property, path);
             }
+        }
+    }
+
+    private generateGuid(property: IProp, path: string) {
+        switch (this.getGuidGenerationMode()) {
+            case "All":
+                this.getODataModel().setProperty(path, window.crypto.randomUUID());
+                break;
+            case "Key":
+                if (property.key) {
+                    this.getODataModel().setProperty(path, window.crypto.randomUUID());
+                }
+                break;
+            case "NonKey":
+                if (!property.key) {
+                    this.getODataModel().setProperty(path, window.crypto.randomUUID());
+                }
+                break;
         }
     }
 
@@ -180,9 +216,10 @@ export default class CreateEntry extends ContentGenerator {
     }
 
     private validateTables() {
+        const generators = this.getTableGenerators() || [];
         let valid = true;
 
-        for (const generator of this.getTableGenerators()) {
+        for (const generator of generators) {
             if (generator.getNavProperty().allowNoItem === false && !generator.getCount()) {
                 valid = false;
                 MessageBox.error(

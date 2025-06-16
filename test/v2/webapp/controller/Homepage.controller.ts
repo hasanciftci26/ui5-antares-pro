@@ -27,32 +27,14 @@ export default class Homepage extends BaseController {
             entitySet: "Employees",
             metadataLabelEnabled: true,
             formType: "SimpleForm",
-            guidGenerationMode: "None",
-            guidVisibilityMode: "All",
             navProperties: [{
-                name: "toCertifications",
-                tableTitle: "Certifications",
-                tableClass: "sap.m.Table",
-                allowNoItem: false
+                name: "toContract",
+                valueInheritance: [{
+                    property: "employeeID",
+                    parentProperty: "ID"
+                }]
             }]
         });
-
-        entry.addValueList(new ValueList({
-            localDataProperty: "toCertifications/employeeID",
-            collectionPath: "Employees",
-            fixedValues: true,
-            parameters: [{
-                localDataProperty: "toCertifications/employeeID",
-                type: "InOut",
-                valueListProperty: "ID"
-            }, {
-                type: "DisplayOnly",
-                valueListProperty: "firstName"
-            }, {
-                type: "DisplayOnly",
-                valueListProperty: "lastName"
-            }]
-        }));
 
         entry.execute();
     }

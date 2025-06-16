@@ -4,7 +4,7 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import Context from "sap/ui/model/odata/v2/Context";
 import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
-import { INavProperty, Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
+import { IBooleanSettings, INavProperty, Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
 import Root from "ui5/antares/pro/v2/core/Root";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import CustomElement from "ui5/antares/pro/v2/ui/CustomElement";
@@ -228,6 +228,22 @@ export default abstract class ContentGenerator extends Root {
         this.setProperty("navProperties", navProperties);
     }
 
+    public setBooleanSettings(booleanSettings: IBooleanSettings) {
+        if (!booleanSettings.trueText) {
+            booleanSettings.trueText = LibraryBundle.getText("ui5AntaresPro.text.true") as string;
+        }
+
+        if (!booleanSettings.falseText) {
+            booleanSettings.falseText = LibraryBundle.getText("ui5AntaresPro.text.false") as string;
+        }
+
+        if (booleanSettings.autoFalse == null) {
+            booleanSettings.autoFalse = true;
+        }
+
+        this.setProperty("booleanSettings", booleanSettings);
+    }
+
     public getOperation() {
         return this.getProperty("operation") as Operation;
     }
@@ -420,7 +436,9 @@ export default abstract class ContentGenerator extends Root {
     }
 
     private addTablesToDialog() {
-        for (const generator of this.getTableGenerators()) {
+        const generators = this.getTableGenerators() || [];
+
+        for (const generator of generators) {
             this.getDialogGenerator().getDialog().addContent(generator.getTable());
         }
     }

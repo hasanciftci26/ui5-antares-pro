@@ -51,7 +51,6 @@ declare module "ui5/antares/pro/v2/ui/ContentGenerator" {
         getNumberSettings: GetProperty<INumberSettings | undefined>;
         setNumberSettings: SetProperty<INumberSettings | undefined>;
         getBooleanSettings: GetProperty<Required<IBooleanSettings>>;
-        setBooleanSettings: SetProperty<IBooleanSettings>;
         getPropertyOrder: GetProperty<string[]>;
         setPropertyOrder: SetProperty<string[]>;
         getPropertySettings: GetProperty<IPropertySettings[]>;
@@ -129,4 +128,10 @@ export interface INavProperty {
     closeButtonType?: ButtonType;
     allowNoItem?: boolean;
     noItemErrorMessage?: string;
+    valueInheritance?: IValueInheritance[];
+}
+
+export interface IValueInheritance {
+    property: string;
+    parentProperty: string;
 }
