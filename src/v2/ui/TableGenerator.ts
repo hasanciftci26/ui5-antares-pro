@@ -515,7 +515,59 @@ export default class TableGenerator extends ManagedObject {
 
             this.setContext(context);
         }
+
+        this.setInitialData();
         return true;
+    }
+
+    private setInitialData() {
+        const parent = this.getParent() as ContentGenerator;
+        const metaContext = parent.getMetaContextByEntitySet(this.getEntitySet());
+        const props = metaContext.getProps();
+        const navProperty = parent.getNavProperties().find(prop => prop.name === this.getNavProperty().name)!;
+
+        for (const property of props) {
+            if (this.getContext().getProperty(property.name) != null) {
+                continue;
+            }
+
+            const valueInheritance = navProperty.valueInheritance?.find(inherit => inherit.property === property.name);
+            const path = this.getContext().getPath() + "/" + property.name;
+
+            if (valueInheritance) {
+                const parentValue = parent.getContext().getProperty(valueInheritance.parentProperty);
+
+                if (parentValue != null) {
+                    parent.getODataModel().setProperty(path, parentValue);
+                }
+            } else {
+                if (property.type === "Edm.Guid") {
+                    this.generateGuid(property, path);
+                } else if (property.type === "Edm.Boolean" && parent.getBooleanSettings().autoFalse) {
+                    parent.getODataModel().setProperty(path, false);
+                }
+            }
+        }
+    }
+
+    private generateGuid(property: IProp, path: string) {
+        const parent = this.getParent() as ContentGenerator;
+
+        switch (parent.getGuidGenerationMode()) {
+            case "All":
+                parent.getODataModel().setProperty(path, window.crypto.randomUUID());
+                break;
+            case "Key":
+                if (property.key) {
+                    parent.getODataModel().setProperty(path, window.crypto.randomUUID());
+                }
+                break;
+            case "NonKey":
+                if (!property.key) {
+                    parent.getODataModel().setProperty(path, window.crypto.randomUUID());
+                }
+                break;
+        }
     }
 
     private extractBindingContext() {

@@ -54,6 +54,9 @@ export default class CreateEntry extends ContentGenerator {
         this.addNavPropertiesToContext();
         this.generateParentGuid();
         this.generateChildGuid();
+        this.inheritValues();
+        this.generateParentBoolean();
+        this.generateChildBoolean();
 
         BusyIndicator.hide();
     }
@@ -149,9 +152,83 @@ export default class CreateEntry extends ContentGenerator {
         }
     }
 
+    private inheritValues() {
+        const children = this.getMetaContexts().filter(meta => meta.getNavProperty()?.multiplicity === "One");
+
+        for (const child of children) {
+            const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
+            const props = child.getProps();
+
+            for (const property of props) {
+                const propertyPath = navProperty.name + "/" + property.name;
+
+                if (this.getContext().getProperty(propertyPath) != null) {
+                    continue;
+                }
+
+                const valueInheritance = navProperty.valueInheritance?.find(inherit => inherit.property === property.name);
+                const path = this.getContext().getPath() + "/" + propertyPath;
+
+                if (!valueInheritance) {
+                    continue;
+                }
+
+                const parentValue = this.getContext().getProperty(valueInheritance.parentProperty);
+
+                if (parentValue != null) {
+                    this.getODataModel().setProperty(path, parentValue);
+                }
+
+            }
+        }
+    }
+
+    private generateParentBoolean() {
+        if (!this.getBooleanSettings().autoFalse) {
+            return;
+        }
+
+        const parent = this.getParentMetaContext();
+        const booleanProperties = parent.getProps().filter(prop => prop.type === "Edm.Boolean");
+
+        for (const property of booleanProperties) {
+            if (this.getContext().getProperty(property.name) != null) {
+                continue;
+            }
+
+            const path = this.getContext().getPath() + "/" + property.name;
+            this.getODataModel().setProperty(path, false);
+        }
+    }
+
+    private generateChildBoolean() {
+        if (!this.getBooleanSettings().autoFalse) {
+            return;
+        }
+
+        const children = this.getMetaContexts().filter(meta => meta.getNavProperty()?.multiplicity === "One");
+
+        for (const child of children) {
+            const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
+            const booleanProperties = child.getProps().filter(prop => prop.type === "Edm.Boolean");
+
+            for (const property of booleanProperties) {
+                const propertyPath = navProperty.name + "/" + property.name;
+
+                if (this.getContext().getProperty(propertyPath) != null) {
+                    continue;
+                }
+
+                const path = this.getContext().getPath() + "/" + propertyPath;
+                this.getODataModel().setProperty(path, false);
+            }
+        }
+    }
+
     private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
         BusyIndicator.show(0);
 
+        this.inheritValues();
         this.correctFixedValueListValues();
         const formValidation = await this.validateForms();
 

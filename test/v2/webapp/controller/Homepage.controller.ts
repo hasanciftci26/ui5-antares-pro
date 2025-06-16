@@ -26,9 +26,15 @@ export default class Homepage extends BaseController {
             controller: this,
             entitySet: "Employees",
             metadataLabelEnabled: true,
-            formType: "SimpleForm",
+            guidVisibilityMode: "All",
             navProperties: [{
                 name: "toContract",
+                valueInheritance: [{
+                    property: "employeeID",
+                    parentProperty: "ID"
+                }]
+            }, {
+                name: "toCertifications",
                 valueInheritance: [{
                     property: "employeeID",
                     parentProperty: "ID"
