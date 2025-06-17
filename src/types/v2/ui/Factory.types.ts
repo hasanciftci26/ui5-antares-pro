@@ -14,8 +14,18 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
     export default interface Factory {
         getFormType: GetProperty<FormType>;
         setFormType: SetProperty<FormType>;
+        getKeyEnforcementEnabled: GetProperty<boolean>;
+        setKeyEnforcementEnabled: SetProperty<boolean>;
+        getMetadataLabelEnabled: GetProperty<boolean>;
+        setMetadataLabelEnabled: SetProperty<boolean>;
+        getGuidGenerationMode: GetProperty<GuidMode>;
+        setGuidGenerationMode: SetProperty<GuidMode>;
+        getGuidVisibilityMode: GetProperty<GuidMode>;
+        setGuidVisibilityMode: SetProperty<GuidMode>;        
         getPropertySettings: GetProperty<PropertySettings[]>;
         setPropertySettings: SetProperty<PropertySettings[]>;
+        getPropertyOrder: GetProperty<string[]>;
+        setPropertyOrder: SetProperty<string[]>;        
         addNavigationProperty: AddAggregation<NavigationProperty>;
         removeNavigationProperty: RemoveAggregation<NavigationProperty>;
         getNavigationProperties: GetAggregation<NavigationProperty[]>;
@@ -24,7 +34,9 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
     }
 }
 
+export type Operation = "Create" | "Update" | "Delete" | "Read";
 export type FormType = "SimpleForm" | "SmartForm";
+export type GuidMode = "All" | "Key" | "NonKey" | "None";
 
 export type TextInEditModeSource =
     "None" |

@@ -11,10 +11,14 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         getMultiplicity: GetProperty<string>;
         setMultiplicity: SetProperty<string>;
         getPropertySettings: GetProperty<PropertySettings[]>;
-        setPropertySettings: SetProperty<PropertySettings[]>;        
+        setPropertySettings: SetProperty<PropertySettings[]>;
+        getPropertyOrder: GetProperty<string[]>;
+        setPropertyOrder: SetProperty<string[]>;
     }
 }
 
 export interface Settings {
     name: string;
+    propertySettings?: PropertySettings[];
+    propertyOrder?: string[];
 }

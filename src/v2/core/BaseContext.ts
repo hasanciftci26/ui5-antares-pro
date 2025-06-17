@@ -52,6 +52,22 @@ export default abstract class BaseContext extends ManagedObject {
         return this.getModel() as ODataModel;
     }
 
+    public getOwnerText(key: string, parameters?: any[]) {
+        const model = this.getOwnerResourceModel();
+
+        if (!model) {
+            return;
+        }
+
+        const bundle = model.getResourceBundle();
+
+        if (bundle instanceof ResourceBundle === false) {
+            return;
+        }
+
+        return bundle.getText(key, parameters, true);
+    }    
+
     protected getView() {
         return this.getProperty("view") as View;
     }
@@ -84,22 +100,6 @@ export default abstract class BaseContext extends ManagedObject {
 
             this.setModel(model);
         }
-    }
-
-    protected getOwnerText(key: string, parameters?: any[]) {
-        const model = this.getOwnerResourceModel();
-
-        if (!model) {
-            return;
-        }
-
-        const bundle = model.getResourceBundle();
-
-        if (bundle instanceof ResourceBundle === false) {
-            return;
-        }
-
-        return bundle.getText(key, parameters, true);
     }
 
     private getDefaultBindingMode() {
