@@ -1,10 +1,15 @@
-import { ClassMetadata, FormGenerator } from "ui5/antares/pro/types/Global.types";
+import JSONModel from "sap/ui/model/json/JSONModel";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
 import BaseContext from "ui5/antares/pro/v2/core/BaseContext";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
+import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
+import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
+import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -15,15 +20,18 @@ export default abstract class Factory extends BaseContext implements MetaContext
         abstract: true,
         properties: {
             formType: { type: "string", defaultValue: "SmartForm" },
+            formTitle: { type: "string", },
+            submitButtonText: { type: "string" },
+            submitButtonType: { type: "string", defaultValue: "Emphasized" },
+            closeButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.close") },
+            closeButtonType: { type: "string", defaultValue: "Default" },
             keyEnforcementEnabled: { type: "boolean", defaultValue: true },
             metadataLabelEnabled: { type: "boolean", defaultValue: false },
             guidGenerationMode: { type: "string", defaultValue: "Key" },
             guidVisibilityMode: { type: "string", defaultValue: "NonKey" },
             propertySettings: { type: "object[]", defaultValue: [] },
             propertyOrder: { type: "string[]", defaultValue: [] },
-            operation: { type: "string", visibility: "hidden" },
-            dialogGenerator: { type: "object", visibility: "hidden" },
-            formGenerator: { type: "object", visibility: "hidden" }
+            operation: { type: "string", visibility: "hidden" }
         },
         aggregations: {
             navigationProperties: {
@@ -35,6 +43,16 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,
                 visibility: "hidden"
+            },
+            dialogGenerator: {
+                type: "ui5.antares.pro.v2.ui.DialogGenerator",
+                multiple: false,
+                visibility: "hidden"
+            },
+            formGenerator: {
+                type: "ui5.antares.pro.v2.ui.FormGeneratorBase",
+                multiple: false,
+                visibility: "hidden"
             }
         }
     };
@@ -42,6 +60,18 @@ export default abstract class Factory extends BaseContext implements MetaContext
     constructor(settings: Settings) {
         super(settings);
         this.setMetaContext(new MetaContext());
+        this.setDialogGenerator(new DialogGenerator({
+            modelName: "factory"
+        }));
+
+        if (this.getFormType() === "SimpleForm") {
+            this.setFormGenerator(new SimpleFormGenerator());
+        } else {
+            this.setFormGenerator(new SmartFormGenerator());
+        }
+
+        this.setDefaultValues();
+        this.setFactoryModel();
     }
 
     public getOperation() {
@@ -53,19 +83,19 @@ export default abstract class Factory extends BaseContext implements MetaContext
     }
 
     protected getDialogGenerator() {
-        return this.getProperty("dialogGenerator") as DialogGenerator;
+        return this.getAggregation("dialogGenerator") as DialogGenerator;
     }
 
     protected setDialogGenerator(dialogGenerator: DialogGenerator) {
-        this.setProperty("dialogGenerator", dialogGenerator);
+        this.setAggregation("dialogGenerator", dialogGenerator);
     }
 
     protected getFormGenerator() {
-        return this.getProperty("formGenerator") as FormGenerator;
+        return this.getAggregation("formGenerator") as FormGeneratorBase;
     }
 
-    protected setFormGenerator(formGenerator: FormGenerator) {
-        this.setProperty("formGenerator", formGenerator);
+    protected setFormGenerator(formGenerator: FormGeneratorBase) {
+        this.setAggregation("formGenerator", formGenerator);
     }
 
     protected getMetaContext() {
@@ -78,6 +108,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
     protected async execute() {
         await this.loadMetaContexts();
+        this.generateContent();
     }
 
     private async loadMetaContexts() {
@@ -85,6 +116,90 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
         for (const property of this.getNavigationProperties()) {
             await property.load();
+        }
+    }
+
+    private generateContent() {
+        this.getDialogGenerator().generate();
+        this.getFormGenerator().generate();
+
+        for (const property of this.getNavigationProperties()) {
+            property.generate();
+        }
+    }
+
+    private setDefaultValues() {
+        this.setDefaultFormTitle();
+        this.setDefaultSubmitButtonText();
+    }
+
+    private setDefaultFormTitle() {
+        if (this.getFormTitle()) {
+            return;
+        }
+
+        switch (this.getOperation()) {
+            case "Create":
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.createEntry", [this.getEntitySet()]));
+                break;
+            case "Update":
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()]));
+                break;
+            case "Delete":
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()]));
+                break;
+            case "Read":
+                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.readEntry", [this.getEntitySet()]));
+                break;
+        }
+    }
+
+    private setDefaultSubmitButtonText() {
+        if (this.getSubmitButtonText()) {
+            return;
+        }
+
+        switch (this.getOperation()) {
+            case "Create":
+                this.setSubmitButtonText(LibraryBundle.getText("ui5AntaresPro.button.create"));
+                break;
+            case "Update":
+                this.setSubmitButtonText(LibraryBundle.getText("ui5AntaresPro.button.update"));
+                break;
+            case "Delete":
+                this.setSubmitButtonText(LibraryBundle.getText("ui5AntaresPro.button.delete"));
+                break;
+        }
+    }
+
+    private setFactoryModel() {
+        const model = new JSONModel({
+            formTitle: this.getFormTitle(),
+            submitButtonText: this.getSubmitButtonText(),
+            submitButtonType: this.getSubmitButtonType(),
+            closeButtonText: this.getCloseButtonText(),
+            closeButtonType: this.getCloseButtonType()
+        });
+
+        model.setDefaultBindingMode("TwoWay");
+        this.setModel(model, "factory");
+
+        this.bindProperties([
+            "formTitle",
+            "submitButtonText",
+            "submitButtonType",
+            "closeButtonText",
+            "closeButtonType"
+        ]);
+    }
+
+    private bindProperties(properties: string[]) {
+        for (const property of properties) {
+            this.bindProperty(property, {
+                path: "/" + property,
+                model: "factory",
+                mode: "TwoWay"
+            });
         }
     }
 }

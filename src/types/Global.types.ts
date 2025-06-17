@@ -112,9 +112,3 @@ export type MetadataPropertyDataType =
 export type MetadataVisibility = "hidden" | "public";
 
 export type MakeRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
-
-export interface FormGenerator {
-    generate: () => void;
-    getForm: () => Control;
-    setForm: (form: Control) => void;
-}

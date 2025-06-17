@@ -1,4 +1,5 @@
 /* eslint-disable semi */
+import { ButtonType } from "sap/m/library";
 import {
     AddAggregation,
     DestroyAggregation,
@@ -14,6 +15,16 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
     export default interface Factory {
         getFormType: GetProperty<FormType>;
         setFormType: SetProperty<FormType>;
+        getFormTitle: GetProperty<string>;
+        setFormTitle: SetProperty<string>;
+        getSubmitButtonText: GetProperty<string>;
+        setSubmitButtonText: SetProperty<string>;
+        getSubmitButtonType: GetProperty<ButtonType>;
+        setSubmitButtonType: SetProperty<ButtonType>;
+        getCloseButtonText: GetProperty<string>;
+        setCloseButtonText: SetProperty<string>;
+        getCloseButtonType: GetProperty<ButtonType>;
+        setCloseButtonType: SetProperty<ButtonType>;        
         getKeyEnforcementEnabled: GetProperty<boolean>;
         setKeyEnforcementEnabled: SetProperty<boolean>;
         getMetadataLabelEnabled: GetProperty<boolean>;

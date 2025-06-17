@@ -29,6 +29,11 @@ export default class Homepage extends BaseController {
             name: "toContract"
         }));
 
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications",
+            tableClass: "sap.m.Table"
+        }));
+
         entry.execute();
     }
 

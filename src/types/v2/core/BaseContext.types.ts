@@ -1,4 +1,5 @@
 /* eslint-disable semi */
+import { ButtonType } from "sap/m/library";
 import Controller from "sap/ui/core/mvc/Controller";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
@@ -26,6 +27,11 @@ export interface Settings {
     resourceModelRef?: string | ResourceModel;
     deferredGroupId?: string;
     formType?: FormType;
+    formTitle?: string;
+    submitButtonText?: string;
+    submitButtonType?: ButtonType;
+    closeButtonText?: string;
+    closeButtonType?: ButtonType;
     keyEnforcementEnabled?: boolean;
     metadataLabelEnabled?: boolean;
     guidGenerationMode?: GuidMode;

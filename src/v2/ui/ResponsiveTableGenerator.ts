@@ -1,15 +1,16 @@
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
-import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
+import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
  */
-export default class SmartFormGenerator extends FormGeneratorBase {
+export default class ResponsiveTableGenerator extends TableGeneratorBase {
     static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            form: { type: "object" }
+            content: { type: "object" },
+            table: { type: "object" }
         }
     };
 

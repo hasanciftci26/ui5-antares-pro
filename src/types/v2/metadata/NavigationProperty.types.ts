@@ -1,15 +1,49 @@
 /* eslint-disable semi */
+import { ButtonType } from "sap/m/library";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
+import { Multiplicity } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { PropertySettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
 
 declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
     export default interface NavigationProperty {
         getName: GetProperty<string>;
         setName: SetProperty<string>;
+        getTableClass: GetProperty<TableClass>;
+        setTableClass: SetProperty<TableClass>;
+        getTableTitle: GetProperty<string>;
+        setTableTitle: SetProperty<string>;
+        getFormTitle: GetProperty<string>;
+        setFormTitle: SetProperty<string>;
+        getCreateFormTitle: GetProperty<string>;
+        setCreateFormTitle: SetProperty<string>;
+        getUpdateFormTitle: GetProperty<string>;
+        setUpdateFormTitle: SetProperty<string>;
+        getDeleteFormTitle: GetProperty<string>;
+        setDeleteFormTitle: SetProperty<string>;
+        getCreateButtonText: GetProperty<string>;
+        setCreateButtonText: SetProperty<string>;
+        getCreateButtonType: GetProperty<ButtonType>;
+        setCreateButtonType: SetProperty<ButtonType>;
+        getUpdateButtonText: GetProperty<string>;
+        setUpdateButtonText: SetProperty<string>;
+        getUpdateButtonType: GetProperty<ButtonType>;
+        setUpdateButtonType: SetProperty<ButtonType>;
+        getDeleteButtonText: GetProperty<string>;
+        setDeleteButtonText: SetProperty<string>;
+        getDeleteButtonType: GetProperty<ButtonType>;
+        setDeleteButtonType: SetProperty<ButtonType>;
+        getSubmitButtonText: GetProperty<string>;
+        setSubmitButtonText: SetProperty<string>;
+        getSubmitButtonType: GetProperty<ButtonType>;
+        setSubmitButtonType: SetProperty<ButtonType>;
+        getCloseButtonText: GetProperty<string>;
+        setCloseButtonText: SetProperty<string>;
+        getCloseButtonType: GetProperty<ButtonType>;
+        setCloseButtonType: SetProperty<ButtonType>;
         getEntitySet: GetProperty<string>;
         setEntitySet: SetProperty<string>;
-        getMultiplicity: GetProperty<string>;
-        setMultiplicity: SetProperty<string>;
+        getMultiplicity: GetProperty<Multiplicity>;
+        setMultiplicity: SetProperty<Multiplicity>;
         getPropertySettings: GetProperty<PropertySettings[]>;
         setPropertySettings: SetProperty<PropertySettings[]>;
         getPropertyOrder: GetProperty<string[]>;
@@ -19,6 +53,21 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
 
 export interface Settings {
     name: string;
+    tableClass?: TableClass;
+    tableTitle?: string;
+    createFormTitle?: string;
+    updateFormTitle?: string;
+    deleteFormTitle?: string;
+    createButtonText?: string;
+    createButtonType?: ButtonType;
+    updateButtonText?: string;
+    updateButtonType?: ButtonType;
+    deleteButtonText?: string;
+    deleteButtonType?: ButtonType;
+    closeButtonText?: string;
+    closeButtonType?: ButtonType;
     propertySettings?: PropertySettings[];
     propertyOrder?: string[];
 }
+
+export type TableClass = "sap.m.Table" | "sap.ui.table.Table";
