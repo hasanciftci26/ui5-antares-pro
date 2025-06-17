@@ -17,7 +17,7 @@ declare module "ui5/antares/pro/v2/core/BaseContext" {
     }
 }
 
-export interface ISettings {
+export interface Settings {
     controller: Controller;
     entitySet: string;
     modelRef?: string | ODataModel;

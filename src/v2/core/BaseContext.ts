@@ -5,14 +5,14 @@ import UIComponent from "sap/ui/core/UIComponent";
 import BindingMode from "sap/ui/model/BindingMode";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { ISettings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 
 /**
  * @namespace ui5.antares.pro.v2.core
  */
 export default abstract class BaseContext extends ManagedObject {
-    static metadata: IClassMetadata = {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         abstract: true,
         properties: {
@@ -27,7 +27,7 @@ export default abstract class BaseContext extends ManagedObject {
         }
     };
 
-    constructor(settings: ISettings) {
+    constructor(settings: Settings) {
         super(settings as $ManagedObjectSettings);
 
         this.setView(this.getController().getView() as View);

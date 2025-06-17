@@ -1,13 +1,13 @@
 import ResourceBundle from "sap/base/i18n/ResourceBundle";
 import ManagedObject from "sap/ui/base/ManagedObject";
 import Lib from "sap/ui/core/Lib";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 
 /**
  * @namespace ui5.antares.pro.v2.util
  */
 export default class LibraryBundle extends ManagedObject {
-    static metadata: IClassMetadata = {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true
     };
