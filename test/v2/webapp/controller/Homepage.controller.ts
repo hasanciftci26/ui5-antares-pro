@@ -1,8 +1,6 @@
-import TextArea from "sap/m/TextArea";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
-import { CreateEntry$SubmitSuccessEvent } from "ui5/antares/pro/types/v2/entry/CreateEntry.types";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
-import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -24,23 +22,12 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "Employees",
-            metadataLabelEnabled: true,
-            guidVisibilityMode: "All",
-            navProperties: [{
-                name: "toContract",
-                valueInheritance: [{
-                    property: "employeeID",
-                    parentProperty: "ID"
-                }]
-            }, {
-                name: "toCertifications",
-                valueInheritance: [{
-                    property: "employeeID",
-                    parentProperty: "ID"
-                }]
-            }]
+            entitySet: "Employees"
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toContract"
+        }));
 
         entry.execute();
     }
@@ -48,12 +35,4 @@ export default class Homepage extends BaseController {
     /* ======================================================================================================================= */
     /* Internal methods                                                                                                        */
     /* ======================================================================================================================= */
-
-    private onSubmitSuccess(event: CreateEntry$SubmitSuccessEvent<{ testID: string; }>) {
-        event.getParameter("data");
-    }
-
-    private onValidateFirstName(element: TextArea) {
-        return element.getValue() !== "";
-    }
 }

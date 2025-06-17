@@ -1,6 +1,7 @@
 import Event from "sap/ui/base/Event";
 import EventProvider from "sap/ui/base/EventProvider";
 import ManagedObject, { AggregationBindingInfo } from "sap/ui/base/ManagedObject";
+import Control from "sap/ui/core/Control";
 
 // Property Types for ManagedObject Classes
 export type GetProperty<T> = () => T;
@@ -111,3 +112,9 @@ export type MetadataPropertyDataType =
 export type MetadataVisibility = "hidden" | "public";
 
 export type MakeRequired<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
+
+export interface FormGenerator {
+    generate: () => void;
+    getForm: () => Control;
+    setForm: (form: Control) => void;
+}

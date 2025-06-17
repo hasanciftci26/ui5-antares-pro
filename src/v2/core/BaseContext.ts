@@ -48,6 +48,10 @@ export default abstract class BaseContext extends ManagedObject {
         this.setProperty("entitySet", entitySet.replace("/", ""));
     }
 
+    public getODataModel() {
+        return this.getModel() as ODataModel;
+    }
+
     protected getView() {
         return this.getProperty("view") as View;
     }
@@ -66,10 +70,6 @@ export default abstract class BaseContext extends ManagedObject {
 
     protected resetDefaultBindingMode() {
         this.getODataModel().setDefaultBindingMode(this.getDefaultBindingMode());
-    }
-
-    protected getODataModel() {
-        return this.getModel() as ODataModel;
     }
 
     protected setODataModel(modelRef: string | ODataModel | undefined) {
