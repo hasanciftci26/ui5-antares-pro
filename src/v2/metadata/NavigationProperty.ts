@@ -72,11 +72,8 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
 
         this.setEntitySet(navigationInfo.entitySet);
         this.setMultiplicity(navigationInfo.multiplicity);
-
-        if (navigationInfo.multiplicity === "One") {
-            this.setOperation(this.getOwnerParent().getOperation());
-            await this.getMetaContext().load();
-        }
+        this.setOperation(this.getOwnerParent().getOperation());
+        await this.getMetaContext().load();
     }
 
     public generate() {
@@ -105,6 +102,10 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         } else {
             return this.getTableGenerator().getContent();
         }
+    }
+
+    public getOwnerParent() {
+        return this.getParent() as Factory;
     }
 
     public getOperation() {
@@ -137,9 +138,5 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
 
     private setTableGenerator(tableGenerator: TableGeneratorBase) {
         this.setAggregation("tableGenerator", tableGenerator);
-    }
-
-    private getOwnerParent() {
-        return this.getParent() as Factory;
     }
 }

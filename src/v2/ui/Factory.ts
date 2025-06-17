@@ -58,12 +58,10 @@ export default abstract class Factory extends BaseContext implements MetaContext
         }
     };
 
-    constructor(settings: Settings) {
+    constructor(settings: Settings, operation: Operation) {
         super(settings);
+        this.setOperation(operation);
         this.setMetaContext(new MetaContext());
-        this.setDialogGenerator(new DialogGenerator({
-            modelName: "factory"
-        }));
 
         if (this.getFormType() === "SimpleForm") {
             this.setFormGenerator(new SimpleFormGenerator());
@@ -73,6 +71,9 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
         this.setDefaultValues();
         this.setFactoryModel();
+        this.setDialogGenerator(new DialogGenerator({
+            dialogModel: this.getFactoryModel()
+        }));
     }
 
     public getOperation() {
@@ -190,6 +191,10 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 this.setSubmitButtonText(LibraryBundle.getText("ui5AntaresPro.button.delete"));
                 break;
         }
+    }
+
+    private getFactoryModel() {
+        return this.getModel("factory") as JSONModel;
     }
 
     private setFactoryModel() {

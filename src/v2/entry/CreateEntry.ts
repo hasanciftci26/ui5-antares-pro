@@ -13,8 +13,7 @@ export default class CreateEntry extends Factory {
     };
 
     constructor(settings: Settings) {
-        super(settings);
-        this.setOperation("Create");
+        super(settings, "Create");
     }
 
     public override async execute<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
