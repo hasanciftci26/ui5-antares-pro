@@ -19,6 +19,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
         library: "ui5.antares.pro",
         abstract: true,
         properties: {
+            context: { type: "object" },
             formType: { type: "string", defaultValue: "SmartForm" },
             formTitle: { type: "string", },
             submitButtonText: { type: "string" },
@@ -108,7 +109,11 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
     protected async execute() {
         await this.loadMetaContexts();
+
         this.generateContent();
+        this.addContent();
+        this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
+        this.getDialogGenerator().getDialog().open();
     }
 
     private async loadMetaContexts() {
@@ -125,6 +130,21 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
         for (const property of this.getNavigationProperties()) {
             property.generate();
+        }
+    }
+
+    private addContent() {
+        const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+        const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+
+        this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+
+        for (const navigation of singleNavigations) {
+            this.getDialogGenerator().getDialog().addContent(navigation.getContent());
+        }
+
+        for (const navigation of multiNavigations) {
+            this.getDialogGenerator().getDialog().addContent(navigation.getContent());
         }
     }
 

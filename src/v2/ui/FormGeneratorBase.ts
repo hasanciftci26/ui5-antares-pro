@@ -15,6 +15,7 @@ export default abstract class FormGeneratorBase extends ManagedObject {
     public abstract generate(): void;
     public abstract getForm(): Control;
     public abstract setForm(form: Control): void;
+    public abstract validate(): Promise<boolean>;
 
     protected getFactory() {
         const parent = this.getParent() as ManagedObject;

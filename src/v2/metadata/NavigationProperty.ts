@@ -25,7 +25,6 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             name: { type: "string" },
             tableClass: { type: "string", defaultValue: "sap.ui.table.Table" },
             tableTitle: { type: "string" },
-            formTitle: { type: "string" },
             createFormTitle: { type: "string" },
             updateFormTitle: { type: "string" },
             deleteFormTitle: { type: "string" },
@@ -35,8 +34,6 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             updateButtonType: { type: "string", defaultValue: "Emphasized" },
             deleteButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.delete") },
             deleteButtonType: { type: "string", defaultValue: "Emphasized" },
-            submitButtonText: { type: "string" },
-            submitButtonType: { type: "string" },
             closeButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.close") },
             closeButtonType: { type: "string", defaultValue: "Default" },
             entitySet: { type: "string" },
@@ -67,7 +64,6 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
     constructor(settings: Settings) {
         super(settings as $ManagedObjectSettings);
         this.setMetaContext(new MetaContext());
-        this.setNavigationModel();
     }
 
     public async load() {
@@ -145,38 +141,5 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
 
     private getOwnerParent() {
         return this.getParent() as Factory;
-    }
-
-    private setNavigationModel() {
-        const model = new JSONModel({
-            tableTitle: this.getTableTitle(),
-            formTitle: this.getFormTitle(),
-            submitButtonText: this.getSubmitButtonText(),
-            submitButtonType: this.getSubmitButtonType(),
-            closeButtonText: this.getCloseButtonText(),
-            closeButtonType: this.getCloseButtonType()
-        });
-
-        model.setDefaultBindingMode("TwoWay");
-        this.setModel(model, "navigation");
-
-        this.bindProperties([
-            "tableTitle",
-            "formTitle",
-            "submitButtonText",
-            "submitButtonType",
-            "closeButtonText",
-            "closeButtonType"
-        ]);
-    }
-
-    private bindProperties(properties: string[]) {
-        for (const property of properties) {
-            this.bindProperty(property, {
-                path: "/" + property,
-                model: "navigation",
-                mode: "TwoWay"
-            });
-        }
     }
 }

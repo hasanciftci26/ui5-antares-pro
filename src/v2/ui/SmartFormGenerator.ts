@@ -16,4 +16,8 @@ export default class SmartFormGenerator extends FormGeneratorBase {
     public generate() {
 
     }
+
+    public async validate() {
+        return true;
+    }
 }

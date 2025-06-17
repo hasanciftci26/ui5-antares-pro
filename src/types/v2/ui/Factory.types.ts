@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
+import Context from "sap/ui/model/odata/v2/Context";
 import {
     AddAggregation,
     DestroyAggregation,
@@ -13,6 +14,8 @@ import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 
 declare module "ui5/antares/pro/v2/ui/Factory" {
     export default interface Factory {
+        getContext: GetProperty<Context>;
+        setContext: SetProperty<Context>;
         getFormType: GetProperty<FormType>;
         setFormType: SetProperty<FormType>;
         getFormTitle: GetProperty<string>;

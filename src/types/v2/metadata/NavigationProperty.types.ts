@@ -12,8 +12,6 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setTableClass: SetProperty<TableClass>;
         getTableTitle: GetProperty<string>;
         setTableTitle: SetProperty<string>;
-        getFormTitle: GetProperty<string>;
-        setFormTitle: SetProperty<string>;
         getCreateFormTitle: GetProperty<string>;
         setCreateFormTitle: SetProperty<string>;
         getUpdateFormTitle: GetProperty<string>;
@@ -32,10 +30,6 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setDeleteButtonText: SetProperty<string>;
         getDeleteButtonType: GetProperty<ButtonType>;
         setDeleteButtonType: SetProperty<ButtonType>;
-        getSubmitButtonText: GetProperty<string>;
-        setSubmitButtonText: SetProperty<string>;
-        getSubmitButtonType: GetProperty<ButtonType>;
-        setSubmitButtonType: SetProperty<ButtonType>;
         getCloseButtonText: GetProperty<string>;
         setCloseButtonText: SetProperty<string>;
         getCloseButtonType: GetProperty<ButtonType>;
