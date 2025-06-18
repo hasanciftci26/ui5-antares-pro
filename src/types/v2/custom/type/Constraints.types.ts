@@ -1,11 +1,9 @@
-export interface NumberFormatOptions {
-    groupingEnabled?: boolean;
-    groupingSeparator?: string;
-    groupingSize?: number;
-    decimalSeparator?: string;
-    parseEmptyValueToZero?: boolean
+export interface NumberConstraints {
+    precision?: number;
+    scale?: number;
+    nullable?: string | boolean    
 }
 
-export interface DateTimeFormatOptions {
-    pattern: string;
+export interface DateTimeConstraints {
+    displayFormat: "Date";
 }
