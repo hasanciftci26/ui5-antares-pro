@@ -30,6 +30,8 @@ export default abstract class Factory extends BaseContext implements MetaContext
             metadataLabelEnabled: { type: "boolean", defaultValue: false },
             guidGenerationMode: { type: "string", defaultValue: "Key" },
             guidVisibilityMode: { type: "string", defaultValue: "NonKey" },
+            dateTimeSettings: { type: "object" },
+            numberSettings: { type: "object" },
             propertySettings: { type: "object[]", defaultValue: [] },
             propertyOrder: { type: "string[]", defaultValue: [] },
             operation: { type: "string", visibility: "hidden" }

@@ -27,7 +27,7 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         getCloseButtonText: GetProperty<string>;
         setCloseButtonText: SetProperty<string>;
         getCloseButtonType: GetProperty<ButtonType>;
-        setCloseButtonType: SetProperty<ButtonType>;        
+        setCloseButtonType: SetProperty<ButtonType>;
         getKeyEnforcementEnabled: GetProperty<boolean>;
         setKeyEnforcementEnabled: SetProperty<boolean>;
         getMetadataLabelEnabled: GetProperty<boolean>;
@@ -35,11 +35,15 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         getGuidGenerationMode: GetProperty<GuidMode>;
         setGuidGenerationMode: SetProperty<GuidMode>;
         getGuidVisibilityMode: GetProperty<GuidMode>;
-        setGuidVisibilityMode: SetProperty<GuidMode>;        
+        setGuidVisibilityMode: SetProperty<GuidMode>;
+        getDateTimeSettings: GetProperty<DateTimeSettings | undefined>;
+        setDateTimeSettings: SetProperty<DateTimeSettings | undefined>;
+        getNumberSettings: GetProperty<NumberSettings | undefined>;
+        setNumberSettings: SetProperty<NumberSettings | undefined>;
         getPropertySettings: GetProperty<PropertySettings[]>;
         setPropertySettings: SetProperty<PropertySettings[]>;
         getPropertyOrder: GetProperty<string[]>;
-        setPropertyOrder: SetProperty<string[]>;        
+        setPropertyOrder: SetProperty<string[]>;
         addNavigationProperty: AddAggregation<NavigationProperty>;
         removeNavigationProperty: RemoveAggregation<NavigationProperty>;
         getNavigationProperties: GetAggregation<NavigationProperty[]>;
@@ -58,6 +62,19 @@ export type TextInEditModeSource =
     "ValueList" |
     "ValueListNoValidation" |
     "ValueListWarning";
+
+export interface DateTimeSettings {
+    datePattern?: string;
+    dateTimePattern?: string;
+    timePattern?: string;
+}
+
+export interface NumberSettings {
+    groupingEnabled?: boolean;
+    groupingSeparator?: string;
+    groupingSize?: number;
+    decimalSeparator?: string;
+}
 
 export interface PropertySettings {
     name: string;

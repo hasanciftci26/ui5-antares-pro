@@ -1,0 +1,1 @@
+export type FieldType = "Smart" | "Non-Smart";
