@@ -81,6 +81,8 @@ export interface Settings {
     closeButtonType?: ButtonType;
     propertySettings?: PropertySettings[];
     propertyOrder?: string[];
+    validationLogics?: ValidationLogic[];
+    valueLists?: ValueList[];
 }
 
 export type TableClass = "sap.m.Table" | "sap.ui.table.Table";

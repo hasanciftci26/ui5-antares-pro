@@ -40,11 +40,15 @@ export interface Settings {
     guidGenerationMode?: GuidMode;
     guidVisibilityMode?: GuidMode;
     requiredPropertyError?: string;
+    validationErrorMessage?: string;
+    showErrorMessageBox?: boolean;
     dateTimeSettings?: DateTimeSettings;
     numberSettings?: NumberSettings;
     propertySettings?: PropertySettings[];
     propertyOrder?: string[];
     navigationProperties?: NavigationProperty[];
+    validationLogics?: ValidationLogic[];
+    valueLists?: ValueList[];
 }
 
 export interface FormUtilityProvider extends ManagedObject {

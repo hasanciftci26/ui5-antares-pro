@@ -38,6 +38,10 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         setGuidGenerationMode: SetProperty<GuidMode>;
         getGuidVisibilityMode: GetProperty<GuidMode>;
         setGuidVisibilityMode: SetProperty<GuidMode>;
+        getValidationErrorMessage: GetProperty<string>;
+        setValidationErrorMessage: SetProperty<string>;
+        getShowErrorMessageBox: GetProperty<boolean>;
+        setShowErrorMessageBox: SetProperty<boolean>;
         getDateTimeSettings: GetProperty<DateTimeSettings | undefined>;
         setDateTimeSettings: SetProperty<DateTimeSettings | undefined>;
         getNumberSettings: GetProperty<NumberSettings | undefined>;

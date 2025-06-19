@@ -36,6 +36,8 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 type: "string",
                 defaultValue: ManagedObject.escapeSettingsValue(LibraryBundle.getText("ui5AntaresPro.error.requiredField"))
             },
+            validationErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.validation") },
+            showErrorMessageBox: { type: "boolean", defaultValue: true },
             dateTimeSettings: { type: "object" },
             numberSettings: { type: "object" },
             propertySettings: { type: "object[]", defaultValue: [] },
@@ -154,7 +156,6 @@ export default abstract class Factory extends BaseContext implements MetaContext
         this.generateContent();
         this.addContent();
         this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
-        this.getDialogGenerator().getDialog().open();
     }
 
     private async loadMetaContexts() {

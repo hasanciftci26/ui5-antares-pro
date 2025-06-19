@@ -5,6 +5,7 @@ import SimpleForm from "sap/ui/layout/form/SimpleForm";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
 import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
+import SimpleFormValidator from "ui5/antares/pro/v2/validation/SimpleFormValidator";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -15,8 +16,20 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
         final: true,
         properties: {
             form: { type: "object" }
+        },
+        aggregations: {
+            validator: {
+                type: "ui5.antares.pro.v2.validation.SimpleFormValidator",
+                multiple: false,
+                visibility: "hidden"
+            }
         }
     };
+
+    constructor() {
+        super();
+        this.setValidator(new SimpleFormValidator());
+    }
 
     public generate() {
         const form = new SimpleForm({
@@ -28,7 +41,15 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
     }
 
     public async validate() {
-        return true;
+        return this.getValidator().validate();
+    }
+
+    private getValidator() {
+        return this.getAggregation("validator") as SimpleFormValidator;
+    }
+
+    private setValidator(validator: SimpleFormValidator) {
+        this.setAggregation("validator", validator);
     }
 
     private getFormContent() {

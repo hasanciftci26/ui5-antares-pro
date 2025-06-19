@@ -1,6 +1,11 @@
+import MessageBox from "sap/m/MessageBox";
+import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Context from "sap/ui/model/odata/v2/Context";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
+import { SubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
+import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
+import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
 
 /**
@@ -9,16 +14,43 @@ import Factory from "ui5/antares/pro/v2/ui/Factory";
 export default class CreateEntry extends Factory {
     static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
-        final: true
+        final: true,
+        properties: {
+            beforeSubmit: { type: "function", visibility: "public" }
+        },
+        events: {
+            submitSuccess: {
+                parameters: {
+                    data: { type: "object" },
+                    response: { type: "object" }
+                }
+            },
+            submitError: {
+                parameters: {
+                    response: { type: "object" }
+                }
+            }
+        }        
     };
 
     constructor(settings: Settings) {
         super(settings, "Create");
+
+        // Attach events
+        this.getDialogGenerator().attachSubmitted(this.onDialogSubmit, this);
+        this.getDialogGenerator().attachClosed(this.onDialogClose, this);
     }
 
     public override async execute<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
+        BusyIndicator.show(0);
+
         await this.createNewEntry(initialData);
         await super.execute();
+        this.addNavigationPropertiesToContext();
+
+        this.getDialogGenerator().getDialog().open();
+
+        BusyIndicator.hide();
     }
 
     private async createNewEntry(initialData?: Record<string, any>) {
@@ -31,5 +63,122 @@ export default class CreateEntry extends Factory {
         }) as Context;
 
         this.setContext(context);
+    }
+
+    private addNavigationPropertiesToContext() {
+        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+
+        for (const property of navigationProperties) {
+            if (this.getContext().getProperty(property.getName()) == null) {
+                this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.getName(), {});
+            }
+        }
+    }
+
+    private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
+        BusyIndicator.show(0);
+
+        this.correctFixedValueListValues();
+        const formValidation = await this.validateForms();
+
+        if (!formValidation) {
+            BusyIndicator.hide();
+            MessageBox.error(this.getValidationErrorMessage());
+            return;
+        }
+
+        const beforeSubmit = this.getBeforeSubmit();
+
+        if (beforeSubmit) {
+            const proceed = await Promise.resolve(beforeSubmit.call(this.getController(), this.getContext()));
+
+            if (!proceed) {
+                return;
+            }
+        }
+
+        this.submit();
+    }
+
+    private onDialogClose(event: DialogGenerator$ClosedEvent) {
+        if (this.getODataModel().hasPendingChanges(true)) {
+            this.getODataModel().resetChanges([this.getContext().getPath()], true, true);
+        }
+
+        this.resetDefaultBindingMode();
+    }
+
+    private async validateForms() {
+        const validations: boolean[] = [true];
+        const mainFormGenerator = this.getFormGenerator();
+        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+
+        validations.push(await mainFormGenerator.validate());
+
+        for (const property of navigationProperties) {
+            validations.push(await property.validate());
+        }
+
+        return validations.every(validation => validation);
+    }
+
+    private correctFixedValueListValues() {
+        const data = this.getContext().getObject() as Record<string, any>;
+
+        for (const property in data) {
+            if (data[property] === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY" || data[property] === "00000000-0000-0000-0000-000000000000") {
+                this.getODataModel().setProperty(this.getContext().getPath() + `/${property}`, null);
+            }
+        }
+    }
+
+    private submit() {
+        if (this.getODataModel().hasPendingChanges(true)) {
+            this.getODataModel().submitChanges({
+                groupId: this.getDeferredGroupId(),
+                success: (response?: SubmitChangesResponse) => {
+                    BusyIndicator.hide();
+
+                    const parser = new ResponseParser(response);
+                    parser.parse();
+
+                    if (parser.status === "Success") {
+                        this.fireSubmitSuccess({
+                            submitted: true,
+                            data: parser.data,
+                            response: parser.response
+                        });
+
+                        this.resetDefaultBindingMode();
+                        this.getDialogGenerator().getDialog().close();
+                    } else {
+                        this.fireSubmitError({
+                            response: parser.response
+                        });
+
+                        if (parser.errorMessage && this.getShowErrorMessageBox()) {
+                            MessageBox.error(parser.errorMessage);
+                        }
+                    }
+                },
+                error: (err?: Record<string, any>) => {
+                    BusyIndicator.hide();
+
+                    const parser = new ResponseParser();
+                    parser.parseError(err);
+
+                    this.fireSubmitError({
+                        response: err
+                    });
+
+                    if (parser.errorMessage && this.getShowErrorMessageBox()) {
+                        MessageBox.error(parser.errorMessage);
+                    }
+                }
+            });
+        } else {
+            this.resetDefaultBindingMode();
+            this.getDialogGenerator().getDialog().close();
+        }
     }
 }

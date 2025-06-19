@@ -57,9 +57,8 @@ export default abstract class FormGeneratorBase extends ManagedObject {
         const parent = this.getParent() as ManagedObject;
 
         switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                const navigationProperty = (parent.getParent() as NavigationProperty).getName();
+            case "ui5.antares.pro.v2.metadata.NavigationProperty":
+                const navigationProperty = (parent as NavigationProperty).getName();
                 return navigationProperty + "/" + property;
             default:
                 return property;
@@ -90,5 +89,23 @@ export default abstract class FormGeneratorBase extends ManagedObject {
             default:
                 return parent as FormUtilityProvider;
         }
+    }
+
+    protected getPropertySettings() {
+        const parent = this.getParent() as ManagedObject;
+
+        switch (parent.getMetadata().getName()) {
+            case "ui5.antares.pro.v2.metadata.NavigationProperty":
+                return (parent as NavigationProperty).getPropertySettings();
+            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
+            case "ui5.antares.pro.v2.ui.GridTableGenerator":
+                return (parent.getParent() as NavigationProperty).getPropertySettings();
+            default:
+                return (parent as Factory).getPropertySettings();
+        }
+    }
+
+    protected getSinglePropertySettings(property: string) {
+        return this.getPropertySettings().find(prop => prop.name === property);
     }
 }

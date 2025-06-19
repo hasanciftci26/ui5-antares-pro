@@ -142,6 +142,14 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         return this.getValueLists().find(valueList => valueList.getLocalDataProperty() === property);
     }
 
+    public async validate() {
+        if (this.getMultiplicity() === "Many") {
+            throw new Error("NavigationProperty validate method can only be used for navigations with multiplicity: One.");
+        }
+
+        return this.getFormGenerator().validate();
+    }
+
     private setOperation(operation: Operation) {
         this.setProperty("operation", operation);
     }
