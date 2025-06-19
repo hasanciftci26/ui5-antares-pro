@@ -27,7 +27,16 @@ export default class Homepage extends BaseController {
                 datePattern: "d MMMM y",
                 dateTimePattern: "d MMMM y HH:mm",
                 timePattern: "HH:mm"
-            }
+            },
+            numberSettings: {
+                decimalSeparator: ",",
+                groupingSeparator: " ",
+                groupingSize: 4
+            },
+            propertySettings: [{
+                name: "salary",
+                required: true
+            }]
         });
 
         entry.execute();

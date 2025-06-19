@@ -5,6 +5,7 @@ import Text from "sap/m/Text";
 import TimePicker from "sap/m/TimePicker";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import CustomData from "sap/ui/core/CustomData";
+import Messaging from "sap/ui/core/Messaging";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Settings, StandardBinding } from "ui5/antares/pro/types/v2/custom/control/ControlGenerator.types";
 import { DateTimeConstraints, NumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
@@ -262,10 +263,13 @@ export default class ControlGenerator extends ManagedObject {
             binding.formatOptions = formatOptions;
         }
 
-        return new TimePicker({
+        const timePicker = new TimePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             value: binding
         });
+
+        Messaging.registerObject(timePicker, true);
+        return timePicker;
     }
 
     private getNumberInput(property: EntityProperty, path: string) {
@@ -284,20 +288,27 @@ export default class ControlGenerator extends ManagedObject {
             binding.formatOptions = formatOptions;
         }
 
-        return new Input({
+        const input = new Input({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            textAlign: "End",
             value: binding
         });
+
+        Messaging.registerObject(input, true);
+        return input;
     }
 
     private getStringInput(property: EntityProperty, path: string) {
-        return new Input({
+        const input = new Input({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             value: {
                 path: path,
                 type: "sap.ui.model.odata.type" + property.type
             }
         });
+
+        Messaging.registerObject(input, true);
+        return input;
     }
 
     private getDynamicDateRange(property: EntityProperty) {
@@ -308,6 +319,7 @@ export default class ControlGenerator extends ManagedObject {
         });
 
         dynamicDateRange.attachChange(this.onDateRangeChange, this);
+        Messaging.registerObject(dynamicDateRange, true);
         return dynamicDateRange;
     }
 
@@ -320,7 +332,7 @@ export default class ControlGenerator extends ManagedObject {
     }
 
     private getCustomDatePicker(property: EntityProperty, path: string, validationLogic?: ValidationLogic) {
-        return new CustomDatePicker({
+        const datePicker = new CustomDatePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
@@ -329,10 +341,13 @@ export default class ControlGenerator extends ManagedObject {
                 type: this.getSimpleFormBindingType(property, validationLogic)
             }
         });
+
+        Messaging.registerObject(datePicker, true);
+        return datePicker;
     }
 
     private getCustomDateTimePicker(property: EntityProperty, path: string, validationLogic?: ValidationLogic) {
-        return new CustomDateTimePicker({
+        const dateTimePicker = new CustomDateTimePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
@@ -341,10 +356,13 @@ export default class ControlGenerator extends ManagedObject {
                 type: this.getSimpleFormBindingType(property, validationLogic)
             }
         });
+
+        Messaging.registerObject(dateTimePicker, true);
+        return dateTimePicker;
     }
 
     private getCustomTimePicker(property: EntityProperty, path: string, validationLogic?: ValidationLogic) {
-        return new CustomTimePicker({
+        const timePicker = new CustomTimePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
@@ -353,10 +371,13 @@ export default class ControlGenerator extends ManagedObject {
                 type: this.getSimpleFormBindingType(property, validationLogic)
             }
         });
+
+        Messaging.registerObject(timePicker, true);
+        return timePicker;
     }
 
     private getCustomInput(property: EntityProperty, path: string, validationLogic?: ValidationLogic) {
-        return new CustomInput({
+        const input = new CustomInput({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
@@ -365,6 +386,13 @@ export default class ControlGenerator extends ManagedObject {
                 type: this.getSimpleFormBindingType(property, validationLogic)
             }
         });
+
+        if (this.isPropertyNumber(property)) {
+            input.setTextAlign("End");
+        }
+
+        Messaging.registerObject(input, true);
+        return input;
     }
 
     private getSimpleFormBindingType(property: EntityProperty, validationLogic?: ValidationLogic) {
@@ -375,5 +403,20 @@ export default class ControlGenerator extends ManagedObject {
         });
 
         return typeInitializer.getCustomType(property, validationLogic);
+    }
+
+    private isPropertyNumber(property: EntityProperty) {
+        const numberTypes = [
+            "Edm.Byte",
+            "Edm.SByte",
+            "Edm.Int16",
+            "Edm.Int32",
+            "Edm.Int64",
+            "Edm.Single",
+            "Edm.Double",
+            "Edm.Decimal"
+        ];
+
+        return numberTypes.includes(property.type);
     }
 }
