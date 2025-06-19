@@ -1,8 +1,8 @@
-import ManagedObject from "sap/ui/base/ManagedObject";
+import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import ValidateException from "sap/ui/model/ValidateException";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { Condition, Operator, PropertyRef, TimeObject } from "ui5/antares/pro/types/v2/validation/ValidationLogic.types";
+import { Condition, Operator, PropertyRef, Settings, TimeObject } from "ui5/antares/pro/types/v2/validation/ValidationLogic.types";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
 import TimeValidation from "ui5/antares/pro/v2/validation/TimeValidation";
@@ -25,6 +25,10 @@ export default class ValidationLogic extends ManagedObject {
             validator: { type: "function" }
         }
     };
+
+    constructor(settings: Settings) {
+        super(settings as $ManagedObjectSettings);
+    }
 
     public async evaluate(value: any) {
         const validator = this.getValidator();
