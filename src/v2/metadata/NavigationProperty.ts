@@ -1,6 +1,7 @@
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { FormUtilityProvider } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { Settings } from "ui5/antares/pro/types/v2/metadata/NavigationProperty.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
@@ -13,11 +14,13 @@ import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace ui5.antares.pro.v2.metadata
  */
-export default class NavigationProperty extends ManagedObject implements MetaContextOwner {
+export default class NavigationProperty extends ManagedObject implements MetaContextOwner, FormUtilityProvider {
     static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
@@ -43,6 +46,16 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             operation: { type: "string", visibility: "hidden" }
         },
         aggregations: {
+            validationLogics: {
+                type: "ui5.antares.pro.v2.validation.ValidationLogic",
+                multiple: true,
+                singularName: "validationLogic"
+            },
+            valueLists: {
+                type: "ui5.antares.pro.v2.valuelist.ValueList",
+                multiple: true,
+                singularName: "valueList"
+            },
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,
@@ -108,16 +121,29 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         return this.getParent() as Factory;
     }
 
+    public getMetaContext() {
+        return this.getAggregation("metaContext") as MetaContext;
+    }
+
     public getOperation() {
         return this.getProperty("operation") as Operation;
     }
 
-    private setOperation(operation: Operation) {
-        this.setProperty("operation", operation);
+    public getValidationLogicByProperty(property: string) {
+        return this.getValidationLogics().find(logic => logic.getPropertyName() === property);
     }
 
-    private getMetaContext() {
-        return this.getAggregation("metaContext") as MetaContext;
+    public addValueList(valueList: ValueList) {
+        valueList.checkValidity();
+        this.addAggregation("valueLists", valueList);
+    }
+
+    public getValueListByProperty(property: string) {
+        return this.getValueLists().find(valueList => valueList.getLocalDataProperty() === property);
+    }
+
+    private setOperation(operation: Operation) {
+        this.setProperty("operation", operation);
     }
 
     private setMetaContext(metaContext: MetaContext) {

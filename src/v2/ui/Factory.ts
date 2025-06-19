@@ -1,6 +1,7 @@
+import ManagedObject from "sap/ui/base/ManagedObject";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
+import { FormUtilityProvider, Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
 import BaseContext from "ui5/antares/pro/v2/core/BaseContext";
@@ -10,11 +11,12 @@ import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
  */
-export default abstract class Factory extends BaseContext implements MetaContextOwner {
+export default abstract class Factory extends BaseContext implements MetaContextOwner, FormUtilityProvider {
     static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         abstract: true,
@@ -30,6 +32,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
             metadataLabelEnabled: { type: "boolean", defaultValue: false },
             guidGenerationMode: { type: "string", defaultValue: "Key" },
             guidVisibilityMode: { type: "string", defaultValue: "NonKey" },
+            requiredPropertyError: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.requiredField") },
             dateTimeSettings: { type: "object" },
             numberSettings: { type: "object" },
             propertySettings: { type: "object[]", defaultValue: [] },
@@ -41,6 +44,16 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 type: "ui5.antares.pro.v2.metadata.NavigationProperty",
                 multiple: true,
                 singularName: "navigationProperty"
+            },
+            validationLogics: {
+                type: "ui5.antares.pro.v2.validation.ValidationLogic",
+                multiple: true,
+                singularName: "validationLogic"
+            },
+            valueLists: {
+                type: "ui5.antares.pro.v2.valuelist.ValueList",
+                multiple: true,
+                singularName: "valueList"
             },
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
@@ -78,6 +91,33 @@ export default abstract class Factory extends BaseContext implements MetaContext
         }));
     }
 
+    public getMetaContext() {
+        return this.getAggregation("metaContext") as MetaContext;
+    }
+
+    public getRequiredPropertyError() {
+        const error = this.getProperty("requiredPropertyError") as string;
+        return error.replace(/\\\{/g, "{").replace(/\\\}/g, "}");
+    }
+
+    public setRequiredPropertyError(error: string) {
+        const escapedValue = error.includes("{property}") ? ManagedObject.escapeSettingsValue(error) : error;
+        this.setProperty("requiredPropertyError", escapedValue);
+    }
+
+    public getValidationLogicByProperty(property: string) {
+        return this.getValidationLogics().find(logic => logic.getPropertyName() === property);
+    }
+
+    public addValueList(valueList: ValueList) {
+        valueList.checkValidity();
+        this.addAggregation("valueLists", valueList);
+    }
+
+    public getValueListByProperty(property: string) {
+        return this.getValueLists().find(valueList => valueList.getLocalDataProperty() === property);
+    }
+
     public getOperation() {
         return this.getProperty("operation") as Operation;
     }
@@ -100,10 +140,6 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
     protected setFormGenerator(formGenerator: FormGeneratorBase) {
         this.setAggregation("formGenerator", formGenerator);
-    }
-
-    protected getMetaContext() {
-        return this.getAggregation("metaContext") as MetaContext;
     }
 
     protected setMetaContext(metaContext: MetaContext) {

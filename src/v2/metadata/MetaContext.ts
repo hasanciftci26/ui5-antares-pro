@@ -94,6 +94,7 @@ export default class MetaContext extends ManagedObject {
 
         switch (parent.getMetadata().getName()) {
             case "ui5.antares.pro.v2.metadata.NavigationProperty":
+            case "ui5.antares.pro.v2.valuelist.ValueList":
                 return parent.getParent() as Factory;
             default:
                 return parent as Factory;

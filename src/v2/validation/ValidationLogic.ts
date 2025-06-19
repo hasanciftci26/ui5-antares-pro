@@ -7,7 +7,10 @@ import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 export default class ValidationLogic extends ManagedObject {
     static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
-        final: true
+        final: true,
+        properties: {
+            propertyName: { type: "string" }
+        }
     };
 
     public async evaluate(value: any) {

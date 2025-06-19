@@ -1,8 +1,18 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
-import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
+import {
+    AddAggregation,
+    DestroyAggregation,
+    GetAggregation,
+    GetProperty,
+    RemoveAggregation,
+    RemoveAllAggregation,
+    SetProperty
+} from "ui5/antares/pro/types/Global.types";
 import { Multiplicity } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { PropertySettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
     export default interface NavigationProperty {
@@ -42,6 +52,15 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setPropertySettings: SetProperty<PropertySettings[]>;
         getPropertyOrder: GetProperty<string[]>;
         setPropertyOrder: SetProperty<string[]>;
+        addValidationLogic: AddAggregation<ValidationLogic>;
+        removeValidationLogic: RemoveAggregation<ValidationLogic>;
+        getValidationLogics: GetAggregation<ValidationLogic[]>;
+        removeAllValidationLogics: RemoveAllAggregation;
+        destroyValidationLogics: DestroyAggregation;
+        removeValueList: RemoveAggregation<ValueList>;
+        getValueLists: GetAggregation<ValueList[]>;
+        removeAllValueLists: RemoveAllAggregation;
+        destroyValueLists: DestroyAggregation;
     }
 }
 

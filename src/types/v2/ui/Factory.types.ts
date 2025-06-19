@@ -11,6 +11,8 @@ import {
     SetProperty
 } from "ui5/antares/pro/types/Global.types";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
+import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 declare module "ui5/antares/pro/v2/ui/Factory" {
     export default interface Factory {
@@ -49,6 +51,15 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         getNavigationProperties: GetAggregation<NavigationProperty[]>;
         removeAllNavigationProperties: RemoveAllAggregation;
         destroyNavigationProperties: DestroyAggregation;
+        addValidationLogic: AddAggregation<ValidationLogic>;
+        removeValidationLogic: RemoveAggregation<ValidationLogic>;
+        getValidationLogics: GetAggregation<ValidationLogic[]>;
+        removeAllValidationLogics: RemoveAllAggregation;
+        destroyValidationLogics: DestroyAggregation;
+        removeValueList: RemoveAggregation<ValueList>;
+        getValueLists: GetAggregation<ValueList[]>;
+        removeAllValueLists: RemoveAllAggregation;
+        destroyValueLists: DestroyAggregation;
     }
 }
 
