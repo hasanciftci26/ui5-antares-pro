@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
+import Context from "sap/ui/model/odata/v2/Context";
 import {
     AddAggregation,
     DestroyAggregation,
@@ -48,6 +49,8 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setEntitySet: SetProperty<string>;
         getMultiplicity: GetProperty<Multiplicity>;
         setMultiplicity: SetProperty<Multiplicity>;
+        getContext: GetProperty<Context>;
+        setContext: SetProperty<Context>;
         getPropertySettings: GetProperty<PropertySettings[]>;
         setPropertySettings: SetProperty<PropertySettings[]>;
         getPropertyOrder: GetProperty<string[]>;

@@ -1,5 +1,4 @@
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
-import JSONModel from "sap/ui/model/json/JSONModel";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { FormUtilityProvider } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
@@ -14,7 +13,6 @@ import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
-import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
@@ -41,6 +39,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             closeButtonType: { type: "string", defaultValue: "Default" },
             entitySet: { type: "string" },
             multiplicity: { type: "string" },
+            context: { type: "object" },
             propertySettings: { type: "object[]", defaultValue: [] },
             propertyOrder: { type: "string[]", defaultValue: [] },
             operation: { type: "string", visibility: "hidden" }
@@ -87,6 +86,10 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         this.setMultiplicity(navigationInfo.multiplicity);
         this.setOperation(this.getOwnerParent().getOperation());
         await this.getMetaContext().load();
+
+        if (navigationInfo.multiplicity === "One") {
+            this.setContext(parent.getContext());
+        }
     }
 
     public generate() {
