@@ -130,7 +130,7 @@ export default class CustomTypeInitializer extends ManagedObject {
 
         const settings = new CustomNumberSettings({
             entityProperty: property,
-            requiredPropertyError: this.getRequiredPropertyError(),
+            requiredPropertyError: ManagedObject.escapeSettingsValue(this.getRequiredPropertyError()),
             fieldType: this.getFieldType(),
             validationLogic: validationLogic
         });
@@ -158,7 +158,7 @@ export default class CustomTypeInitializer extends ManagedObject {
         const dateTimeSettings = this.getDateTimeSettings();
         const settings = new CustomDateTimeSettings({
             entityProperty: property,
-            requiredPropertyError: this.getRequiredPropertyError(),
+            requiredPropertyError: ManagedObject.escapeSettingsValue(this.getRequiredPropertyError()),
             fieldType: this.getFieldType(),
             validationLogic: validationLogic
         });
@@ -205,7 +205,7 @@ export default class CustomTypeInitializer extends ManagedObject {
     private getCustomStringSettings(property: EntityProperty, validationLogic?: ValidationLogic) {
         return new CustomStringSettings({
             entityProperty: property,
-            requiredPropertyError: this.getRequiredPropertyError(),
+            requiredPropertyError: ManagedObject.escapeSettingsValue(this.getRequiredPropertyError()),
             fieldType: this.getFieldType(),
             validationLogic: validationLogic
         });

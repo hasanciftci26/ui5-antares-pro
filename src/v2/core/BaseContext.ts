@@ -28,6 +28,10 @@ export default abstract class BaseContext extends ManagedObject {
     };
 
     constructor(settings: Settings) {
+        if (settings.requiredPropertyError?.includes("{property}")) {
+            settings.requiredPropertyError = ManagedObject.escapeSettingsValue(settings.requiredPropertyError);
+        }
+
         super(settings as $ManagedObjectSettings);
 
         this.setView(this.getController().getView() as View);
@@ -66,7 +70,7 @@ export default abstract class BaseContext extends ManagedObject {
         }
 
         return bundle.getText(key, parameters, true);
-    }    
+    }
 
     protected getView() {
         return this.getProperty("view") as View;

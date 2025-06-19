@@ -10,8 +10,6 @@ declare module "ui5/antares/pro/v2/custom/type/CustomDateTimeSettings" {
     export default interface CustomDateTimeSettings {
         getEntityProperty: GetProperty<EntityProperty>;
         setEntityProperty: SetProperty<EntityProperty>;
-        getRequiredPropertyError: GetProperty<string>;
-        setRequiredPropertyError: SetProperty<string>;
         getFieldType: GetProperty<FieldType>;
         setFieldType: SetProperty<FieldType>;
         getConstraints: GetProperty<DateTimeConstraints | undefined>;

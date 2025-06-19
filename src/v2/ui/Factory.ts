@@ -32,7 +32,10 @@ export default abstract class Factory extends BaseContext implements MetaContext
             metadataLabelEnabled: { type: "boolean", defaultValue: false },
             guidGenerationMode: { type: "string", defaultValue: "Key" },
             guidVisibilityMode: { type: "string", defaultValue: "NonKey" },
-            requiredPropertyError: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.requiredField") },
+            requiredPropertyError: {
+                type: "string",
+                defaultValue: ManagedObject.escapeSettingsValue(LibraryBundle.getText("ui5AntaresPro.error.requiredField"))
+            },
             dateTimeSettings: { type: "object" },
             numberSettings: { type: "object" },
             propertySettings: { type: "object[]", defaultValue: [] },
@@ -96,8 +99,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
     }
 
     public getRequiredPropertyError() {
-        const error = this.getProperty("requiredPropertyError") as string;
-        return error.replace(/\\\{/g, "{").replace(/\\\}/g, "}");
+        return this.getProperty("requiredPropertyError") as string;
     }
 
     public setRequiredPropertyError(error: string) {

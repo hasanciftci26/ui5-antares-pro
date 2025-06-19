@@ -1,4 +1,5 @@
 import Label from "sap/m/Label";
+import ManagedObject from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
@@ -35,7 +36,7 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
         const properties = this.getMetaContext().getEntityProperties();
         const generator = new ControlGenerator({
             generateFor: "SimpleForm",
-            requiredPropertyError: this.getRequiredPropertyError(),
+            requiredPropertyError: ManagedObject.escapeSettingsValue(this.getRequiredPropertyError()),
             dateTimeSettings: this.getDateTimeSettings(),
             numberSettings: this.getNumberSettings()
         });

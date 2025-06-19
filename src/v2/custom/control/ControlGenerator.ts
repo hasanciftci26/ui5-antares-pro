@@ -397,7 +397,7 @@ export default class ControlGenerator extends ManagedObject {
 
     private getSimpleFormBindingType(property: EntityProperty, validationLogic?: ValidationLogic) {
         const typeInitializer = new CustomTypeInitializer({
-            requiredPropertyError: this.getRequiredPropertyError() as string,
+            requiredPropertyError: ManagedObject.escapeSettingsValue(this.getRequiredPropertyError() as string),
             dateTimeSettings: this.getDateTimeSettings(),
             numberSettings: this.getNumberSettings()
         });

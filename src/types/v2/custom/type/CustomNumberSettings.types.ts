@@ -10,8 +10,6 @@ declare module "ui5/antares/pro/v2/custom/type/CustomNumberSettings" {
     export default interface CustomNumberSettings {
         getEntityProperty: GetProperty<EntityProperty>;
         setEntityProperty: SetProperty<EntityProperty>;
-        getRequiredPropertyError: GetProperty<string>;
-        setRequiredPropertyError: SetProperty<string>;
         getFieldType: GetProperty<FieldType>;
         setFieldType: SetProperty<FieldType>;
         getConstraints: GetProperty<NumberConstraints | undefined>;

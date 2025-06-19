@@ -20,4 +20,13 @@ export default class CustomStringSettings extends ManagedObject {
     constructor(settings: Settings) {
         super(settings as $ManagedObjectSettings);
     }
+
+    public getRequiredPropertyError() {
+        const error = this.getProperty("requiredPropertyError") as string;
+        return error.replace(/\\\{/g, "{").replace(/\\\}/g, "}");
+    } 
+    
+    public setRequiredPropertyError(error: string) {
+        this.setProperty("requiredPropertyError", error);
+    }    
 }
