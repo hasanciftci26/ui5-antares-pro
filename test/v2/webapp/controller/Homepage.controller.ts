@@ -41,26 +41,19 @@ export default class Homepage extends BaseController {
         });
 
         entry.addNavigationProperty(new NavigationProperty({
-            name: "toContract",
+            name: "toCertifications",
             propertySettings: [{
-                name: "contractType",
+                name: "title",
                 required: true
             }],
             validationLogics: [
                 new ValidationLogic({
-                    propertyName: "contractType",
+                    propertyName: "title",
                     operator: "Regex",
                     value1: new RegExp("^[A-Z0-9_]+$"),
-                    errorMessage: "Contract Type must be constant case"
+                    errorMessage: "Title must be uppercase"
                 })
             ]
-        }));
-
-        entry.addValidationLogic(new ValidationLogic({
-            propertyName: "lastName",
-            operator: "Regex",
-            value1: new RegExp("^[A-Z0-9_]+$"),
-            errorMessage: "Last Name must be constant case"
         }));
 
         entry.execute();

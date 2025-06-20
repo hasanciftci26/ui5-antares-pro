@@ -3,6 +3,7 @@ import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { FormUtilityProvider } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { Settings } from "ui5/antares/pro/types/v2/metadata/NavigationProperty.types";
+import { Settings as TableGeneratorSettings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
@@ -37,6 +38,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             deleteButtonType: { type: "string", defaultValue: "Emphasized" },
             closeButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.close") },
             closeButtonType: { type: "string", defaultValue: "Default" },
+            visibleColumnCount: { type: "int", defaultValue: 5 },
             entitySet: { type: "string" },
             multiplicity: { type: "string" },
             context: { type: "object" },
@@ -103,9 +105,9 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             this.getFormGenerator().generate();
         } else {
             if (this.getTableClass() === "sap.m.Table") {
-                this.setTableGenerator(new ResponsiveTableGenerator());
+                this.setTableGenerator(new ResponsiveTableGenerator(this.getTableGeneratorSettings()));
             } else {
-                this.setTableGenerator(new GridTableGenerator());
+                this.setTableGenerator(new GridTableGenerator(this.getTableGeneratorSettings()));
             }
 
             this.getTableGenerator().generate();
@@ -153,7 +155,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         return this.getFormGenerator().validate();
     }
 
-    private setOperation(operation: Operation) {
+    public setOperation(operation: Operation) {
         this.setProperty("operation", operation);
     }
 
@@ -175,5 +177,25 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
 
     private setTableGenerator(tableGenerator: TableGeneratorBase) {
         this.setAggregation("tableGenerator", tableGenerator);
+    }
+
+    private getTableGeneratorSettings() {
+        const settings: TableGeneratorSettings = {
+            tableTitle: this.getTableTitle(),
+            createFormTitle: this.getCreateFormTitle(),
+            updateFormTitle: this.getUpdateFormTitle(),
+            deleteFormTitle: this.getDeleteFormTitle(),
+            createButtonText: this.getCreateButtonText(),
+            createButtonType: this.getCreateButtonType(),
+            updateButtonText: this.getUpdateButtonText(),
+            updateButtonType: this.getUpdateButtonType(),
+            deleteButtonText: this.getDeleteButtonText(),
+            deleteButtonType: this.getDeleteButtonType(),
+            closeButtonText: this.getCloseButtonText(),
+            closeButtonType: this.getCloseButtonType(),
+            visibleColumnCount: this.getVisibleColumnCount()
+        };
+
+        return settings;
     }
 }

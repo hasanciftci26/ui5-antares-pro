@@ -41,7 +41,7 @@ export default class DialogGenerator extends ManagedObject {
                 path: "dialog>/formTitle"
             },
             endButton: this.getEndButton(),
-            escapeHandler: this.onEscape as EscapeHandler
+            escapeHandler: this.onEscape.bind(this) as EscapeHandler
         });
 
         dialog.setModel(factory.getODataModel());

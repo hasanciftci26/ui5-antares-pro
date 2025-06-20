@@ -1,4 +1,5 @@
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { Settings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
 import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
 
 /**
@@ -14,7 +15,11 @@ export default class ResponsiveTableGenerator extends TableGeneratorBase {
         }
     };
 
-    public generate() {
+    constructor(settings: Settings) {
+        super(settings);
+    }
 
+    public generate() {
+        this.initialize();
     }
 }
