@@ -37,6 +37,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 defaultValue: ManagedObject.escapeSettingsValue(LibraryBundle.getText("ui5AntaresPro.error.requiredField"))
             },
             validationErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.validation") },
+            selectRowError: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.selectRow") },
             showErrorMessageBox: { type: "boolean", defaultValue: true },
             dateTimeSettings: { type: "object" },
             numberSettings: { type: "object" },

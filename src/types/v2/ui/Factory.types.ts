@@ -40,6 +40,8 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         setGuidVisibilityMode: SetProperty<GuidMode>;
         getValidationErrorMessage: GetProperty<string>;
         setValidationErrorMessage: SetProperty<string>;
+        getSelectRowError: GetProperty<string>;
+        setSelectRowError: SetProperty<string>;
         getShowErrorMessageBox: GetProperty<boolean>;
         setShowErrorMessageBox: SetProperty<boolean>;
         getDateTimeSettings: GetProperty<DateTimeSettings | undefined>;

@@ -87,7 +87,14 @@ export default class ControlGenerator extends ManagedObject {
         const formatOptions = this.getFormatOptions(property);
         const binding: StandardBinding = {
             path: path,
-            type: "sap.ui.model.odata.type" + property.type.substring(3)
+            type: "sap.ui.model.odata.type" + property.type.substring(3),
+            formatter: (value) => {
+                if (value == null || value == "") {
+                    return "–";
+                }
+
+                return value;
+            }
         };
 
         if (constraints) {

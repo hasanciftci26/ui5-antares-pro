@@ -41,6 +41,7 @@ export interface Settings {
     guidVisibilityMode?: GuidMode;
     requiredPropertyError?: string;
     validationErrorMessage?: string;
+    selectRowError?: string;
     showErrorMessageBox?: boolean;
     dateTimeSettings?: DateTimeSettings;
     numberSettings?: NumberSettings;

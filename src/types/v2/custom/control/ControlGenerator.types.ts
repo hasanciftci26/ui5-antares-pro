@@ -37,4 +37,5 @@ export interface StandardBinding {
     type: string;
     constraints?: Record<string, any>;
     formatOptions?: Record<string, any>;
+    formatter?: (value: any) => any;
 }

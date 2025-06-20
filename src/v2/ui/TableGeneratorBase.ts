@@ -20,6 +20,7 @@ import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import MessageBox from "sap/m/MessageBox";
+import Context from "sap/ui/model/odata/v2/Context";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -233,35 +234,62 @@ export default abstract class TableGeneratorBase extends ManagedObject {
     }
 
     private onUpdate() {
+        const selectedContext = this.getSelectedRowContext();
 
+        if (!selectedContext) {
+            MessageBox.error(this.getFactory().getSelectRowError());
+            return;
+        }
     }
 
-    private onDelete() {
+    private async onDelete() {
+        const selectedContext = this.getSelectedRowContext();
 
+        if (!selectedContext) {
+            MessageBox.error(this.getFactory().getSelectRowError());
+            return;
+        }
+
+        this.getOwnerParent().setContext(selectedContext);
+        this.getOwnerParent().setOperation("Delete");
+        this.setSubmitButtonText(this.getDeleteButtonText());
+        this.setSubmitButtonType(this.getDeleteButtonType());
+        this.setFormTitle(this.getDeleteFormTitle() || LibraryBundle.getText(
+            "ui5AntaresPro.title.deleteEntry",
+            [this.getOwnerParent().getEntitySet()]
+        ));
+
+        await this.getMetaContext().load();
+        this.getDialogGenerator().generate();
+        this.getFormGenerator().generate();
+
+        this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
+        this.getDialogGenerator().getDialog().open();
     }
 
     private onSettings() {
 
     }
 
-    private async onSubmit() {
-        BusyIndicator.show(0);
-
-        this.correctFixedValueListValues();
-        const validation = await this.getFormGenerator().validate();
-
-        if (!validation) {
-            BusyIndicator.hide();
-            MessageBox.error(this.getFactory().getValidationErrorMessage());
-            return;
+    private onSubmit() {
+        switch (this.getOwnerParent().getOperation()) {
+            case "Create":
+            case "Update":
+                this.submit();
+                break;
+            case "Delete":
+                this.delete();
+                break;
         }
-
-        BusyIndicator.hide();
-        this.getDialogGenerator().getDialog().close();
     }
 
     private onClose() {
         const factory = this.getFactory();
+
+        if (this.getOwnerParent().getOperation() === "Delete") {
+            return;
+        }
 
         if (factory.getODataModel().hasPendingChanges(true)) {
             factory.getODataModel().resetChanges([this.getOwnerParent().getContext().getPath()], true, true);
@@ -301,6 +329,54 @@ export default abstract class TableGeneratorBase extends ManagedObject {
                 this.getFactory().getODataModel().setProperty(context.getPath() + `/${property}`, null);
             }
         }
+    }
+
+    private getSelectedRowContext() {
+        const tableInstance = this.getTableInstance();
+
+        if (tableInstance instanceof GridTable) {
+            const selectedIndices = tableInstance.getSelectedIndices();
+
+            if (!selectedIndices.length) {
+                return;
+            }
+
+            return tableInstance.getContextByIndex(selectedIndices[0]) as Context;
+        } else {
+            const selectedItem = tableInstance.getSelectedItem();
+
+            if (!selectedItem) {
+                return;
+            }
+
+            return selectedItem.getBindingContext() as Context;
+        }
+    }
+
+    private async submit() {
+        BusyIndicator.show(0);
+        this.correctFixedValueListValues();
+        const validation = await this.getFormGenerator().validate();
+
+        if (!validation) {
+            BusyIndicator.hide();
+            MessageBox.error(this.getFactory().getValidationErrorMessage());
+            return;
+        }
+
+        BusyIndicator.hide();
+        this.getDialogGenerator().getDialog().close();
+    }
+
+    private delete() {
+        BusyIndicator.show(0);
+
+        this.getOwnerParent().getContext().delete({
+            groupId: this.getFactory().getDeferredGroupId()
+        }).then(() => {
+            BusyIndicator.hide();
+            this.getDialogGenerator().getDialog().close();
+        });
     }
 
     private setDefaultTableTitle() {
