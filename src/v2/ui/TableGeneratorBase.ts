@@ -9,7 +9,7 @@ import Control from "sap/ui/core/Control";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
-import { P13nProperty, Settings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
+import { P13nProperty, P13nStateChangeParams, Settings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
@@ -80,7 +80,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getDialogGenerator().attachClosed(this.onClose, this);
     }
 
-    public abstract generate(): void;
+    public abstract generate(): Promise<void>;
     public abstract getContent(): Control;
     public abstract setContent(content: Control): void;
     public abstract getTable(): Control;
@@ -146,9 +146,9 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         await this.getMetaContext().load();
     }
 
-    protected getToolbar(addSettingsButton: boolean) {
+    protected getToolbar() {
         const toolbar = new OverflowToolbar({
-            content: this.getToolbarContent(addSettingsButton)
+            content: this.getToolbarContent()
         });
 
         toolbar.setModel(this.getTableModel(), "table");
@@ -169,41 +169,32 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             }
         });
 
-        this.setP13nStateChangeHandler(this.onP13nStateChange.bind(this));
+        this.setP13nStateChangeHandler(this.onP13nStateChange.bind(this) as (event: Event) => void);
         Engine.getInstance().attachStateChange(this.getP13nStateChangeHandler());
     }
 
-    private getToolbarContent(addSettingsButton: boolean) {
+    private getToolbarContent() {
         const content: Control[] = [
-            new Title({ text: "{table>/tableTitle} ({table>/count})" })
+            new Title({ text: "{table>/tableTitle} ({table>/count})" }),
+            new ToolbarSpacer()
         ];
 
         switch (this.getFactory().getOperation()) {
             case "Create":
-                content.push(new ToolbarSpacer());
                 content.push(this.getTableCreateButton());
                 content.push(this.getTableDeleteButton());
                 break;
             case "Update":
-                content.push(new ToolbarSpacer());
                 content.push(this.getTableCreateButton());
                 content.push(this.getTableUpdateButton());
                 content.push(this.getTableDeleteButton());
                 break;
             case "Delete":
-                content.push(new ToolbarSpacer());
                 content.push(this.getTableDeleteButton());
                 break;
         }
 
-        if (addSettingsButton) {
-            if (this.getFactory().getOperation() === "Read") {
-                content.push(new ToolbarSpacer());
-            }
-
-            content.push(this.getTableSettingsButton());
-        }
-
+        content.push(this.getTableSettingsButton());
         return content;
     }
 
@@ -303,8 +294,29 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         });
     }
 
-    private onP13nStateChange(event: Event) {
+    private onP13nStateChange(event: Event<P13nStateChangeParams>) {
+        const tableInstance = this.getTableInstance();
+        const control = event.getParameter("control");
+        const state = event.getParameter("state");
 
+        if (control !== tableInstance || !state) {
+            return;
+        }
+
+        if (tableInstance instanceof GridTable) {
+            const columns = tableInstance.getColumns();
+            columns.forEach(column => column.setVisible(false));
+
+            state.Columns.forEach((selectedColumn, index) => {
+                const column = columns.find(column => column.data("p13nKey") === selectedColumn.key);
+
+                if (column) {
+                    column.setVisible(true);
+                    tableInstance.removeColumn(column);
+                    tableInstance.insertColumn(column, index);
+                }
+            });
+        }
     }
 
     private onSubmit() {

@@ -42,6 +42,7 @@ export default class Homepage extends BaseController {
 
         entry.addNavigationProperty(new NavigationProperty({
             name: "toCertifications",
+            visibleColumnCount: 3,
             propertySettings: [{
                 name: "title",
                 required: true

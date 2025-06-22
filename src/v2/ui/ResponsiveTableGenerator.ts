@@ -19,7 +19,7 @@ export default class ResponsiveTableGenerator extends TableGeneratorBase {
         super(settings);
     }
 
-    public generate() {
+    public async generate() {
         this.initialize();
     }
 }

@@ -1,11 +1,11 @@
 import Label from "sap/m/Label";
 import CustomData from "sap/ui/core/CustomData";
+import Fragment from "sap/ui/core/Fragment";
 import { Binding$ChangeEvent } from "sap/ui/model/Binding";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import Column from "sap/ui/table/Column";
 import Table from "sap/ui/table/Table";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { EntityProperty } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { P13nProperty, Settings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
 import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
 import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
@@ -27,14 +27,12 @@ export default class GridTableGenerator extends TableGeneratorBase {
         super(settings);
     }
 
-    public generate() {
-        const properties = this.getMetaContext().getEntityProperties().filter(prop => prop.visible);
-        const table = new Table({
-            selectionMode: "Single",
-            extension: this.getToolbar(properties.length > this.getVisibleColumnCount())
-        });
+    public async generate() {
+        const table = await this.loadTable();
 
         this.initialize();
+        table.addExtension(this.getToolbar());
+        table.addStyleClass("sapUiSmallMargin");
 
         table.bindRows({
             path: this.getOwnerParent().getName(),
@@ -46,17 +44,15 @@ export default class GridTableGenerator extends TableGeneratorBase {
             }
         });
 
-        table.addStyleClass("sapUiSmallMargin");
-
-        const p13nProperties = this.addColumns(table, properties);
-        
+        const p13nProperties = this.addColumns(table);
         this.setTableInstance(table);
         this.setTable(table);
         this.setContent(table);
         this.registerP13n(p13nProperties);
     }
 
-    private addColumns(table: Table, properties: EntityProperty[]) {
+    private addColumns(table: Table) {
+        const properties = this.getMetaContext().getEntityProperties().filter(prop => prop.visible);        
         const p13nProperties: P13nProperty[] = [];
         const generator = new ControlGenerator({
             generateFor: "Table",
@@ -83,5 +79,14 @@ export default class GridTableGenerator extends TableGeneratorBase {
         }
 
         return p13nProperties;
+    }
+
+    private async loadTable() {
+        const table = await Fragment.load({
+            id: "gridTable" + Date.now(),
+            name: "ui5.antares.pro.v2.ui.static.GridTable"
+        }) as Table;
+
+        return table;
     }
 }

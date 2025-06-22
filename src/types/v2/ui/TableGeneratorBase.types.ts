@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
+import Control from "sap/ui/core/Control";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
 declare module "ui5/antares/pro/v2/ui/TableGeneratorBase" {
@@ -61,4 +62,14 @@ export interface P13nProperty {
     key: string;
     label: string;
     path: string;
+}
+
+export interface P13nStateChangeParams {
+    control: Control;
+    state?: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention        
+        Columns: {
+            key: string;
+        }[];
+    };
 }

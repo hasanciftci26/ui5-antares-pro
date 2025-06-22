@@ -153,8 +153,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
     protected async execute() {
         await this.loadMetaContexts();
-
-        this.generateContent();
+        await this.generateContent();
         this.addContent();
         this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
     }
@@ -167,12 +166,12 @@ export default abstract class Factory extends BaseContext implements MetaContext
         }
     }
 
-    private generateContent() {
+    private async generateContent() {
         this.getDialogGenerator().generate();
         this.getFormGenerator().generate();
 
         for (const property of this.getNavigationProperties()) {
-            property.generate();
+            await property.generate();
         }
     }
 

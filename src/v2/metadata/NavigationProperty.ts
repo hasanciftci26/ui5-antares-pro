@@ -94,7 +94,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         }
     }
 
-    public generate() {
+    public async generate() {
         if (this.getMultiplicity() === "One") {
             if (this.getOwnerParent().getFormType() === "SimpleForm") {
                 this.setFormGenerator(new SimpleFormGenerator());
@@ -110,7 +110,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
                 this.setTableGenerator(new GridTableGenerator(this.getTableGeneratorSettings()));
             }
 
-            this.getTableGenerator().generate();
+            await this.getTableGenerator().generate();
         }
     }
 
