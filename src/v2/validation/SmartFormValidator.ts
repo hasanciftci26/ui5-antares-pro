@@ -2,6 +2,7 @@ import ManagedObject from "sap/ui/base/ManagedObject";
 import SmartField from "sap/ui/comp/smartfield/SmartField";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { ControlType } from "ui5/antares/pro/types/v2/ui/FormGeneratorBase.types";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 
 /**
@@ -25,13 +26,13 @@ export default class SmartFormValidator extends ManagedObject {
         for (const group of form.getGroups()) {
             for (const element of group.getGroupElements()) {
                 const control = (element as GroupElement).getElements()[0];
-                const controlType = control.getCustomData().find(data => data.getKey() === "UI5AntaresProControlType");
+                const controlType = control.data("UI5AntaresProControlType") as ControlType | undefined;
 
                 if (!controlType) {
                     continue;
                 }
 
-                if (controlType.getValue() === "Standard") {
+                if (controlType === "Standard") {
                     if (control instanceof SmartField) {
                         try {
                             await control.checkValuesValidity();
