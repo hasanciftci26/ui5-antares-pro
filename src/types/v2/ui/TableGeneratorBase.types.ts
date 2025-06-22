@@ -56,3 +56,9 @@ export interface Settings {
     closeButtonType: ButtonType;
     visibleColumnCount: number;
 }
+
+export interface P13nProperty {
+    key: string;
+    label: string;
+    path: string;
+}

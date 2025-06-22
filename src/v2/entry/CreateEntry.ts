@@ -30,7 +30,7 @@ export default class CreateEntry extends Factory {
                     response: { type: "object" }
                 }
             }
-        }        
+        }
     };
 
     constructor(settings: Settings) {
@@ -105,6 +105,7 @@ export default class CreateEntry extends Factory {
             this.getODataModel().resetChanges([this.getContext().getPath()], true, true);
         }
 
+        this.getNavigationProperties().forEach(property => property.deregisterP13n());
         this.resetDefaultBindingMode();
     }
 
@@ -150,6 +151,7 @@ export default class CreateEntry extends Factory {
                         });
 
                         this.resetDefaultBindingMode();
+                        this.getNavigationProperties().forEach(property => property.deregisterP13n());
                         this.getDialogGenerator().getDialog().close();
                     } else {
                         this.fireSubmitError({
@@ -178,6 +180,7 @@ export default class CreateEntry extends Factory {
             });
         } else {
             this.resetDefaultBindingMode();
+            this.getNavigationProperties().forEach(property => property.deregisterP13n());
             this.getDialogGenerator().getDialog().close();
         }
     }

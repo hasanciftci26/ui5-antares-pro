@@ -9,7 +9,7 @@ import Control from "sap/ui/core/Control";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
-import { Settings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
+import { P13nProperty, Settings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
@@ -21,6 +21,11 @@ import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import MessageBox from "sap/m/MessageBox";
 import Context from "sap/ui/model/odata/v2/Context";
+import MetadataHelper from "sap/m/p13n/MetadataHelper";
+import Engine from "sap/m/p13n/Engine";
+import SelectionController from "sap/m/p13n/SelectionController";
+import Event from "sap/ui/base/Event";
+import { Button$PressEvent } from "sap/m/Button";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -47,7 +52,8 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             closeButtonText: { type: "string" },
             closeButtonType: { type: "string" },
             visibleColumnCount: { type: "int" },
-            tableInstance: { type: "object", visibility: "hidden" }
+            tableInstance: { type: "object", visibility: "hidden" },
+            p13nStateChangeHandler: { type: "function", visibility: "hidden" }
         },
         aggregations: {
             dialogGenerator: {
@@ -79,6 +85,11 @@ export default abstract class TableGeneratorBase extends ManagedObject {
     public abstract setContent(content: Control): void;
     public abstract getTable(): Control;
     public abstract setTable(content: Control): void;
+
+    public deregisterP13n() {
+        Engine.getInstance().deregister(this.getTableInstance());
+        Engine.getInstance().detachStateChange(this.getP13nStateChangeHandler());
+    }
 
     protected getFactory() {
         const parent = this.getParent() as NavigationProperty;
@@ -142,6 +153,24 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
         toolbar.setModel(this.getTableModel(), "table");
         return toolbar;
+    }
+
+    protected registerP13n(properties: P13nProperty[]) {
+        const helper = new MetadataHelper(properties);
+
+        Engine.getInstance().register(this.getTableInstance(), {
+            helper: helper,
+            controller: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                Columns: new SelectionController({
+                    targetAggregation: "columns",
+                    control: this.getTableInstance()
+                })
+            }
+        });
+
+        this.setP13nStateChangeHandler(this.onP13nStateChange.bind(this));
+        Engine.getInstance().attachStateChange(this.getP13nStateChangeHandler());
     }
 
     private getToolbarContent(addSettingsButton: boolean) {
@@ -268,7 +297,13 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getDialogGenerator().getDialog().open();
     }
 
-    private onSettings() {
+    private onSettings(event: Button$PressEvent) {
+        Engine.getInstance().show(this.getTableInstance(), ["Columns"], {
+            source: event.getSource()
+        });
+    }
+
+    private onP13nStateChange(event: Event) {
 
     }
 
@@ -377,6 +412,14 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             BusyIndicator.hide();
             this.getDialogGenerator().getDialog().close();
         });
+    }
+
+    private getP13nStateChangeHandler() {
+        return this.getProperty("p13nStateChangeHandler") as (event: Event) => void;
+    }
+
+    private setP13nStateChangeHandler(p13nStateChangeHandler: (event: Event) => void) {
+        this.setProperty("p13nStateChangeHandler", p13nStateChangeHandler);
     }
 
     private setDefaultTableTitle() {

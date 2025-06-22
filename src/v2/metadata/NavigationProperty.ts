@@ -159,6 +159,12 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         this.setProperty("operation", operation);
     }
 
+    public deregisterP13n() {
+        if (this.getMultiplicity() === "Many") {
+            this.getTableGenerator().deregisterP13n();
+        }
+    }
+
     private setMetaContext(metaContext: MetaContext) {
         this.setAggregation("metaContext", metaContext);
     }
