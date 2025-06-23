@@ -34,9 +34,11 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
     public generate() {
         const form = new SimpleForm({
             editable: true,
+            adjustLabelSpan: false,
             content: this.getFormContent()
         });
 
+        this.setFormLayoutData(form);
         this.setForm(form);
     }
 
@@ -63,14 +65,34 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
         });
 
         for (const property of properties) {
-            controls.push(new Label({ text: property.label }));
-            controls.push(generator.generate(
+            const control = generator.generate(
                 property,
                 this.getPropertyPath(property.name),
                 this.getValidationLogicByProperty(property.name)
-            ));
+            );
+
+            this.setControlLayoutData(property, control);
+            controls.push(new Label({ text: property.label }));
+            controls.push(control);
         }
 
         return controls;
+    }
+
+    private setFormLayoutData(form: SimpleForm) {
+        const formLayout = this.getFormLayout();
+
+        form.setLayout(formLayout.getLayoutType());
+        form.setColumnsXL(formLayout.getColumnsXL());
+        form.setColumnsL(formLayout.getColumnsL());
+        form.setColumnsM(formLayout.getColumnsM());
+        form.setLabelSpanXL(formLayout.getLabelSpanXL());
+        form.setLabelSpanL(formLayout.getLabelSpanL());
+        form.setLabelSpanM(formLayout.getLabelSpanM());
+        form.setLabelSpanS(formLayout.getLabelSpanS());
+        form.setEmptySpanXL(formLayout.getEmptySpanXL());
+        form.setEmptySpanL(formLayout.getEmptySpanL());
+        form.setEmptySpanM(formLayout.getEmptySpanM());
+        form.setEmptySpanS(formLayout.getEmptySpanS());
     }
 }

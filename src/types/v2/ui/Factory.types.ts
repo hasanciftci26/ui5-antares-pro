@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
+import LayoutData from "sap/ui/core/LayoutData";
 import Context from "sap/ui/model/odata/v2/Context";
 import {
     AddAggregation,
@@ -8,9 +9,11 @@ import {
     GetProperty,
     RemoveAggregation,
     RemoveAllAggregation,
+    SetAggregation,
     SetProperty
 } from "ui5/antares/pro/types/Global.types";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
+import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
@@ -66,6 +69,8 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         getValueLists: GetAggregation<ValueList[]>;
         removeAllValueLists: RemoveAllAggregation;
         destroyValueLists: DestroyAggregation;
+        getFormLayout: GetAggregation<FormLayout>;
+        setFormLayout: SetAggregation<FormLayout>;
     }
 }
 
@@ -100,4 +105,5 @@ export interface PropertySettings {
     readonly?: boolean;
     excluded?: boolean;
     textInEditModeSource?: TextInEditModeSource;
+    layoutData?: LayoutData;
 }

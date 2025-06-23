@@ -61,6 +61,10 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 multiple: true,
                 singularName: "valueList"
             },
+            formLayout: {
+                type: "ui5.antares.pro.v2.ui.FormLayout",
+                multiple: false
+            },
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,

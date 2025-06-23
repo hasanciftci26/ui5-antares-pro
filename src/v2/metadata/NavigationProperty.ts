@@ -57,6 +57,10 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
                 multiple: true,
                 singularName: "valueList"
             },
+            formLayout: {
+                type: "ui5.antares.pro.v2.ui.FormLayout",
+                multiple: false
+            },            
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,

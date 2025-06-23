@@ -1,7 +1,9 @@
 import Label from "sap/m/Label";
 import SmartField from "sap/ui/comp/smartfield/SmartField";
+import ColumnLayout from "sap/ui/comp/smartform/ColumnLayout";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
+import Layout from "sap/ui/comp/smartform/Layout";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
 import CustomData from "sap/ui/core/CustomData";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
@@ -9,6 +11,7 @@ import { EntityProperty } from "ui5/antares/pro/types/v2/metadata/MetaContext.ty
 import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
 import CustomTypeInitializer from "ui5/antares/pro/v2/custom/type/CustomTypeInitializer";
 import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
+import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
 import SmartFormValidator from "ui5/antares/pro/v2/validation/SmartFormValidator";
 
 /**
@@ -45,6 +48,7 @@ export default class SmartFormGenerator extends FormGeneratorBase {
             })
         });
 
+        this.setFormLayoutData(form);
         this.setForm(form);
     }
 
@@ -65,9 +69,12 @@ export default class SmartFormGenerator extends FormGeneratorBase {
         const properties = this.getMetaContext().getEntityProperties();
 
         for (const property of properties) {
+            const control = this.getControl(property);
+            this.setControlLayoutData(property, control);
+
             elements.push(new GroupElement({
                 label: new Label({ text: property.label }),
-                elements: this.getControl(property)
+                elements: control
             }));
         }
 
@@ -114,5 +121,39 @@ export default class SmartFormGenerator extends FormGeneratorBase {
         }
 
         return field;
+    }
+
+    private setFormLayoutData(form: SmartForm) {
+        const formLayout = this.getFormLayout();
+
+        if (formLayout.getLayoutType() === "ResponsiveGridLayout") {
+            form.setLayout(this.getResponsiveGridLayout(formLayout));
+        } else {
+            form.setLayout(this.getColumnLayout(formLayout));
+        }
+    }
+
+    private getResponsiveGridLayout(formLayout: FormLayout) {
+        return new Layout({
+            columnsXL: formLayout.getColumnsXL(),
+            columnsL: formLayout.getColumnsL(),
+            columnsM: formLayout.getColumnsM(),
+            labelSpanXL: formLayout.getLabelSpanXL(),
+            labelSpanL: formLayout.getLabelSpanL(),
+            labelSpanM: formLayout.getLabelSpanM(),
+            labelSpanS: formLayout.getLabelSpanS(),
+            emptySpanXL: formLayout.getEmptySpanXL(),
+            emptySpanL: formLayout.getEmptySpanL(),
+            emptySpanM: formLayout.getEmptySpanM(),
+            emptySpanS: formLayout.getEmptySpanS()
+        });
+    }
+
+    private getColumnLayout(formLayout: FormLayout) {
+        return new ColumnLayout({
+            columnsXL: formLayout.getColumnsXL(),
+            columnsL: formLayout.getColumnsL(),
+            columnsM: formLayout.getColumnsM()
+        });
     }
 }
