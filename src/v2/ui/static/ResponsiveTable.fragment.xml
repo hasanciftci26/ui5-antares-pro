@@ -1,0 +1,11 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+>
+    <Table
+        id="ui5AntaresProNavigationResponsiveTable"
+        mode="SingleSelectMaster"
+        autoPopinMode="true"
+        inset="true"
+    />
+</core:FragmentDefinition>

@@ -316,6 +316,19 @@ export default abstract class TableGeneratorBase extends ManagedObject {
                     tableInstance.insertColumn(column, index);
                 }
             });
+        } else {
+            const columns = tableInstance.getColumns();
+            columns.forEach(column => column.setVisible(false));
+
+            state.Columns.forEach((selectedColumn, index) => {
+                const column = columns.find(column => column.data("p13nKey") === selectedColumn.key);
+
+                if (column) {
+                    column.setVisible(true);
+                    tableInstance.removeColumn(column);
+                    tableInstance.insertColumn(column, index);
+                }
+            });
         }
     }
 

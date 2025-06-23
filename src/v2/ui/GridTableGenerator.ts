@@ -32,7 +32,7 @@ export default class GridTableGenerator extends TableGeneratorBase {
 
         this.initialize();
         table.addExtension(this.getToolbar());
-        table.addStyleClass("sapUiSmallMargin");
+        table.addStyleClass("sapUiMediumMargin");
 
         table.bindRows({
             path: this.getOwnerParent().getName(),
