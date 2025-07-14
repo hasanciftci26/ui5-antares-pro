@@ -15,6 +15,8 @@ import CustomDatePicker from "ui5/antares/pro/v2/custom/control/CustomDatePicker
 import CustomDateTimePicker from "ui5/antares/pro/v2/custom/control/CustomDateTimePicker";
 import CustomInput from "ui5/antares/pro/v2/custom/control/CustomInput";
 import CustomTimePicker from "ui5/antares/pro/v2/custom/control/CustomTimePicker";
+import CustomFilterBar from "ui5/antares/pro/v2/custom/type/CustomFilterBar";
+import CustomFilterBarSettings from "ui5/antares/pro/v2/custom/type/CustomFilterBarSettings";
 import CustomTypeInitializer from "ui5/antares/pro/v2/custom/type/CustomTypeInitializer";
 import NumberManager from "ui5/antares/pro/v2/util/NumberManager";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
@@ -260,19 +262,16 @@ export default class ControlGenerator extends ManagedObject {
     }
 
     private getTimePicker(property: EntityProperty, path: string) {
-        const formatOptions = this.getDateTimeFormatOptions(property);
-        const binding: StandardBinding = {
-            path: path,
-            type: "sap.ui.model.odata.type.Time"
-        };
-
-        if (formatOptions) {
-            binding.formatOptions = formatOptions;
-        }
-
         const timePicker = new TimePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
-            value: binding
+            value: {
+                path: path,
+                type: new CustomFilterBar(new CustomFilterBarSettings({
+                    entityProperty: property,
+                    dateTimeSettings: this.getDateTimeSettings(),
+                    numberSettings: this.getNumberSettings()
+                }))
+            }
         });
 
         Messaging.registerObject(timePicker, true);
@@ -280,25 +279,17 @@ export default class ControlGenerator extends ManagedObject {
     }
 
     private getNumberInput(property: EntityProperty, path: string) {
-        const constraints = this.getNumberConstraints(property);
-        const formatOptions = this.getNumberFormatOptions();
-        const binding: StandardBinding = {
-            path: path,
-            type: "sap.ui.model.odata.type" + property.type
-        };
-
-        if (constraints) {
-            binding.constraints = constraints;
-        }
-
-        if (formatOptions) {
-            binding.formatOptions = formatOptions;
-        }
-
         const input = new Input({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             textAlign: "End",
-            value: binding
+            value: {
+                path: path,
+                type: new CustomFilterBar(new CustomFilterBarSettings({
+                    entityProperty: property,
+                    dateTimeSettings: this.getDateTimeSettings(),
+                    numberSettings: this.getNumberSettings()
+                }))
+            }
         });
 
         Messaging.registerObject(input, true);
@@ -310,7 +301,11 @@ export default class ControlGenerator extends ManagedObject {
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             value: {
                 path: path,
-                type: "sap.ui.model.odata.type" + property.type
+                type: new CustomFilterBar(new CustomFilterBarSettings({
+                    entityProperty: property,
+                    dateTimeSettings: this.getDateTimeSettings(),
+                    numberSettings: this.getNumberSettings()
+                }))
             }
         });
 
