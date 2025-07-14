@@ -173,6 +173,14 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         Engine.getInstance().attachStateChange(this.getP13nStateChangeHandler());
     }
 
+    protected setTableLayoutData() {
+        const tableLayoutData = this.getOwnerParent().getTableLayoutData();
+
+        if (tableLayoutData) {
+            this.getTableInstance().setLayoutData(tableLayoutData);
+        }
+    }
+
     private getToolbarContent() {
         const content: Control[] = [
             new Title({ text: "{table>/tableTitle} ({table>/count})" }),

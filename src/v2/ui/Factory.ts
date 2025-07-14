@@ -1,9 +1,15 @@
+import FlexBox from "sap/m/FlexBox";
+import HBox from "sap/m/HBox";
+import VBox from "sap/m/VBox";
 import ManagedObject from "sap/ui/base/ManagedObject";
+import Grid from "sap/ui/layout/Grid";
+import HorizontalLayout from "sap/ui/layout/HorizontalLayout";
+import VerticalLayout from "sap/ui/layout/VerticalLayout";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { FormUtilityProvider, Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
+import { ContentWrapper, Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
 import BaseContext from "ui5/antares/pro/v2/core/BaseContext";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
@@ -41,6 +47,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
             showErrorMessageBox: { type: "boolean", defaultValue: true },
             dateTimeSettings: { type: "object" },
             numberSettings: { type: "object" },
+            contentWrapper: { type: "object" },
             propertySettings: { type: "object[]", defaultValue: [] },
             propertyOrder: { type: "string[]", defaultValue: [] },
             operation: { type: "string", visibility: "hidden" }
@@ -180,6 +187,16 @@ export default abstract class Factory extends BaseContext implements MetaContext
     }
 
     private addContent() {
+        const contentWrapper = this.getContentWrapper();
+
+        if (contentWrapper) {
+            this.addContentIntoWrapper(contentWrapper);
+        } else {
+            this.addContentIntoDialog();
+        }
+    }
+
+    private addContentIntoDialog() {
         const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
         const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
 
@@ -191,6 +208,51 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
         for (const navigation of multiNavigations) {
             this.getDialogGenerator().getDialog().addContent(navigation.getContent());
+        }
+    }
+
+    private addContentIntoWrapper(wrapper: ContentWrapper) {
+        switch (true) {
+            case wrapper instanceof VBox:
+            case wrapper instanceof HBox:
+            case wrapper instanceof FlexBox:
+                this.addContentAsItem(wrapper);
+                break;
+            default:
+                this.addContentAsContent(wrapper);
+                break;
+        }
+
+        this.getDialogGenerator().getDialog().addContent(wrapper);
+    }
+
+    private addContentAsItem(wrapper: VBox | HBox | FlexBox) {
+        const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+        const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+
+        wrapper.addItem(this.getFormGenerator().getForm());
+
+        for (const navigation of singleNavigations) {
+            wrapper.addItem(navigation.getContent());
+        }
+
+        for (const navigation of multiNavigations) {
+            wrapper.addItem(navigation.getContent());
+        }
+    }
+
+    private addContentAsContent(wrapper: Grid | HorizontalLayout | VerticalLayout) {
+        const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+        const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+
+        wrapper.addContent(this.getFormGenerator().getForm());
+
+        for (const navigation of singleNavigations) {
+            wrapper.addContent(navigation.getContent());
+        }
+
+        for (const navigation of multiNavigations) {
+            wrapper.addContent(navigation.getContent());
         }
     }
 

@@ -27,6 +27,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             name: { type: "string" },
             tableClass: { type: "string", defaultValue: "sap.ui.table.Table" },
             tableTitle: { type: "string" },
+            tableLayoutData: { type: "object" },
             createFormTitle: { type: "string" },
             updateFormTitle: { type: "string" },
             deleteFormTitle: { type: "string" },
@@ -60,7 +61,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             formLayout: {
                 type: "ui5.antares.pro.v2.ui.FormLayout",
                 multiple: false
-            },            
+            },
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,

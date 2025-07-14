@@ -125,11 +125,16 @@ export default class SmartFormGenerator extends FormGeneratorBase {
 
     private setFormLayoutData(form: SmartForm) {
         const formLayout = this.getFormLayout();
+        const layoutData = formLayout.getLayoutData();
 
         if (formLayout.getLayoutType() === "ResponsiveGridLayout") {
             form.setLayout(this.getResponsiveGridLayout(formLayout));
         } else {
             form.setLayout(this.getColumnLayout(formLayout));
+        }
+
+        if (layoutData) {
+            form.setLayoutData(layoutData);
         }
     }
 

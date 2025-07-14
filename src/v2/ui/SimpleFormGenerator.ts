@@ -81,6 +81,7 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
 
     private setFormLayoutData(form: SimpleForm) {
         const formLayout = this.getFormLayout();
+        const layoutData = formLayout.getLayoutData();
 
         form.setLayout(formLayout.getLayoutType());
         form.setColumnsXL(formLayout.getColumnsXL());
@@ -94,5 +95,9 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
         form.setEmptySpanL(formLayout.getEmptySpanL());
         form.setEmptySpanM(formLayout.getEmptySpanM());
         form.setEmptySpanS(formLayout.getEmptySpanS());
+
+        if (layoutData) {
+            form.setLayoutData(layoutData);
+        }
     }
 }

@@ -1,6 +1,12 @@
 /* eslint-disable semi */
+import FlexBox from "sap/m/FlexBox";
+import HBox from "sap/m/HBox";
 import { ButtonType } from "sap/m/library";
+import VBox from "sap/m/VBox";
 import LayoutData from "sap/ui/core/LayoutData";
+import Grid from "sap/ui/layout/Grid";
+import HorizontalLayout from "sap/ui/layout/HorizontalLayout";
+import VerticalLayout from "sap/ui/layout/VerticalLayout";
 import Context from "sap/ui/model/odata/v2/Context";
 import {
     AddAggregation,
@@ -51,6 +57,8 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         setDateTimeSettings: SetProperty<DateTimeSettings | undefined>;
         getNumberSettings: GetProperty<NumberSettings | undefined>;
         setNumberSettings: SetProperty<NumberSettings | undefined>;
+        getContentWrapper: GetProperty<ContentWrapper | undefined>;
+        setContentWrapper: SetProperty<ContentWrapper | undefined>;
         getPropertySettings: GetProperty<PropertySettings[]>;
         setPropertySettings: SetProperty<PropertySettings[]>;
         getPropertyOrder: GetProperty<string[]>;
@@ -107,3 +115,11 @@ export interface PropertySettings {
     textInEditModeSource?: TextInEditModeSource;
     layoutData?: LayoutData;
 }
+
+export type ContentWrapper =
+    VBox |
+    HBox |
+    FlexBox |
+    Grid |
+    VerticalLayout |
+    HorizontalLayout;

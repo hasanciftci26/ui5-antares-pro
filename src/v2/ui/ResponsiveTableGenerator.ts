@@ -52,6 +52,7 @@ export default class ResponsiveTableGenerator extends TableGeneratorBase {
         this.setTable(table);
         this.setContent(table);
         this.registerP13n(p13nProperties);
+        this.setTableLayoutData();
     }
 
     private addColumns(table: Table, template: ColumnListItem) {

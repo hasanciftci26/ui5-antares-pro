@@ -1,4 +1,5 @@
 /* eslint-disable semi */
+import LayoutData from "sap/ui/core/LayoutData";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
 declare module "ui5/antares/pro/v2/ui/FormLayout" {
@@ -27,6 +28,8 @@ declare module "ui5/antares/pro/v2/ui/FormLayout" {
         setEmptySpanM: SetProperty<number>;
         getEmptySpanS: GetProperty<number>;
         setEmptySpanS: SetProperty<number>;
+        getLayoutData: GetProperty<LayoutData | undefined>;
+        setLayoutData: SetProperty<LayoutData>;
     }
 }
 
@@ -43,6 +46,7 @@ export interface Settings {
     emptySpanL?: number;
     emptySpanM?: number;
     emptySpanS?: number;
+    layoutData?: LayoutData;
 }
 
 export type LayoutType = "ResponsiveGridLayout" | "ColumnLayout";

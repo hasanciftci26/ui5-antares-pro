@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 import { ButtonType } from "sap/m/library";
+import LayoutData from "sap/ui/core/LayoutData";
 import Context from "sap/ui/model/odata/v2/Context";
 import {
     AddAggregation,
@@ -31,6 +32,8 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setUpdateFormTitle: SetProperty<string | undefined>;
         getDeleteFormTitle: GetProperty<string | undefined>;
         setDeleteFormTitle: SetProperty<string | undefined>;
+        getTableLayoutData: GetProperty<LayoutData | undefined>;
+        setTableLayoutData: SetProperty<LayoutData>;
         getCreateButtonText: GetProperty<string>;
         setCreateButtonText: SetProperty<string>;
         getCreateButtonType: GetProperty<ButtonType>;
@@ -77,6 +80,7 @@ export interface Settings {
     name: string;
     tableClass?: TableClass;
     tableTitle?: string;
+    tableLayoutData?: LayoutData;
     createFormTitle?: string;
     updateFormTitle?: string;
     deleteFormTitle?: string;
