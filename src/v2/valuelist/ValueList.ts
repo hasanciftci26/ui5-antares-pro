@@ -556,12 +556,23 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
                 const parsedValue = type.parseValue(value, "string");
 
                 if (parsedValue != null && parsedValue !== "") {
-                    filters.push(new Filter({
-                        path: property,
-                        operator: type.getFilterOperator(),
-                        value1: parsedValue,
-                        caseSensitive: this.getCaseSensitiveSearch()
-                    }));
+                    if (control instanceof TimePicker) {
+                        if (this.hasMilliseconds(parsedValue)) {
+                            filters.push(new Filter({
+                                path: property,
+                                operator: type.getFilterOperator(),
+                                value1: this.convertMsToODataFormat(parsedValue.ms),
+                                caseSensitive: this.getCaseSensitiveSearch()
+                            }));
+                        }
+                    } else {
+                        filters.push(new Filter({
+                            path: property,
+                            operator: type.getFilterOperator(),
+                            value1: parsedValue,
+                            caseSensitive: this.getCaseSensitiveSearch()
+                        }));
+                    }
                 }
             }
         }
@@ -613,7 +624,40 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
     }
 
     private onClearFilterBar() {
+        const filterBar = this.getValueHelpDialog().getFilterBar();
+
+        for (const item of filterBar.getFilterGroupItems()) {
+            const control = item.getControl() as Input | DynamicDateRange | TimePicker | CheckBox;
+
+            if (control instanceof DynamicDateRange === false) {
+                continue;
+            }
+
+            // @ts-ignore
+            control.setValue();
+        }
+
         this.getValueHelpFilterModel().setData({ ui5AntaresProVHSearch: "" });
         this.getValueHelpDialog().getFilterBar().search();
+    }
+
+    private convertMsToODataFormat(ms: number) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        return `PT${this.padTimeNumber(hours)}H${this.padTimeNumber(minutes)}M${this.padTimeNumber(seconds)}S`;
+    }
+
+    private padTimeNumber(number: number) {
+        return number.toString().padStart(2, "0");
+    }
+
+    private hasMilliseconds(value: object): value is { ms: number; } {
+        return value != null &&
+            typeof value === "object" &&
+            "ms" in value &&
+            typeof value.ms === "number";
     }
 }

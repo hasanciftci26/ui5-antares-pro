@@ -23,26 +23,39 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "Employees",
+            entitySet: "EmployeeContracts",
             formType: "SimpleForm",
             guidVisibilityMode: "All"
         });
 
-        entry.addNavigationProperty(new NavigationProperty({
-            name: "toContract",
-            valueLists: [new ValueList({
-                entitySet: "Countries",
+        entry.addValueList(new ValueList({
+            entitySet: "Employees",
+            localDataProperty: "contractType",
+            caseSensitiveSearch: true,
+            parameters: [{
+                type: "Out",
                 localDataProperty: "contractType",
-                caseSensitiveSearch: true,
-                parameters: [{
-                    type: "Out",
-                    localDataProperty: "contractType",
-                    valueListProperty: "code"
-                }, {
-                    type: "DisplayOnly",
-                    valueListProperty: "name"
-                }]
-            })]
+                valueListProperty: "firstName"
+            }, {
+                type: "DisplayOnly",
+                valueListProperty: "lastName"
+            },{
+                type: "Out",
+                localDataProperty: "contractStart",
+                valueListProperty: "dateOfBirth"
+            },{
+                type: "DisplayOnly",
+                valueListProperty: "hireDate"
+            },{
+                type: "DisplayOnly",
+                valueListProperty: "workingStartTime"
+            },{
+                type: "DisplayOnly",
+                valueListProperty: "performanceRating"
+            },{
+                type: "DisplayOnly",
+                valueListProperty: "salary"
+            }]
         }));
 
         entry.execute();
