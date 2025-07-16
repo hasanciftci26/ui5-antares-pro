@@ -75,7 +75,9 @@ export default class CustomFilterBar extends SimpleType {
         }
     }
 
-    private determineOperator(value: string) {
+    private determineOperator(formattedValue: string) {
+        const value = formattedValue.replace(/[()]/g, "");
+
         switch (true) {
             case value.startsWith(">="):
                 this.operator = "GE";
@@ -96,21 +98,21 @@ export default class CustomFilterBar extends SimpleType {
                 if (value.endsWith("*")) {
                     this.operator = "CONTAINS";
                 } else {
-                    this.operator = "STARTS_WITH";
+                    this.operator = "ENDS_WITH";
                 }
                 break;
             case value.startsWith("!*"):
                 if (value.endsWith("*")) {
                     this.operator = "NOT_CONTAINS";
                 } else {
-                    this.operator = "NOT_STARTS_WITH";
+                    this.operator = "NOT_ENDS_WITH";
                 }
                 break;
             case value.endsWith("*"):
                 if (value.startsWith("!")) {
-                    this.operator = "NOT_ENDS_WITH";
+                    this.operator = "NOT_STARTS_WITH";
                 } else {
-                    this.operator = "ENDS_WITH";
+                    this.operator = "STARTS_WITH";
                 }
                 break;
             default:
@@ -136,13 +138,13 @@ export default class CustomFilterBar extends SimpleType {
             case "NOT_CONTAINS":
                 return "!(*" + value + "*)";
             case "STARTS_WITH":
-                return "*" + value;
-            case "NOT_STARTS_WITH":
-                return "!(*" + value + ")";
-            case "ENDS_WITH":
                 return value + "*";
-            case "NOT_ENDS_WITH":
+            case "NOT_STARTS_WITH":
                 return "!(" + value + "*)";
+            case "ENDS_WITH":
+                return "*" + value;
+            case "NOT_ENDS_WITH":
+                return "!(*" + value + ")";
             default:
                 return value;
         }

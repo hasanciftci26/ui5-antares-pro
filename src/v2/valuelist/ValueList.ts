@@ -550,7 +550,12 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
                 const parsedValue = type.parseValue(value, "string");
 
                 if (parsedValue != null && parsedValue !== "") {
-                    filters.push(new Filter(property, type.getFilterOperator(), parsedValue));
+                    filters.push(new Filter({
+                        path: property,
+                        operator: type.getFilterOperator(),
+                        value1: parsedValue,
+                        caseSensitive: this.getCaseSensitiveSearch()
+                    }));
                 }
             }
         }

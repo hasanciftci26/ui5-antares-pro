@@ -22,12 +22,13 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "Employees",
+            entitySet: "EmployeeContracts",
             formType: "SimpleForm",
+            guidVisibilityMode: "All",
             valueLists: [
                 new ValueList({
-                    localDataProperty: "countryCode",
-                    entitySet: "Countries",
+                    localDataProperty: "employeeID",
+                    entitySet: "Employees",
                     searchSupported: true,
                     caseSensitiveSearch: true,
                     propertyLabels: [{
@@ -36,11 +37,14 @@ export default class Homepage extends BaseController {
                     }],
                     parameters: [{
                         type: "InOut",
-                        localDataProperty: "countryCode",
-                        valueListProperty: "code"
+                        localDataProperty: "employeeID",
+                        valueListProperty: "ID"
                     }, {
                         type: "DisplayOnly",
-                        valueListProperty: "name"
+                        valueListProperty: "firstName"
+                    },{
+                        type: "DisplayOnly",
+                        valueListProperty: "lastName"
                     }]
                 })
             ]
