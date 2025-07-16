@@ -1,48 +1,28 @@
 import Label from "sap/m/Label";
-import Text from "sap/m/Text";
-import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import SmartField from "sap/ui/comp/smartfield/SmartField";
+import ColumnLayout from "sap/ui/comp/smartform/ColumnLayout";
 import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
+import Layout from "sap/ui/comp/smartform/Layout";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
-import Control from "sap/ui/core/Control";
 import CustomData from "sap/ui/core/CustomData";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { INumberConstraints } from "ui5/antares/pro/types/v2/custom/type/Constraints.types";
-import { INumberFormatOptions } from "ui5/antares/pro/types/v2/custom/type/FormatOptions.types";
-import { IDateTimeSettings } from "ui5/antares/pro/types/v2/custom/type/Settings.types";
-import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import { IDateBinding, IDateTimeBinding, INumberBinding } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
-import { ISettings } from "ui5/antares/pro/types/v2/ui/SmartFormGenerator.types";
-import CustomByte from "ui5/antares/pro/v2/custom/type/CustomByte";
-import CustomDateTime from "ui5/antares/pro/v2/custom/type/CustomDateTime";
-import CustomDateTimeOffset from "ui5/antares/pro/v2/custom/type/CustomDateTimeOffset";
-import CustomDecimal from "ui5/antares/pro/v2/custom/type/CustomDecimal";
-import CustomDouble from "ui5/antares/pro/v2/custom/type/CustomDouble";
-import CustomGuid from "ui5/antares/pro/v2/custom/type/CustomGuid";
-import CustomInt16 from "ui5/antares/pro/v2/custom/type/CustomInt16";
-import CustomInt32 from "ui5/antares/pro/v2/custom/type/CustomInt32";
-import CustomInt64 from "ui5/antares/pro/v2/custom/type/CustomInt64";
-import CustomSByte from "ui5/antares/pro/v2/custom/type/CustomSByte";
-import CustomSingle from "ui5/antares/pro/v2/custom/type/CustomSingle";
-import CustomString from "ui5/antares/pro/v2/custom/type/CustomString";
-import CustomTime from "ui5/antares/pro/v2/custom/type/CustomTime";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
-import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { EntityProperty } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
+import CustomTypeInitializer from "ui5/antares/pro/v2/custom/type/CustomTypeInitializer";
+import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
+import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
 import SmartFormValidator from "ui5/antares/pro/v2/validation/SmartFormValidator";
-import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
  */
-export default class SmartFormGenerator extends ManagedObject {
-    static metadata: IClassMetadata = {
+export default class SmartFormGenerator extends FormGeneratorBase {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            entitySet: { type: "string", visibility: "public" },
-            form: { type: "object", visibility: "public" },
-            includeNavPropertyToPath: { type: "boolean", visibility: "public", defaultValue: true }
+            form: { type: "object" }
         },
         aggregations: {
             validator: {
@@ -53,21 +33,22 @@ export default class SmartFormGenerator extends ManagedObject {
         }
     };
 
-    constructor(settings: ISettings) {
-        super(settings as $ManagedObjectSettings);
+    constructor() {
+        super();
         this.setValidator(new SmartFormValidator());
     }
 
     public generate() {
         const form = new SmartForm({
-            editTogglable: false,
             editable: true,
+            editTogglable: false,
             validationMode: "Standard",
             groups: new Group({
                 groupElements: this.getGroupElements()
             })
         });
 
+        this.setFormLayoutData(form);
         this.setForm(form);
     }
 
@@ -85,220 +66,50 @@ export default class SmartFormGenerator extends ManagedObject {
 
     private getGroupElements() {
         const elements: GroupElement[] = [];
-        const parent = this.getOwnerContentGenerator();
-        const metaContext = parent.getMetaContextByEntitySet(this.getEntitySet());
-        const properties = metaContext.getProps();
+        const properties = this.getMetaContext().getEntityProperties();
 
         for (const property of properties) {
+            const control = this.getControl(property);
+            this.setControlLayoutData(property, control);
+
             elements.push(new GroupElement({
                 label: new Label({ text: property.label }),
-                elements: this.getSmartField(property, metaContext.getNavProperty()?.name)
+                elements: control
             }));
         }
 
         return elements;
     }
 
-    private getSmartField(property: IProp, navProperty?: string) {
-        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getOwnerContentGenerator();
-        const customElement = parent.getCustomElementByProperty(settingsPath);
-
-        if (customElement) {
-            return customElement.getElement() as Control;
-        }
+    private getControl(property: EntityProperty) {
+        const generator = new ControlGenerator({
+            generateFor: "SmartForm",
+            dateTimeSettings: this.getDateTimeSettings(),
+            numberSettings: this.getNumberSettings()
+        });
 
         if (property.readonly) {
-            return this.getReadonlyControl(property, navProperty);
+            return generator.generate(property, this.getPropertyPath(property.name));
         } else {
-            return this.getEditableSmartField(property, navProperty);
+            return this.getSmartField(property);
         }
     }
 
-    private getReadonlyControl(property: IProp, navProperty?: string) {
-        switch (property.type) {
-            case "Edm.DateTime":
-                if (property.displayFormat === "Date") {
-                    return this.getDateText(property, navProperty);
-                } else {
-                    return this.getDateTimeText(property, navProperty);
-                }
-            case "Edm.DateTimeOffset":
-                return this.getDateTimeText(property, navProperty);
-            case "Edm.Time":
-                return this.getTimeText(property, navProperty);
-            case "Edm.Byte":
-            case "Edm.SByte":
-            case "Edm.Int16":
-            case "Edm.Int32":
-            case "Edm.Int64":
-            case "Edm.Single":
-            case "Edm.Double":
-            case "Edm.Decimal":
-                return this.getNumberText(property, navProperty);
-            case "Edm.Boolean":
-                return this.getBooleanText(property, navProperty);
-            default:
-                return this.getRegularText(property, navProperty);
-        }
-    }
+    private getSmartField(property: EntityProperty) {
+        const propertySettings = this.getSinglePropertySettings(property.name);
 
-    private getDateText(property: IProp, navProperty?: string) {
-        return new Text({
-            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
-            visible: property.visible,
-            text: this.getDateBinding(property, navProperty)
+        const typeInitializer = new CustomTypeInitializer({
+            requiredPropertyError: "",
+            fieldType: "Smart",
+            dateTimeSettings: this.getDateTimeSettings(),
+            numberSettings: this.getNumberSettings()
         });
-    }
-
-    private getDateBinding(property: IProp, navProperty?: string) {
-        const bindingPath = this.getPropertyPath(property, navProperty);
-        const parent = this.getOwnerContentGenerator();
-        const datePattern = parent.getDateTimeSettings()?.datePattern;
-        const binding: IDateBinding = {
-            path: bindingPath,
-            type: "sap.ui.model.odata.type." + property.type.substring(4),
-            constraints: {
-                displayFormat: "Date"
-            }
-        };
-
-        if (datePattern) {
-            binding.formatOptions = {
-                pattern: datePattern
-            };
-        }
-
-        return binding;
-    }
-
-    private getDateTimeText(property: IProp, navProperty?: string) {
-        return new Text({
-            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
-            visible: property.visible,
-            text: this.getDateTimeBinding(property, navProperty)
-        });
-    }
-
-    private getDateTimeBinding(property: IProp, navProperty?: string) {
-        const bindingPath = this.getPropertyPath(property, navProperty);
-        const parent = this.getOwnerContentGenerator();
-        const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
-        const binding: IDateTimeBinding = {
-            path: bindingPath,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
-        };
-
-        if (dateTimePattern) {
-            binding.formatOptions = {
-                pattern: dateTimePattern
-            };
-        }
-
-        return binding;
-    }
-
-    private getTimeText(property: IProp, navProperty?: string) {
-        return new Text({
-            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
-            visible: property.visible,
-            text: this.getTimeBinding(property, navProperty)
-        });
-    }
-
-    private getTimeBinding(property: IProp, navProperty?: string) {
-        const bindingPath = this.getPropertyPath(property, navProperty);
-        const parent = this.getOwnerContentGenerator();
-        const timePattern = parent.getDateTimeSettings()?.timePattern;
-        const binding: IDateTimeBinding = {
-            path: bindingPath,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
-        };
-
-        if (timePattern) {
-            binding.formatOptions = {
-                pattern: timePattern
-            };
-        }
-
-        return binding;
-    }
-
-    private getNumberText(property: IProp, navProperty?: string) {
-        return new Text({
-            customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
-            visible: property.visible,
-            text: this.getNumberBinding(property, navProperty)
-        });
-    }
-
-    private getNumberBinding(property: IProp, navProperty?: string) {
-        const bindingPath = this.getPropertyPath(property, navProperty);
-        const parent = this.getOwnerContentGenerator();
-        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
-        const binding: INumberBinding = {
-            path: bindingPath,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
-        };
-
-        if (numberSettings) {
-            binding.formatOptions = {
-                groupingEnabled: numberSettings.groupingEnabled,
-                groupingSeparator: numberSettings.groupingSeparator,
-                groupingSize: numberSettings.groupingSize,
-                decimalSeparator: numberSettings.decimalSeparator
-            };
-        }
-
-        if (property.precision && property.scale) {
-            binding.constraints = {
-                precision: property.precision,
-                scale: property.scale
-            };
-        }
-
-        return binding;
-    }
-
-    private getBooleanText(property: IProp, navProperty?: string) {
-        const bindingPath = this.getPropertyPath(property, navProperty);
-        const parent = this.getOwnerContentGenerator();
-        const booleanSettings = parent.getBooleanSettings();
-
-        return new Text({
-            text: {
-                path: bindingPath,
-                formatter: (value: boolean | null) => {
-                    if (value == null) {
-                        return value;
-                    }
-
-                    return value === true ? booleanSettings.trueText : booleanSettings.falseText;
-                }
-            }
-        });
-    }
-
-    private getRegularText(property: IProp, navProperty?: string) {
-        return new Text({
-            text: {
-                path: this.getPropertyPath(property, navProperty),
-                type: "sap.ui.model.odata.type." + property.type.substring(4)
-            }
-        });
-    }
-
-    private getEditableSmartField(property: IProp, navProperty?: string) {
-        const bindingPath = this.getPropertyPath(property, navProperty);
-        const settingsPath = navProperty ? `${navProperty}/${property.name}` : property.name;
-        const parent = this.getOwnerContentGenerator();
-        const propertySettings = parent.getSinglePropertySettings(settingsPath);
 
         const field = new SmartField({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             value: {
-                path: bindingPath,
-                type: this.getSmartFieldBindingType(property, bindingPath, settingsPath)
+                path: this.getPropertyPath(property.name),
+                type: typeInitializer.getCustomType(property, this.getValidationLogicByProperty(property.name))
             },
             mandatory: property.required,
             editable: true,
@@ -312,338 +123,42 @@ export default class SmartFormGenerator extends ManagedObject {
         return field;
     }
 
-    private getSmartFieldBindingType(property: IProp, bindingPath: string, settingsPath: string) {
-        switch (property.type) {
-            case "Edm.Byte":
-                return this.getByteType(property, settingsPath);
-            case "Edm.SByte":
-                return this.getSByteType(property, settingsPath);
-            case "Edm.Int16":
-                return this.getInt16Type(property, settingsPath);
-            case "Edm.Int32":
-                return this.getInt32Type(property, settingsPath);
-            case "Edm.Int64":
-                return this.getInt64Type(property, settingsPath);
-            case "Edm.Single":
-                return this.getSingleType(property, settingsPath);
-            case "Edm.Double":
-                return this.getDoubleType(property, settingsPath);
-            case "Edm.Decimal":
-                return this.getDecimalType(property, settingsPath);
-            case "Edm.DateTime":
-                return this.getDateTimeType(property, settingsPath);
-            case "Edm.DateTimeOffset":
-                return this.getDateTimeOffsetType(property, settingsPath);
-            case "Edm.Time":
-                return this.getTimeType(property, settingsPath);
-            case "Edm.Guid":
-                return this.getGuidType(property, settingsPath);
-            case "Edm.String":
-                return this.getStringType(property, settingsPath);
-            default:
-                return "sap.ui.model.odata.type." + property.type.substring(4);
-        }
-    }
+    private setFormLayoutData(form: SmartForm) {
+        const formLayout = this.getFormLayout();
+        const layoutData = formLayout.getLayoutData();
 
-    private getByteType(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomByte({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getSByteType(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomSByte({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getInt16Type(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomInt16({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getInt32Type(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomInt32({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getInt64Type(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomInt64({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getSingleType(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomSingle({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getDoubleType(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomDouble({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getDecimalType(property: IProp, settingsPath: string) {
-        const parent = this.getOwnerContentGenerator();
-        const settings = this.getNumberSettings(property);
-        const validationLogic = parent.getValidationLogicByProperty(settingsPath);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomDecimal({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            formatOptions: settings.formatOptions,
-            constraints: settings.constrains,
-            validationLogic: validationLogic,
-            smartField: true
-        });
-    }
-
-    private getNumberSettings(property: IProp) {
-        const parent = this.getOwnerContentGenerator();
-        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
-        let formatOptions: INumberFormatOptions | undefined;
-        let constraints: INumberConstraints | undefined;
-
-        if (numberSettings) {
-            formatOptions = {
-                groupingEnabled: numberSettings.groupingEnabled,
-                groupingSeparator: numberSettings.groupingSeparator,
-                groupingSize: numberSettings.groupingSize,
-                decimalSeparator: numberSettings.decimalSeparator
-            };
-        }
-
-        if (property.precision && property.scale) {
-            constraints = {
-                precision: property.precision,
-                scale: property.scale
-            };
-        }
-
-        return {
-            formatOptions: formatOptions,
-            constrains: constraints
-        };
-    }
-
-    private getDateTimeType(property: IProp, path: string) {
-        const parent = this.getOwnerContentGenerator();
-        const validationLogic = parent.getValidationLogicByProperty(path);
-        const dateTimeSettings = parent.getDateTimeSettings();
-        const typeSettings: IDateTimeSettings = {
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            validationLogic: validationLogic,
-            smartField: true
-        };
-
-        if (property.displayFormat === "Date") {
-            typeSettings.constraints = {
-                displayFormat: "Date"
-            };
-
-            if (dateTimeSettings?.datePattern) {
-                typeSettings.formatOptions = {
-                    pattern: dateTimeSettings.datePattern
-                };
-            }
+        if (formLayout.getLayoutType() === "ResponsiveGridLayout") {
+            form.setLayout(this.getResponsiveGridLayout(formLayout));
         } else {
-            if (dateTimeSettings?.dateTimePattern) {
-                typeSettings.formatOptions = {
-                    pattern: dateTimeSettings.dateTimePattern
-                };
-            }
+            form.setLayout(this.getColumnLayout(formLayout));
         }
 
-        this.setValidationLogicContextSettings(validationLogic);
-        return new CustomDateTime(typeSettings);
-    }
-
-    private getDateTimeOffsetType(property: IProp, path: string) {
-        const parent = this.getOwnerContentGenerator();
-        const validationLogic = parent.getValidationLogicByProperty(path);
-        const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
-        const typeSettings: IDateTimeSettings = {
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            validationLogic: validationLogic,
-            smartField: true
-        };
-
-        if (dateTimePattern) {
-            typeSettings.formatOptions = {
-                pattern: dateTimePattern
-            };
+        if (layoutData) {
+            form.setLayoutData(layoutData);
         }
-
-        this.setValidationLogicContextSettings(validationLogic);
-        return new CustomDateTimeOffset(typeSettings);
     }
 
-    private getTimeType(property: IProp, path: string) {
-        const parent = this.getOwnerContentGenerator();
-        const timePattern = parent.getDateTimeSettings()?.timePattern;
-        const validationLogic = parent.getValidationLogicByProperty(path);
-        const typeSettings: IDateTimeSettings = {
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            validationLogic: validationLogic,
-            smartField: true
-        };
-
-        if (timePattern) {
-            typeSettings.formatOptions = {
-                pattern: timePattern
-            };
-        }
-
-        this.setValidationLogicContextSettings(validationLogic);
-        return new CustomTime(typeSettings);
-    }
-
-    private getGuidType(property: IProp, path: string) {
-        const parent = this.getOwnerContentGenerator();
-        const validationLogic = parent.getValidationLogicByProperty(path);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomGuid({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            validationLogic: validationLogic,
-            smartField: true
+    private getResponsiveGridLayout(formLayout: FormLayout) {
+        return new Layout({
+            columnsXL: formLayout.getColumnsXL(),
+            columnsL: formLayout.getColumnsL(),
+            columnsM: formLayout.getColumnsM(),
+            labelSpanXL: formLayout.getLabelSpanXL(),
+            labelSpanL: formLayout.getLabelSpanL(),
+            labelSpanM: formLayout.getLabelSpanM(),
+            labelSpanS: formLayout.getLabelSpanS(),
+            emptySpanXL: formLayout.getEmptySpanXL(),
+            emptySpanL: formLayout.getEmptySpanL(),
+            emptySpanM: formLayout.getEmptySpanM(),
+            emptySpanS: formLayout.getEmptySpanS()
         });
     }
 
-    private getStringType(property: IProp, path: string) {
-        const parent = this.getOwnerContentGenerator();
-        const validationLogic = parent.getValidationLogicByProperty(path);
-
-        this.setValidationLogicContextSettings(validationLogic);
-
-        return new CustomString({
-            property: property,
-            requiredPropertyErrorMessage: parent.getRequiredPropertyErrorMessage(),
-            validationLogic: validationLogic,
-            smartField: true
+    private getColumnLayout(formLayout: FormLayout) {
+        return new ColumnLayout({
+            columnsXL: formLayout.getColumnsXL(),
+            columnsL: formLayout.getColumnsL(),
+            columnsM: formLayout.getColumnsM()
         });
     }
-
-    private getOwnerContentGenerator() {
-        const parent = this.getParent() as ManagedObject;
-
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.TableGenerator":
-                return parent.getParent() as ContentGenerator;
-            default:
-                return parent as ContentGenerator;
-        }
-    }
-
-    private getPropertyPath(property: IProp, navProperty?: string) {
-        if (navProperty) {
-            if (this.getIncludeNavPropertyToPath()) {
-                return `${navProperty}/${property.name}`;
-            } else {
-                return property.name;
-            }
-        } else {
-            return property.name;
-        }
-    }
-
-    private setValidationLogicContextSettings(validationLogic?: ValidationLogic) {
-        if (!validationLogic) {
-            return;
-        }
-
-        const parent = this.getParent() as ManagedObject;
-
-        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.ui.TableGenerator") {
-            validationLogic.setUseChildContext(true);
-        }
-    }    
 }

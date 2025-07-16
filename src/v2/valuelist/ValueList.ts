@@ -1,59 +1,62 @@
-import CheckBox from "sap/m/CheckBox";
-import Input from "sap/m/Input";
 import SearchField from "sap/m/SearchField";
-import TimePicker from "sap/m/TimePicker";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import FilterBar, { FilterBar$SearchEvent } from "sap/ui/comp/filterbar/FilterBar";
 import FilterGroupItem from "sap/ui/comp/filterbar/FilterGroupItem";
-import ValueHelpDialog, { ValueHelpDialog$CancelEvent, ValueHelpDialog$OkEvent } from "sap/ui/comp/valuehelpdialog/ValueHelpDialog";
-import Messaging from "sap/ui/core/Messaging";
+import ValueHelpDialog, { ValueHelpDialog$OkEvent } from "sap/ui/comp/valuehelpdialog/ValueHelpDialog";
+import BusyIndicator from "sap/ui/core/BusyIndicator";
 import JSONModel from "sap/ui/model/json/JSONModel";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import { IDateBinding, IDateTimeBinding, INumberBinding } from "ui5/antares/pro/types/v2/ui/SimpleFormGenerator.types";
-import { ISettings } from "ui5/antares/pro/types/v2/valuelist/ValueList.types";
+import { ValueHelpDialog$CancelEvent } from "sap/zen/dsh/widgets/ValueHelpDialog";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import { Operation, PropertySettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
+import { Settings } from "ui5/antares/pro/types/v2/valuelist/ValueList.types";
+import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
-import NumberSettings from "ui5/antares/pro/v2/util/NumberSettings";
+import Factory from "ui5/antares/pro/v2/ui/Factory";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 import ResponsiveTable from "sap/m/Table";
 import ResponsiveTableColumn from "sap/m/Column";
 import GridTable from "sap/ui/table/Table";
 import GridTableColumn from "sap/ui/table/Column";
 import Label from "sap/m/Label";
-import Text from "sap/m/Text";
 import ColumnListItem from "sap/m/ColumnListItem";
-import BusyIndicator from "sap/ui/core/BusyIndicator";
-import Filter from "sap/ui/model/Filter";
-import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
+import Control from "sap/ui/core/Control";
+import Context from "sap/ui/model/odata/v2/Context";
+import DynamicDateRange from "sap/m/DynamicDateRange";
+import Input from "sap/m/Input";
+import TimePicker from "sap/m/TimePicker";
+import CheckBox from "sap/m/CheckBox";
 import { ValueState } from "sap/ui/core/library";
 import MessageBox from "sap/m/MessageBox";
-import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
-import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDateRange";
-import Context from "sap/ui/model/odata/v2/Context";
+import Filter from "sap/ui/model/Filter";
+import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
+import PropertyBinding from "sap/ui/model/PropertyBinding";
+import CustomFilterBar from "ui5/antares/pro/v2/custom/type/CustomFilterBar";
 
 /**
  * @namespace ui5.antares.pro.v2.valuelist
  */
-export default class ValueList extends ManagedObject {
-    static metadata: IClassMetadata = {
+export default class ValueList extends ManagedObject implements MetaContextOwner {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            localDataProperty: { type: "string", visibility: "public" },
-            collectionPath: { type: "string", visibility: "public" },
-            fixedValues: { type: "boolean", visibility: "public", defaultValue: false },
-            fixedValueSeparator: { type: "string", visibility: "public", defaultValue: " " },
-            searchSupported: { type: "boolean", visibility: "public", defaultValue: false },
-            caseSensitiveSearch: { type: "boolean", visibility: "public", defaultValue: false },
-            title: { type: "string", visibility: "public" },
-            filterBarErrorMessage: { type: "string", visibility: "public" },
-            dateRangeOptions: { type: "string", visibility: "public" },
-            parameters: { type: "object[]", visibility: "public", defaultValue: [] },
+            localDataProperty: { type: "string" },
+            entitySet: { type: "string" },
+            searchSupported: { type: "boolean", defaultValue: true },
+            caseSensitiveSearch: { type: "boolean", defaultValue: false },
+            title: { type: "string" },
+            filterBarErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.invalidValue") },
+            localDataContext: { type: "object" },
+            pathPrefix: { type: "string", defaultValue: "" },
+            dateRangeOptions: { type: "string[]" },
+            parameters: { type: "object[]", defaultValue: [] },
+            propertyOrder: { type: "string[]", defaultValue: [] },
+            propertyLabels: { type: "object[]", defaultValue: [] },
             valueHelpDialog: { type: "object", visibility: "hidden" },
-            useChildContext: { type: "boolean", visibility: "public", defaultValue: false }
         },
         aggregations: {
-            collectionMetaContext: {
+            metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,
                 visibility: "hidden"
@@ -61,14 +64,10 @@ export default class ValueList extends ManagedObject {
         }
     };
 
-    constructor(settings: ISettings) {
+    constructor(settings: Settings) {
         super(settings as $ManagedObjectSettings);
         this.setDefaultTitle();
-        this.setDefaultFilterBarErrorMessage();
-        this.setCollectionMetaContext(new MetaContext({
-            entitySet: this.getCollectionPath().substring(1),
-            entitySetType: "Parent"
-        }));
+        this.setMetaContext(new MetaContext());
 
         const model = new JSONModel({
             ui5AntaresProVHSearch: ""
@@ -78,32 +77,32 @@ export default class ValueList extends ManagedObject {
         this.setModel(model, "valueHelpFilter");
     }
 
-    public setCollectionPath(newValue: string) {
-        const path = newValue.startsWith("/") ? newValue : `/${newValue}`;
-        this.setProperty("collectionPath", path);
+    public getEntitySet() {
+        return this.getProperty("entitySet") as string;
     }
 
-    public check() {
-        if (this.getFixedValues()) {
-            const inOutParam = this.getParameters().find(param => param.type === "InOut");
-            const displayOnlyParams = this.getParameters().filter(param => param.type === "DisplayOnly");
+    public setEntitySet(entitySet: string) {
+        this.setProperty("entitySet", entitySet.startsWith("/") ? entitySet.substring(1) : entitySet);
+    }
 
-            if (!inOutParam || !displayOnlyParams.length) {
-                throw new Error(
-                    "A ValueList with the Fixed Values option enabled can only have one InOut and one-or-multiple DisplayOnly parameter."
-                );
-            }
-        } else {
-            const consistent = this.getParameters().find(param => param.type === "InOut" || param.type === "Out");
+    public getOperation() {
+        return "Create" as Operation;
+    };
 
-            if (!consistent) {
-                throw new Error("ValueList must include InOut or Out parameter.");
-            }
-        }
+    public getPropertySettings() {
+        const settings: PropertySettings[] = this.getPropertyLabels().map((property) => {
+            return {
+                name: property.name,
+                label: property.label
+            };
+        });
+
+        return settings;
     }
 
     public async open() {
         BusyIndicator.show(0);
+        this.checkValidity();
 
         const valueHelpDialog = new ValueHelpDialog({
             title: this.getTitle(),
@@ -116,7 +115,7 @@ export default class ValueList extends ManagedObject {
         valueHelpDialog.attachCancel(this.onCancel, this);
         valueHelpDialog.attachAfterClose(this.onAfterClose, this);
 
-        await this.getCollectionMetaContext().load();
+        await this.getMetaContext().load();
 
         this.addFilterBar();
         await this.bindTable();
@@ -131,18 +130,36 @@ export default class ValueList extends ManagedObject {
         BusyIndicator.hide();
     }
 
-    public getFixedValueInOutParameter() {
-        const parameter = this.getParameters().find(param => param.type === "InOut");
+    private checkValidity() {
+        const consistent = this.getParameters().find(param => param.type === "InOut" || param.type === "Out");
 
-        if (parameter?.type !== "InOut") {
-            throw new Error("InOut parameter is missing for the fixed value enabled ValueList.");
+        if (!consistent) {
+            throw new Error("ValueList must include InOut or Out parameter.");
         }
-
-        return parameter;
     }
 
-    public getFixedValueDisplayOnlyParameters() {
-        return this.getParameters().filter(param => param.type === "DisplayOnly");
+    private getMetaContext() {
+        return this.getAggregation("metaContext") as MetaContext;
+    }
+
+    private setMetaContext(metaContext: MetaContext) {
+        this.setAggregation("metaContext", metaContext);
+    }
+
+    private getValueHelpDialog() {
+        return this.getProperty("valueHelpDialog") as ValueHelpDialog;
+    }
+
+    private setValueHelpDialog(valueHelpDialog: ValueHelpDialog) {
+        this.setProperty("valueHelpDialog", valueHelpDialog);
+    }
+
+    private setDefaultTitle() {
+        if (this.getTitle()) {
+            return;
+        }
+
+        this.setTitle(this.getEntitySet());
     }
 
     private addFilterBar() {
@@ -172,17 +189,29 @@ export default class ValueList extends ManagedObject {
     private getFilterGroupItems() {
         const items: FilterGroupItem[] = [];
         const parameters = this.getParameters();
-        const props = this.getCollectionMetaContext().getProps();
+        const properties = this.getMetaContext().getEntityProperties();
+        const generator = new ControlGenerator({
+            generateFor: "Filterbar",
+            dateRangeOptions: this.getDateRangeOptions(),
+            dateTimeSettings: this.getFactory().getDateTimeSettings(),
+            numberSettings: this.getFactory().getNumberSettings()
+        });
 
         for (const parameter of parameters) {
             if (parameter.type === "In") {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === parameter.valueListProperty);
+            const property = properties.find(property => property.name === parameter.valueListProperty);
 
             if (!property) {
-                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getEntitySet());
+            }
+
+            const control = generator.generate(property, "valueHelpFilter>/" + property.name);
+
+            if (control instanceof Input) {
+                control.attachSubmit(() => this.getValueHelpDialog().getFilterBar().search());
             }
 
             items.push(new FilterGroupItem({
@@ -190,178 +219,11 @@ export default class ValueList extends ManagedObject {
                 name: property.name,
                 label: property.label,
                 visibleInFilterBar: true,
-                control: this.getFilterBarControl(property)
+                control: control
             }));
         }
 
         return items;
-    }
-
-    private getFilterBarControl(property: IProp) {
-        switch (property.type) {
-            case "Edm.DateTime":
-            case "Edm.DateTimeOffset":
-                return this.getDynamicDateRange(property);
-            case "Edm.Time":
-                return this.getTimePicker(property);
-            case "Edm.Byte":
-            case "Edm.SByte":
-            case "Edm.Int16":
-            case "Edm.Int32":
-            case "Edm.Int64":
-            case "Edm.Single":
-            case "Edm.Double":
-            case "Edm.Decimal":
-                return this.getNumberInput(property);
-            case "Edm.Boolean":
-                return this.getBooleanControl(property);
-            default:
-                return this.getStringInput(property);
-        }
-    }
-
-    private getDynamicDateRange(property: IProp) {
-        const dynamicDateRange = new DynamicDateRange({
-            name: property.name,
-            standardOptions: this.getDateRangeOptions()
-        });
-
-        dynamicDateRange.attachChange(this.onDateRangeChange, this);
-        return dynamicDateRange;
-    }
-
-    private onDateRangeChange(event: DynamicDateRange$ChangeEvent) {
-        if (event.getParameter("valid")) {
-            event.getSource().setValueState("None");
-        } else {
-            event.getSource().setValueState("Error");
-        }
-    }
-
-    private getDateBinding(property: IProp) {
-        const parent = this.getParent() as ContentGenerator;
-        const datePattern = parent.getDateTimeSettings()?.datePattern;
-        const binding: IDateBinding = {
-            path: property.name,
-            type: "sap.ui.model.odata.type." + property.type.substring(4),
-            constraints: {
-                displayFormat: "Date"
-            }
-        };
-
-        if (datePattern) {
-            binding.formatOptions = {
-                pattern: datePattern
-            };
-        }
-
-        return binding;
-    }
-
-    private getDateTimeBinding(property: IProp) {
-        const parent = this.getParent() as ContentGenerator;
-        const dateTimePattern = parent.getDateTimeSettings()?.dateTimePattern;
-        const binding: IDateTimeBinding = {
-            path: property.name,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
-        };
-
-        if (dateTimePattern) {
-            binding.formatOptions = {
-                pattern: dateTimePattern
-            };
-        }
-
-        return binding;
-    }
-
-    private getTimePicker(property: IProp) {
-        const timePicker = new TimePicker({
-            value: this.getTimeBinding(property, "Filterbar")
-        });
-
-        Messaging.registerObject(timePicker, true);
-        return timePicker;
-    }
-
-    private getTimeBinding(property: IProp, source: "Filterbar" | "Table") {
-        const parent = this.getParent() as ContentGenerator;
-        const timePattern = parent.getDateTimeSettings()?.timePattern;
-        const path = source === "Filterbar" ? `valueHelpFilter>/${property.name}` : property.name;
-        const binding: IDateTimeBinding = {
-            path: path,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
-        };
-
-        if (timePattern) {
-            binding.formatOptions = {
-                pattern: timePattern
-            };
-        }
-
-        return binding;
-    }
-
-    private getNumberInput(property: IProp) {
-        const input = new Input({
-            textAlign: "End",
-            value: this.getNumberBinding(property, "Filterbar")
-        });
-
-        input.attachSubmit(this.onEnterFilter, this);
-        Messaging.registerObject(input, true);
-        return input;
-    }
-
-    private getNumberBinding(property: IProp, source: "Filterbar" | "Table") {
-        const parent = this.getParent() as ContentGenerator;
-        const numberSettings = NumberSettings.prepare(parent.getNumberSettings());
-        const path = source === "Filterbar" ? `valueHelpFilter>/${property.name}` : property.name;
-        const binding: INumberBinding = {
-            path: path,
-            type: "sap.ui.model.odata.type." + property.type.substring(4)
-        };
-
-        if (numberSettings) {
-            binding.formatOptions = {
-                groupingEnabled: numberSettings.groupingEnabled,
-                groupingSeparator: numberSettings.groupingSeparator,
-                groupingSize: numberSettings.groupingSize,
-                decimalSeparator: numberSettings.decimalSeparator
-            };
-        }
-
-        if (property.precision && property.scale) {
-            binding.constraints = {
-                precision: property.precision,
-                scale: property.scale
-            };
-        }
-
-        return binding;
-    }
-
-    private getBooleanControl(property: IProp) {
-        return new CheckBox({
-            selected: {
-                path: "valueHelpFilter>/" + property.name,
-                type: "sap.ui.model.odata.type." + property.type.substring(4)
-            }
-        });
-    }
-
-    private getStringInput(property: IProp) {
-        const input = new Input({
-            value: {
-                path: "valueHelpFilter>/" + property.name,
-                type: "sap.ui.model.odata.type." + property.type.substring(4)
-            },
-            maxLength: property.maxLength
-        });
-
-        input.attachSubmit(this.onEnterFilter, this);
-        Messaging.registerObject(input, true);
-        return input;
     }
 
     private getSearchField() {
@@ -388,11 +250,9 @@ export default class ValueList extends ManagedObject {
     }
 
     private bindGridTable(table: GridTable) {
-        const parent = this.getParent() as ContentGenerator;
-
-        table.setModel(parent.getODataModel());
+        table.setModel(this.getFactory().getODataModel());
         table.bindRows({
-            path: this.getCollectionPath(),
+            path: "/" + this.getEntitySet(),
             events: {
                 dataReceived: () => {
                     this.getValueHelpDialog().update();
@@ -405,32 +265,36 @@ export default class ValueList extends ManagedObject {
 
     private addGridTableColumns(table: GridTable) {
         const parameters = this.getParameters();
-        const props = this.getCollectionMetaContext().getProps();
+        const properties = this.getMetaContext().getEntityProperties();
+        const generator = new ControlGenerator({
+            generateFor: "Table",
+            dateRangeOptions: this.getDateRangeOptions(),
+            dateTimeSettings: this.getFactory().getDateTimeSettings(),
+            numberSettings: this.getFactory().getNumberSettings()
+        });
 
         for (const parameter of parameters) {
             if (parameter.type === "In" || parameter.type === "FilterOnly") {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === parameter.valueListProperty);
+            const property = properties.find(property => property.name === parameter.valueListProperty);
 
             if (!property) {
-                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getEntitySet());
             }
 
             table.addColumn(new GridTableColumn({
                 label: new Label({ text: property.label }),
-                template: this.getTableColumnText(property)
+                template: generator.generate(property, property.name)
             }));
         }
     }
 
     private bindResponsiveTable(table: ResponsiveTable) {
-        const parent = this.getParent() as ContentGenerator;
-
-        table.setModel(parent.getODataModel());
+        table.setModel(this.getFactory().getODataModel());
         table.bindItems({
-            path: this.getCollectionPath(),
+            path: "/" + this.getEntitySet(),
             template: new ColumnListItem({
                 cells: this.addResponsiveTableColumns(table)
             }),
@@ -444,107 +308,137 @@ export default class ValueList extends ManagedObject {
 
     private addResponsiveTableColumns(table: ResponsiveTable) {
         const parameters = this.getParameters();
-        const props = this.getCollectionMetaContext().getProps();
-        const cells: Text[] = [];
+        const properties = this.getMetaContext().getEntityProperties();
+        const generator = new ControlGenerator({
+            generateFor: "Table",
+            dateRangeOptions: this.getDateRangeOptions(),
+            dateTimeSettings: this.getFactory().getDateTimeSettings(),
+            numberSettings: this.getFactory().getNumberSettings()
+        });
+        const cells: Control[] = [];
 
         for (const parameter of parameters) {
             if (parameter.type === "In" || parameter.type === "FilterOnly") {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === parameter.valueListProperty);
+            const property = properties.find(property => property.name === parameter.valueListProperty);
 
             if (!property) {
-                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+                throw new Error(parameter.valueListProperty + " was not found in the Entity Set: " + this.getEntitySet());
             }
 
             table.addColumn(new ResponsiveTableColumn({
                 header: new Label({ text: property.label })
             }));
 
-            cells.push(this.getTableColumnText(property));
+            cells.push(generator.generate(property, property.name));
         }
 
         return cells;
     }
 
-    private getTableColumnText(property: IProp) {
-        switch (property.type) {
-            case "Edm.DateTime":
-                if (property.displayFormat === "Date") {
-                    return this.getDateText(property);
-                } else {
-                    return this.getDateTimeText(property);
-                }
-            case "Edm.DateTimeOffset":
-                return this.getDateTimeText(property);
-            case "Edm.Time":
-                return this.getTimeText(property);
-            case "Edm.Byte":
-            case "Edm.SByte":
-            case "Edm.Int16":
-            case "Edm.Int32":
-            case "Edm.Int64":
-            case "Edm.Single":
-            case "Edm.Double":
-            case "Edm.Decimal":
-                return this.getNumberText(property);
-            case "Edm.Boolean":
-                return this.getBooleanText(property);
-            default:
-                return this.getRegularText(property);
+    private async onConfirm(event: ValueHelpDialog$OkEvent) {
+        const table = await event.getSource().getTableAsync();
+
+        if (table instanceof GridTable) {
+            const selectedIndex = table.getSelectedIndices()[0];
+            const context = table.getContextByIndex(selectedIndex) as Context;
+            this.setOutValues(context);
+        }
+
+        if (table instanceof ResponsiveTable) {
+            const selectedItem = table.getSelectedItem();
+            const context = selectedItem.getBindingContext() as Context;
+            this.setOutValues(context);
+        }
+
+        this.getValueHelpDialog().close();
+    }
+
+    private setOutValues(context: Context) {
+        const parent = this.getFactory();
+
+        for (const param of this.getParameters()) {
+            if (param.type !== "Out" && param.type !== "InOut") {
+                continue;
+            }
+
+            const value = context.getProperty(param.valueListProperty);
+            parent.getODataModel().setProperty(this.getParameterPath(param.localDataProperty), value);
         }
     }
 
-    private getDateText(property: IProp) {
-        return new Text({
-            text: this.getDateBinding(property)
-        });
+    private getParameterPath(property: string) {
+        const propertyPath = this.getPathPrefix() ? this.getPathPrefix() + "/" + property : property;
+        return this.getLocalDataContext().getPath() + "/" + propertyPath;
     }
 
-    private getDateTimeText(property: IProp) {
-        return new Text({
-            text: this.getDateTimeBinding(property)
-        });
+    private onCancel(event: ValueHelpDialog$CancelEvent) {
+        this.getValueHelpDialog().close();
     }
 
-    private getTimeText(property: IProp) {
-        return new Text({
-            text: this.getTimeBinding(property, "Table")
-        });
+    private onAfterClose() {
+        this.getValueHelpDialog().destroy();
     }
 
-    private getNumberText(property: IProp) {
-        return new Text({
-            text: this.getNumberBinding(property, "Table")
-        });
+    private getValueHelpFilterModel() {
+        return this.getModel("valueHelpFilter") as JSONModel;
     }
 
-    private getBooleanText(property: IProp) {
-        const parent = this.getParent() as ContentGenerator;
-        const booleanSettings = parent.getBooleanSettings();
+    private getFactory() {
+        const parent = this.getParent() as ManagedObject;
 
-        return new Text({
-            text: {
-                path: property.name,
-                formatter: (value: boolean | null) => {
-                    if (value == null) {
-                        return value;
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
+            return parent.getParent() as Factory;
+        } else {
+            return this.getParent() as Factory;
+        }
+    }
+
+    private setInitialFilters() {
+        const context = this.getLocalDataContext();
+        const properties = this.getMetaContext().getEntityProperties();
+        let triggerSearch = false;
+
+        this.getValueHelpFilterModel().setData({ ui5AntaresProVHSearch: "" });
+
+        for (const param of this.getParameters()) {
+            if (param.type !== "In" && param.type !== "InOut") {
+                continue;
+            }
+
+            const contextValue = context.getProperty(this.getParameterPath(param.localDataProperty));
+            const property = properties.find(property => property.name === param.valueListProperty);
+
+            if (!property) {
+                throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getEntitySet());
+            }
+
+            if (contextValue != null && contextValue !== "") {
+                if (contextValue instanceof Date) {
+                    const dynamicDateRanges = this.getValueHelpDialog().getFilterBar().getFilterGroupItems()
+                        .map(item => item.getControl())
+                        .filter(item => item instanceof DynamicDateRange);
+                    const dynamicDateRange = dynamicDateRanges.find(control => control.getName() === property.name);
+
+                    if (dynamicDateRange) {
+                        dynamicDateRange.setValue({
+                            operator: "DATE",
+                            values: [contextValue]
+                        });
                     }
-
-                    return value === true ? booleanSettings.trueText : booleanSettings.falseText;
+                } else {
+                    this.getValueHelpFilterModel().setProperty("/" + property.name, contextValue || null);
                 }
-            }
-        });
-    }
 
-    private getRegularText(property: IProp) {
-        return new Text({
-            text: {
-                path: property.name,
-                type: "sap.ui.model.odata.type." + property.type.substring(4)
+                triggerSearch = true;
             }
-        });
+        }
+
+        if (triggerSearch) {
+            this.getValueHelpDialog().getFilterBar().search();
+        }
     }
 
     private async onFilter(event: FilterBar$SearchEvent) {
@@ -605,17 +499,17 @@ export default class ValueList extends ManagedObject {
         }
 
         const filters: Filter[] = [];
-        const props = this.getCollectionMetaContext().getProps();
+        const properties = this.getMetaContext().getEntityProperties();
 
         for (const param of this.getParameters()) {
             if (param.type === "In") {
                 continue;
             }
 
-            const property = props.find(prop => prop.name === param.valueListProperty);
+            const property = properties.find(property => property.name === param.valueListProperty);
 
             if (!property) {
-                throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
+                throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getEntitySet());
             }
 
             if (property.type !== "Edm.String") {
@@ -642,15 +536,33 @@ export default class ValueList extends ManagedObject {
 
     private getFilters() {
         const filters: Filter[] = [];
-        const filterData: Record<string, any> = this.getValueHelpFilterModel().getData();
+        const filterBar = this.getValueHelpDialog().getFilterBar();
 
-        for (const property in filterData) {
-            if (property === "ui5AntaresProVHSearch") {
+        for (const item of filterBar.getFilterGroupItems()) {
+            const control = item.getControl() as Input | DynamicDateRange | TimePicker | CheckBox;
+
+            if (control instanceof DynamicDateRange) {
                 continue;
             }
 
-            if (filterData[property] != null && filterData[property] !== "") {
-                filters.push(new Filter(property, "EQ", filterData[property]));
+            const property = control.getName();
+
+            if (control instanceof CheckBox) {
+                filters.push(new Filter(property, "EQ", control.getSelected()));
+            } else {
+                const binding = control.getBinding("value") as PropertyBinding;
+                const value = control.getProperty("value");
+                const type = binding.getType() as CustomFilterBar;
+                const parsedValue = type.parseValue(value, "string");
+
+                if (parsedValue != null && parsedValue !== "") {
+                    filters.push(new Filter({
+                        path: property,
+                        operator: type.getFilterOperator(),
+                        value1: parsedValue,
+                        caseSensitive: this.getCaseSensitiveSearch()
+                    }));
+                }
             }
         }
 
@@ -688,127 +600,6 @@ export default class ValueList extends ManagedObject {
         return filters;
     }
 
-    private async onConfirm(event: ValueHelpDialog$OkEvent) {
-        const table = await event.getSource().getTableAsync();
-
-        if (table instanceof GridTable) {
-            const selectedIndex = table.getSelectedIndices()[0];
-            const context = table.getContextByIndex(selectedIndex) as Context;
-            this.setOutValues(context);
-        }
-
-        if (table instanceof ResponsiveTable) {
-            const selectedItem = table.getSelectedItem();
-            const context = selectedItem.getBindingContext() as Context;
-            this.setOutValues(context);
-        }
-
-        this.getValueHelpDialog().close();
-    }
-
-    private setOutValues(context: Context) {
-        const parent = this.getParent() as ContentGenerator;
-
-        for (const param of this.getParameters()) {
-            if (param.type !== "Out" && param.type !== "InOut") {
-                continue;
-            }
-
-            const value = context.getProperty(param.valueListProperty);
-            parent.getODataModel().setProperty(this.getRelevantContext().getPath() + `/${this.getPropertyPath(param.localDataProperty)}`, value);
-        }
-    }
-
-    private onCancel(event: ValueHelpDialog$CancelEvent) {
-        this.getValueHelpDialog().close();
-    }
-
-    private onAfterClose() {
-        this.getValueHelpDialog().destroy();
-    }
-
-    private setDefaultTitle() {
-        if (this.getTitle()) {
-            return;
-        }
-
-        const entitySet = this.getCollectionPath().substring(1);
-        this.setTitle(entitySet);
-    }
-
-    private setDefaultFilterBarErrorMessage() {
-        if (this.getFilterBarErrorMessage()) {
-            return;
-        }
-
-        this.setFilterBarErrorMessage(LibraryBundle.getText("ui5AntaresPro.error.invalidValue")!);
-    }
-
-    private getCollectionMetaContext() {
-        return this.getAggregation("collectionMetaContext") as MetaContext;
-    }
-
-    private setCollectionMetaContext(collectionMetaContext: MetaContext) {
-        this.setAggregation("collectionMetaContext", collectionMetaContext);
-    }
-
-    private getValueHelpDialog() {
-        return this.getProperty("valueHelpDialog") as ValueHelpDialog;
-    }
-
-    private setValueHelpDialog(valueHelpDialog: ValueHelpDialog) {
-        this.setProperty("valueHelpDialog", valueHelpDialog);
-    }
-
-    private getValueHelpFilterModel() {
-        return this.getModel("valueHelpFilter") as JSONModel;
-    }
-
-    private setInitialFilters() {
-        const context = this.getRelevantContext();
-        const props = this.getCollectionMetaContext().getProps();
-        let triggerSearch = false;
-
-        this.getValueHelpFilterModel().setData({ ui5AntaresProVHSearch: "" });
-
-        for (const param of this.getParameters()) {
-            if (param.type !== "In" && param.type !== "InOut") {
-                continue;
-            }
-
-            const contextValue = context.getProperty(this.getPropertyPath(param.localDataProperty));
-            const property = props.find(prop => prop.name === param.valueListProperty);
-
-            if (!property) {
-                throw new Error(param.valueListProperty + " was not found in the Entity Set: " + this.getCollectionPath());
-            }
-
-            if (contextValue != null && contextValue !== "") {
-                if (contextValue instanceof Date) {
-                    const dynamicDateRanges = this.getValueHelpDialog().getFilterBar().getFilterGroupItems()
-                        .map(item => item.getControl())
-                        .filter(item => item instanceof DynamicDateRange);
-                    const dynamicDateRange = dynamicDateRanges.find(control => control.getName() === property.name);
-
-                    if (dynamicDateRange) {
-                        dynamicDateRange.setValue({
-                            operator: "DATE",
-                            values: [contextValue]
-                        });
-                    }
-                } else {
-                    this.getValueHelpFilterModel().setProperty("/" + property.name, contextValue || null);
-                }
-
-                triggerSearch = true;
-            }
-        }
-
-        if (triggerSearch) {
-            this.getValueHelpDialog().getFilterBar().search();
-        }
-    }
-
     private async getListBinding() {
         const table = await this.getValueHelpDialog().getTableAsync();
 
@@ -821,30 +612,8 @@ export default class ValueList extends ManagedObject {
         }
     }
 
-    private onEnterFilter() {
-        this.getValueHelpDialog().getFilterBar().search();
-    }
-
     private onClearFilterBar() {
         this.getValueHelpFilterModel().setData({ ui5AntaresProVHSearch: "" });
         this.getValueHelpDialog().getFilterBar().search();
-    }
-
-    private getRelevantContext() {
-        const parent = this.getParent() as ContentGenerator;
-
-        if (this.getUseChildContext()) {
-            return parent.getChildContext() || parent.getContext();
-        } else {
-            return parent.getContext();
-        }
-    }
-
-    private getPropertyPath(propertyName: string) {
-        if (this.getUseChildContext() && propertyName.includes("/")) {
-            return propertyName.split("/")[1];
-        } else {
-            return propertyName;
-        }
     }
 }

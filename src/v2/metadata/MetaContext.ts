@@ -1,30 +1,26 @@
 import ManagedObject from "sap/ui/base/ManagedObject";
 import { EntitySet, EntityType } from "sap/ui/model/odata/ODataMetaModel";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import {
-    INavPropertyExtraction,
-    INavPropertyExtractionParams,
-    IProp,
-    ISettings,
+    EntityProperty,
+    MetaContextOwner,
     MetaModelProperty,
+    NavigationInfo,
     PropertyDisplayFormat
 } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import { Operation } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
+import Factory from "ui5/antares/pro/v2/ui/Factory";
 import LabelGenerator from "ui5/antares/pro/v2/util/LabelGenerator";
 
 /**
  * @namespace ui5.antares.pro.v2.metadata
  */
 export default class MetaContext extends ManagedObject {
-    static metadata: IClassMetadata = {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            entitySet: { type: "string", visibility: "public" },
-            entitySetType: { type: "string", visibility: "public" },
-            navProperty: { type: "object", visibility: "public" },
-            props: { type: "object[]", visibility: "public", defaultValue: [] }
+            entityProperties: { type: "object[]", defaultValue: [] }
         },
         aggregations: {
             labelGenerator: {
@@ -35,144 +31,110 @@ export default class MetaContext extends ManagedObject {
         }
     };
 
-    constructor(settings: ISettings) {
-        super(settings);
+    constructor() {
+        super();
         this.setLabelGenerator(new LabelGenerator());
     }
 
-    public static async extractNavProperties(params: INavPropertyExtractionParams) {
-        const extractions: INavPropertyExtraction[] = [];
-        const metaModel = params.model.getMetaModel();
-
+    public static async getNavigationInfo(model: ODataModel, ownerEntitySet: string, navigationProperty: string): Promise<NavigationInfo> {
+        const metaModel = model.getMetaModel();
         await metaModel.loaded();
+        const entitySet = metaModel.getODataEntitySet(ownerEntitySet, false) as EntitySet;
+        const entityType = metaModel.getODataEntityType(entitySet.entityType, false) as EntityType;
+        const association = metaModel.getODataAssociationEnd(entityType, navigationProperty);
 
-        const entitySet = metaModel.getODataEntitySet(params.entitySet, false) as EntitySet | null | undefined;
-
-        if (!entitySet) {
-            throw new Error(`Entity Set: ${params.entitySet} was not found.`);
+        if (!association) {
+            throw new Error(`Navigation Property: ${navigationProperty} was not found in the Entity Set: ${ownerEntitySet}.`);
         }
 
-        const entityType = metaModel.getODataEntityType(entitySet.entityType, false) as EntityType | null | undefined;
-
-        if (!entityType) {
-            throw new Error(`Entity Type for the Entity Set: ${params.entitySet} was not found.`);
-        }
-
-        for (const property of params.navProperties) {
-            const association = metaModel.getODataAssociationEnd(entityType, property);
-
-            if (association) {
-                extractions.push({
-                    name: property,
-                    entitySet: association.role,
-                    multiplicity: association.multiplicity === "*" ? "Many" : "One"
-                });
-            }
-        }
-
-        return extractions;
+        return {
+            entitySet: association.role,
+            multiplicity: association.multiplicity === "*" ? "Many" : "One"
+        };
     }
 
     public async load() {
         const entityType = await this.getMetaModelEntityType();
-        const props: IProp[] = [];
+        const properties: EntityProperty[] = [];
 
         if (!entityType.property) {
-            throw new Error("No property was found for the Entity Set: " + this.getEntitySet());
+            throw new Error("No property was found for the Entity Set: " + this.getOwnerParent().getEntitySet());
         }
 
         for (const property of entityType.property as MetaModelProperty[]) {
-            if (this.isPropExcluded(entityType, property)) {
+            if (this.isPropertyExcluded(entityType, property)) {
                 continue;
             }
 
-            props.push({
-                key: this.isKeyProp(entityType, property),
+            properties.push({
+                key: this.isKeyProperty(entityType, property),
                 name: property.name,
                 type: property.type,
                 label: this.getLabelGenerator().generate(property),
-                readonly: this.isPropReadonly(entityType, property),
-                required: this.isPropRequired(entityType, property),
-                visible: this.isPropVisible(entityType, property),
-                displayFormat: this.getPropDisplayFormat(property),
-                precision: this.getPropPrecision(property),
-                scale: this.getPropScale(property),
-                maxLength: this.getPropMaxLength(property)
+                readonly: this.isPropertyReadonly(entityType, property),
+                required: this.isPropertyRequired(entityType, property),
+                visible: this.isPropertyVisible(entityType, property),
+                displayFormat: this.getPropertyDisplayFormat(property),
+                precision: this.getPropertyPrecision(property),
+                scale: this.getPropertyScale(property),
+                maxLength: this.getPropertyMaxLength(property)
             });
         }
 
-        const sortedProperties = this.sortProperties(props);
-        this.setProps(sortedProperties);
+        const sortedProperties = this.sortProperties(properties);
+        this.setEntityProperties(sortedProperties);
     }
 
-    protected getLabelGenerator() {
-        return this.getAggregation("labelGenerator") as LabelGenerator;
+    public getOwnerParent() {
+        return this.getParent() as MetaContextOwner;
     }
 
-    protected setLabelGenerator(labelGenerator: LabelGenerator) {
-        this.setAggregation("labelGenerator", labelGenerator);
-    }
+    public getFactory() {
+        const parent = this.getParent() as ManagedObject;
 
-    protected destroyLabelGenerator() {
-        this.destroyAggregation("labelGenerator");
-    }
+        switch (parent.getMetadata().getName()) {
+            case "ui5.antares.pro.v2.metadata.NavigationProperty":
+                return parent.getParent() as Factory;
+            case "ui5.antares.pro.v2.valuelist.ValueList":
+                const grandParent = parent.getParent() as ManagedObject;
 
-    private async getMetaModelEntityType() {
-        const metaModel = await this.getMetaModel();
-        const entitySet = await this.getMetaModelEntitySet();
-        const entityType = metaModel.getODataEntityType(entitySet.entityType, false) as EntityType | null | undefined;
-
-        if (!entityType) {
-            throw new Error(`Entity Type for the Entity Set: ${this.getEntitySet()} was not found.`);
+                if (grandParent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
+                    return grandParent.getParent() as Factory;
+                } else {
+                    return parent.getParent() as Factory;
+                }
+            default:
+                return parent as Factory;
         }
-
-        return entityType;
     }
 
-    private async getMetaModelEntitySet() {
-        const metaModel = await this.getMetaModel();
-        const entitySet = metaModel.getODataEntitySet(this.getEntitySet(), false) as EntitySet | null | undefined;
-
-        if (!entitySet) {
-            throw new Error(`Entity Set: ${this.getEntitySet()} was not found.`);
-        }
-
-        return entitySet;
-    }
-
-    private async getMetaModel() {
-        const parent = this.getOwnerContentGenerator();
-        const model = parent.getODataModel();
-        const metaModel = model.getMetaModel();
-
-        await metaModel.loaded();
-        return metaModel;
-    }
-
-    private isKeyProp(entityType: EntityType, property: MetaModelProperty) {
+    private isKeyProperty(entityType: EntityType, property: MetaModelProperty) {
         return entityType.key.propertyRef.some(ref => ref.name === property.name);
     }
 
-    private isPropExcluded(entityType: EntityType, property: MetaModelProperty) {
-        const parent = this.getOwnerContentGenerator();
+    private isPropertyExcluded(entityType: EntityType, property: MetaModelProperty) {
+        const factory = this.getFactory();
 
-        if (parent.getKeyEnforcementEnabled() && this.isKeyProp(entityType, property)) {
+        if (factory.getKeyEnforcementEnabled() && this.isKeyProperty(entityType, property)) {
             return false;
         }
 
         return this.getExcludedProperties().includes(property.name);
     }
 
-    private isPropReadonly(entityType: EntityType, property: MetaModelProperty) {
-        const parent = this.getOwnerContentGenerator();
-        const operation = parent.getProperty("operation") as Operation;
+    private isPropertyReadonly(entityType: EntityType, property: MetaModelProperty) {
+        if (property.readOnly === "true") {
+            return true;
+        }
+
+        const operation = this.getOwnerParent().getOperation();
 
         switch (operation) {
             case "Read":
             case "Delete":
                 return true;
             case "Update":
-                if (this.isKeyProp(entityType, property)) {
+                if (this.isKeyProperty(entityType, property)) {
                     return true;
                 } else {
                     return this.getReadonlyProperties().includes(property.name);
@@ -182,16 +144,19 @@ export default class MetaContext extends ManagedObject {
         }
     }
 
-    private isPropRequired(entityType: EntityType, property: MetaModelProperty) {
-        const parent = this.getOwnerContentGenerator();
-        const operation = parent.getProperty("operation") as Operation;
+    private isPropertyRequired(entityType: EntityType, property: MetaModelProperty) {
+        if (property.nullable === "false") {
+            return true;
+        }
+
+        const operation = this.getOwnerParent().getOperation();
 
         switch (operation) {
             case "Read":
             case "Delete":
                 return false;
             default:
-                if (this.isKeyProp(entityType, property)) {
+                if (this.isKeyProperty(entityType, property)) {
                     return true;
                 } else {
                     return this.getRequiredProperties().includes(property.name);
@@ -199,31 +164,31 @@ export default class MetaContext extends ManagedObject {
         }
     }
 
-    private isPropVisible(entityType: EntityType, property: MetaModelProperty) {
+    private isPropertyVisible(entityType: EntityType, property: MetaModelProperty) {
         if (property.type !== "Edm.Guid") {
             return true;
         }
 
-        const parent = this.getOwnerContentGenerator();
+        const factory = this.getFactory();
 
-        switch (parent.getGuidVisibilityMode()) {
+        switch (factory.getGuidVisibilityMode()) {
             case "All":
                 return true;
             case "Key":
-                return this.isKeyProp(entityType, property);
+                return this.isKeyProperty(entityType, property);
             case "NonKey":
-                return this.isKeyProp(entityType, property) === false;
+                return this.isKeyProperty(entityType, property) === false;
             default:
                 return false;
         }
     }
 
-    private getPropDisplayFormat(property: MetaModelProperty) {
+    private getPropertyDisplayFormat(property: MetaModelProperty) {
         const displayFormat = property.extensions?.find(ext => ext.name === "display-format");
         return displayFormat?.value as PropertyDisplayFormat | undefined;
     }
 
-    private getPropPrecision(property: MetaModelProperty) {
+    private getPropertyPrecision(property: MetaModelProperty) {
         if (property.type !== "Edm.Decimal") {
             return;
         }
@@ -233,7 +198,7 @@ export default class MetaContext extends ManagedObject {
         }
     }
 
-    private getPropScale(property: MetaModelProperty) {
+    private getPropertyScale(property: MetaModelProperty) {
         if (property.type !== "Edm.Decimal") {
             return;
         }
@@ -243,7 +208,7 @@ export default class MetaContext extends ManagedObject {
         }
     }
 
-    private getPropMaxLength(property: MetaModelProperty) {
+    private getPropertyMaxLength(property: MetaModelProperty) {
         if (property.type === "Edm.String") {
             if (property.maxLength) {
                 return parseInt(property.maxLength);
@@ -252,110 +217,96 @@ export default class MetaContext extends ManagedObject {
     }
 
     private getExcludedProperties() {
-        const parent = this.getOwnerContentGenerator();
+        const parent = this.getOwnerParent();
         const propertySettings = parent.getPropertySettings();
-
-        if (this.getEntitySetType() === "Parent") {
-            return propertySettings.filter(prop => prop.excluded && prop.name.includes("/") === false).map(prop => prop.name);
-        } else {
-            const excludedProperties = propertySettings.filter(
-                prop => prop.excluded && prop.name.startsWith(this.getNavProperty()!.name + "/")
-            );
-
-            return excludedProperties.map(prop => prop.name.split("/")[1]);
-        }
+        return propertySettings.filter(settings => settings.excluded).map(settings => settings.name);
     }
 
     private getReadonlyProperties() {
-        const parent = this.getOwnerContentGenerator();
+        const parent = this.getOwnerParent();
         const propertySettings = parent.getPropertySettings();
-
-        if (this.getEntitySetType() === "Parent") {
-            return propertySettings.filter(prop => prop.readonly && prop.name.includes("/") === false).map(prop => prop.name);
-        } else {
-            const readonlyProperties = propertySettings.filter(
-                prop => prop.readonly && prop.name.startsWith(this.getNavProperty()!.name + "/")
-            );
-
-            return readonlyProperties.map(prop => prop.name.split("/")[1]);
-        }
+        return propertySettings.filter(settings => settings.readonly).map(settings => settings.name);
     }
 
     private getRequiredProperties() {
-        const parent = this.getOwnerContentGenerator();
+        const parent = this.getOwnerParent();
         const propertySettings = parent.getPropertySettings();
-
-        if (this.getEntitySetType() === "Parent") {
-            return propertySettings.filter(prop => prop.required && prop.name.includes("/") === false).map(prop => prop.name);
-        } else {
-            const requiredProperties = propertySettings.filter(
-                prop => prop.required && prop.name.startsWith(this.getNavProperty()!.name + "/")
-            );
-
-            return requiredProperties.map(prop => prop.name.split("/")[1]);
-        }
+        return propertySettings.filter(settings => settings.required).map(settings => settings.name);
     }
 
-    private getPropertyOrder() {
-        const parent = this.getOwnerContentGenerator();
-
-        if (this.getEntitySetType() === "Parent") {
-            return parent.getPropertyOrder().filter(prop => prop.includes("/") === false);
-        } else {
-            const propertyOrder = parent.getPropertyOrder().filter(
-                prop => prop.startsWith(this.getNavProperty()!.name + "/")
-            );
-
-            return propertyOrder.map(prop => prop.split("/")[1]);
-        }
-    }
-
-    private sortProperties(props: IProp[]) {
-        const parent = this.getOwnerContentGenerator();
+    private sortProperties(properties: EntityProperty[]) {
+        const parent = this.getOwnerParent();
+        const factory = this.getFactory();
         const orderMap = new Map<string, number>();
         let orderIndex = 0;
 
-        if (parent.getKeyEnforcementEnabled()) {
-            for (const name of this.getPropertyOrder()) {
-                const prop = props.find(prop => prop.name === name && prop.key);
+        if (factory.getKeyEnforcementEnabled()) {
+            for (const name of parent.getPropertyOrder()) {
+                const prop = properties.find(prop => prop.name === name && prop.key);
 
                 if (prop && !orderMap.has(prop.name)) {
                     orderMap.set(prop.name, orderIndex++);
                 }
             }
 
-            for (const prop of props) {
+            for (const prop of properties) {
                 if (prop.key && !orderMap.has(prop.name)) {
                     orderMap.set(prop.name, orderIndex++);
                 }
             }
         }
 
-        for (const name of this.getPropertyOrder()) {
+        for (const name of parent.getPropertyOrder()) {
             if (!orderMap.has(name)) {
                 orderMap.set(name, orderIndex++);
             }
         }
 
-        for (const prop of props) {
+        for (const prop of properties) {
             if (!orderMap.has(prop.name)) {
                 orderMap.set(prop.name, orderIndex++);
             }
         }
 
-        return [...props].sort((a, b) => {
+        return [...properties].sort((a, b) => {
             return (orderMap.get(a.name) ?? Infinity) - (orderMap.get(b.name) ?? Infinity);
         });
     }
 
-    private getOwnerContentGenerator() {
-        const parent = this.getParent() as ManagedObject;
+    private async getMetaModelEntityType() {
+        const metaModel = await this.getMetaModel();
+        const entitySet = await this.getMetaModelEntitySet();
+        const entityType = metaModel.getODataEntityType(entitySet.entityType, false) as EntityType | null | undefined;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.valuelist.ValueList":
-                return parent.getParent() as ContentGenerator;
-            default:
-                return parent as ContentGenerator;
+        if (!entityType) {
+            throw new Error(`Entity Type for the Entity Set: ${this.getOwnerParent().getEntitySet()} was not found.`);
         }
+
+        return entityType;
+    }
+
+    private async getMetaModelEntitySet() {
+        const metaModel = await this.getMetaModel();
+        const entitySet = metaModel.getODataEntitySet(this.getOwnerParent().getEntitySet(), false) as EntitySet | null | undefined;
+
+        if (!entitySet) {
+            throw new Error(`Entity Set: ${this.getOwnerParent().getEntitySet()} was not found.`);
+        }
+
+        return entitySet;
+    }
+
+    private async getMetaModel() {
+        const metaModel = this.getFactory().getODataModel().getMetaModel();
+        await metaModel.loaded();
+        return metaModel;
+    }
+
+    private getLabelGenerator() {
+        return this.getAggregation("labelGenerator") as LabelGenerator;
+    }
+
+    private setLabelGenerator(labelGenerator: LabelGenerator) {
+        this.setAggregation("labelGenerator", labelGenerator);
     }
 }

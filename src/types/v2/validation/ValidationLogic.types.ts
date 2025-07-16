@@ -1,4 +1,5 @@
 /* eslint-disable semi */
+/* eslint-disable @typescript-eslint/naming-convention */
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 import TimeValidation from "ui5/antares/pro/v2/validation/TimeValidation";
 
@@ -19,9 +20,7 @@ declare module "ui5/antares/pro/v2/validation/ValidationLogic" {
         getConditions: GetProperty<Condition[]>;
         setConditions: SetProperty<Condition[]>;
         getValidator: GetProperty<Validator | undefined>;
-        setValidator: SetProperty<Validator | undefined>;
-        getUseChildContext: GetProperty<boolean>;
-        setUseChildContext: SetProperty<boolean>;
+        setValidator: SetProperty<Validator | undefined>;        
     }
 }
 
@@ -42,61 +41,67 @@ export type SettingsBase<T> = T & {
 };
 
 export type Validator = (value: any) => boolean | Promise<boolean>;
-export type Condition = ICommonWithValue | ICommonWithMultiValue | ICommonWithNoValue | INumericWithValue | INumericWithMultiValue | IString;
+export type Condition = CommonWithValue | CommonWithMultiValue | CommonWithNoValue | NumericWithValue | NumericWithMultiValue | String | Regex;
 
-export interface ICommonWithValue {
+export interface CommonWithValue {
     propertyName: string;
     operator: CommonOperatorWithValue;
-    value1: Value | IPropertyRef;
+    value1: Value | PropertyRef;
 }
 
-export interface ICommonWithMultiValue {
+export interface CommonWithMultiValue {
     propertyName: string;
     operator: CommonOperatorWithMultiValue;
     value1: Array<string | number | bigint>;
 }
 
-export interface ICommonWithNoValue {
+export interface CommonWithNoValue {
     propertyName: string;
     operator: CommonOperatorWithNoValue;
 }
 
-export interface INumericWithValue {
+export interface NumericWithValue {
     propertyName: string;
     operator: NumericOperatorWithValue;
-    value1: number | bigint | Date | TimeValidation | IPropertyRef;
+    value1: number | bigint | Date | TimeValidation | PropertyRef;
 }
 
-export type INumericWithMultiValue =
-    INumericWithMultiValueNumber |
-    INumericWithMultiValueDate |
-    INumericWithMultiValueTime;
+export type NumericWithMultiValue =
+    NumericWithMultiValueNumber |
+    NumericWithMultiValueDate |
+    NumericWithMultiValueTime;
 
-export interface INumericWithMultiValueNumber {
+export interface NumericWithMultiValueNumber {
     propertyName: string;
     operator: NumericOperatorWithMultiValue;
-    value1: number | bigint | IPropertyRef;
-    value2: number | bigint | IPropertyRef;
+    value1: number | bigint | PropertyRef;
+    value2: number | bigint | PropertyRef;
 }
 
-export interface INumericWithMultiValueDate {
+export interface NumericWithMultiValueDate {
     propertyName: string;
     operator: NumericOperatorWithMultiValue;
-    value1: Date | IPropertyRef;
-    value2: Date | IPropertyRef;
+    value1: Date | PropertyRef;
+    value2: Date | PropertyRef;
 }
 
-export interface INumericWithMultiValueTime {
+export interface NumericWithMultiValueTime {
     propertyName: string;
     operator: NumericOperatorWithMultiValue;
-    value1: TimeValidation | IPropertyRef;
-    value2: TimeValidation | IPropertyRef;
+    value1: TimeValidation | PropertyRef;
+    value2: TimeValidation | PropertyRef;
 }
 
-export interface IString {
+export interface String {
     propertyName: string;
     operator: StringOperator;
-    value1: string | IPropertyRef;
+    value1: string | PropertyRef;
+}
+
+export interface Regex {
+    propertyName: string;
+    operator: RegexOperator;
+    value1: RegExp;
 }
 
 export type Operator =
@@ -105,21 +110,23 @@ export type Operator =
     CommonOperatorWithNoValue |
     NumericOperatorWithValue |
     NumericOperatorWithMultiValue |
-    StringOperator;
+    StringOperator |
+    RegexOperator;
 
 export type CommonOperatorWithValue = "EQ" | "NE";
 export type CommonOperatorWithMultiValue = "In" | "NotIn";
-export type CommonOperatorWithNoValue = "IsEmpty" | "IsNotEmpty";
+export type CommonOperatorWithNoValue = "IsEmpty";
 export type NumericOperatorWithValue = "LE" | "LT" | "GE" | "GT";
 export type NumericOperatorWithMultiValue = "BT" | "NB";
 export type StringOperator = "Contains" | "NotContains" | "StartsWith" | "NotStartsWith" | "EndsWith" | "NotEndsWith";
+export type RegexOperator = "Regex";
 export type Value = string | number | bigint | boolean | Date | TimeValidation;
 export type LogicalOperator = "And" | "Or";
 
-export interface ITimeObject {
+export interface TimeObject {
     ms: number;
 }
 
-export interface IPropertyRef {
+export interface PropertyRef {
     propertyName: string;
 }

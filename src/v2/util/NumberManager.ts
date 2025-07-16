@@ -1,12 +1,12 @@
 import ManagedObject from "sap/ui/base/ManagedObject";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { INumberSettings } from "ui5/antares/pro/types/v2/ui/ContentGenerator.types";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { NumberSettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
 
 /**
  * @namespace ui5.antares.pro.v2.util
  */
-export default class NumberSettings extends ManagedObject {
-    static metadata: IClassMetadata = {
+export default class NumberManager extends ManagedObject {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true
     };
@@ -15,12 +15,12 @@ export default class NumberSettings extends ManagedObject {
         super();
     }
 
-    public static prepare(settings?: INumberSettings) {
+    public static prepare(settings?: NumberSettings) {
         if (!settings) {
             return;
         }
 
-        const newSettings: INumberSettings = {
+        const newSettings: NumberSettings = {
             groupingEnabled: settings.groupingEnabled,
             groupingSize: settings.groupingSize
         };

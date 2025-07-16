@@ -1,20 +1,18 @@
 import MessageBox from "sap/m/MessageBox";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Context from "sap/ui/model/odata/v2/Context";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { ISettings } from "ui5/antares/pro/types/v2/core/Root.types";
-import { ISubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
-import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
+import { SubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
 import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
 import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
-import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import Factory from "ui5/antares/pro/v2/ui/Factory";
 
 /**
  * @namespace ui5.antares.pro.v2.entry
  */
-export default class CreateEntry extends ContentGenerator {
-    static metadata: IClassMetadata = {
+export default class CreateEntry extends Factory {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
         properties: {
@@ -35,7 +33,7 @@ export default class CreateEntry extends ContentGenerator {
         }
     };
 
-    constructor(settings: ISettings) {
+    constructor(settings: Settings) {
         super(settings, "Create");
 
         // Attach events
@@ -43,184 +41,35 @@ export default class CreateEntry extends ContentGenerator {
         this.getDialogGenerator().attachClosed(this.onDialogClose, this);
     }
 
-    public async execute<EntityT extends Record<string, any> = Record<string, any>>(initialData?: EntityT) {
+    public override async execute<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
         BusyIndicator.show(0);
 
-        const context = await this.createContext<EntityT>(initialData);
-        this.setContext(context);
-
-        await this.generate();
-
-        this.addNavPropertiesToContext();
-        this.generateParentGuid();
-        this.generateChildGuid();
-        this.inheritValues();
-        this.generateParentBoolean();
-        this.generateChildBoolean();
+        await this.createNewEntry(initialData);
+        await super.execute();
+        this.addNavigationPropertiesToContext();
+        this.getDialogGenerator().getDialog().open();
 
         BusyIndicator.hide();
     }
 
-    private async createContext<EntityT extends Record<string, any>>(initialData?: EntityT) {
+    private async createNewEntry(initialData?: Record<string, any>) {
         await this.getODataModel().getMetaModel().loaded();
 
-        return this.getODataModel().createEntry(this.getEntitySetPath(), {
+        const context = this.getODataModel().createEntry("/" + this.getEntitySet(), {
             groupId: this.getDeferredGroupId(),
             properties: initialData,
-            expand: this.getNavProperties().map(prop => prop.name).join() || undefined
+            expand: this.getNavigationProperties().map(property => property.getName()).join() || undefined
         }) as Context;
+
+        this.setContext(context);
     }
 
-    private addNavPropertiesToContext() {
-        const children = this.getChildMetaContexts();
+    private addNavigationPropertiesToContext() {
+        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
 
-        for (const child of children) {
-            const navProperty = child.getNavProperty()!;
-
-            if (this.getContext().getProperty(navProperty.name)) {
-                continue;
-            }
-
-            const path = this.getContext().getPath() + "/" + navProperty.name;
-
-            if (navProperty.multiplicity === "One") {
-                this.getODataModel().setProperty(path, {});
-            }
-        }
-    }
-
-    private generateParentGuid() {
-        const parent = this.getParentMetaContext();
-        const guidProperties = parent.getProps().filter(prop => prop.type === "Edm.Guid");
-
-        for (const property of guidProperties) {
-            if (this.getContext().getProperty(property.name)) {
-                continue;
-            }
-
-            const path = this.getContext().getPath() + "/" + property.name;
-            this.generateGuid(property, path);
-        }
-    }
-
-    private generateChildGuid() {
-        const children = this.getMetaContexts().filter(meta => meta.getNavProperty()?.multiplicity === "One");
-
-        for (const child of children) {
-            const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
-            const guidProperties = child.getProps().filter(prop => prop.type === "Edm.Guid");
-
-            for (const property of guidProperties) {
-                const propertyPath = navProperty.name + "/" + property.name;
-
-                if (this.getContext().getProperty(propertyPath)) {
-                    continue;
-                }
-
-                const valueInheritance = navProperty.valueInheritance?.find(inherit => inherit.property === property.name);
-                const path = this.getContext().getPath() + "/" + propertyPath;
-
-                if (valueInheritance) {
-                    const parentValue = this.getContext().getProperty(valueInheritance.parentProperty);
-
-                    if (parentValue) {
-                        this.getODataModel().setProperty(path, parentValue);
-                        continue;
-                    }
-                }
-
-                this.generateGuid(property, path);
-            }
-        }
-    }
-
-    private generateGuid(property: IProp, path: string) {
-        switch (this.getGuidGenerationMode()) {
-            case "All":
-                this.getODataModel().setProperty(path, window.crypto.randomUUID());
-                break;
-            case "Key":
-                if (property.key) {
-                    this.getODataModel().setProperty(path, window.crypto.randomUUID());
-                }
-                break;
-            case "NonKey":
-                if (!property.key) {
-                    this.getODataModel().setProperty(path, window.crypto.randomUUID());
-                }
-                break;
-        }
-    }
-
-    private inheritValues() {
-        const children = this.getMetaContexts().filter(meta => meta.getNavProperty()?.multiplicity === "One");
-
-        for (const child of children) {
-            const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
-            const props = child.getProps();
-
-            for (const property of props) {
-                const propertyPath = navProperty.name + "/" + property.name;
-
-                if (this.getContext().getProperty(propertyPath) != null) {
-                    continue;
-                }
-
-                const valueInheritance = navProperty.valueInheritance?.find(inherit => inherit.property === property.name);
-                const path = this.getContext().getPath() + "/" + propertyPath;
-
-                if (!valueInheritance) {
-                    continue;
-                }
-
-                const parentValue = this.getContext().getProperty(valueInheritance.parentProperty);
-
-                if (parentValue != null) {
-                    this.getODataModel().setProperty(path, parentValue);
-                }
-
-            }
-        }
-    }
-
-    private generateParentBoolean() {
-        if (!this.getBooleanSettings().autoFalse) {
-            return;
-        }
-
-        const parent = this.getParentMetaContext();
-        const booleanProperties = parent.getProps().filter(prop => prop.type === "Edm.Boolean");
-
-        for (const property of booleanProperties) {
-            if (this.getContext().getProperty(property.name) != null) {
-                continue;
-            }
-
-            const path = this.getContext().getPath() + "/" + property.name;
-            this.getODataModel().setProperty(path, false);
-        }
-    }
-
-    private generateChildBoolean() {
-        if (!this.getBooleanSettings().autoFalse) {
-            return;
-        }
-
-        const children = this.getMetaContexts().filter(meta => meta.getNavProperty()?.multiplicity === "One");
-
-        for (const child of children) {
-            const navProperty = this.getNavProperties().find(prop => prop.name === child.getNavProperty()?.name)!;
-            const booleanProperties = child.getProps().filter(prop => prop.type === "Edm.Boolean");
-
-            for (const property of booleanProperties) {
-                const propertyPath = navProperty.name + "/" + property.name;
-
-                if (this.getContext().getProperty(propertyPath) != null) {
-                    continue;
-                }
-
-                const path = this.getContext().getPath() + "/" + propertyPath;
-                this.getODataModel().setProperty(path, false);
+        for (const property of navigationProperties) {
+            if (this.getContext().getProperty(property.getName()) == null) {
+                this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.getName(), {});
             }
         }
     }
@@ -228,20 +77,12 @@ export default class CreateEntry extends ContentGenerator {
     private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
         BusyIndicator.show(0);
 
-        this.inheritValues();
         this.correctFixedValueListValues();
         const formValidation = await this.validateForms();
 
         if (!formValidation) {
             BusyIndicator.hide();
             MessageBox.error(this.getValidationErrorMessage());
-            return;
-        }
-
-        const tableValidation = this.validateTables();
-
-        if (!tableValidation) {
-            BusyIndicator.hide();
             return;
         }
 
@@ -263,7 +104,22 @@ export default class CreateEntry extends ContentGenerator {
             this.getODataModel().resetChanges([this.getContext().getPath()], true, true);
         }
 
-        this.resetODataBindingMode();
+        this.getNavigationProperties().forEach(property => property.deregisterP13n());
+        this.resetDefaultBindingMode();
+    }
+
+    private async validateForms() {
+        const validations: boolean[] = [true];
+        const mainFormGenerator = this.getFormGenerator();
+        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+
+        validations.push(await mainFormGenerator.validate());
+
+        for (const property of navigationProperties) {
+            validations.push(await property.validate());
+        }
+
+        return validations.every(validation => validation);
     }
 
     private correctFixedValueListValues() {
@@ -276,45 +132,11 @@ export default class CreateEntry extends ContentGenerator {
         }
     }
 
-    private async validateForms() {
-        const validations: boolean[] = [true];
-
-        if (this.getFormType() === "SimpleForm") {
-            for (const generator of this.getSimpleFormGenerators()) {
-                validations.push(await generator.validate());
-            }
-        } else {
-            for (const generator of this.getSmartFormGenerators()) {
-                validations.push(await generator.validate());
-            }
-        }
-
-        return validations.every(validation => validation);
-    }
-
-    private validateTables() {
-        const generators = this.getTableGenerators() || [];
-        let valid = true;
-
-        for (const generator of generators) {
-            if (generator.getNavProperty().allowNoItem === false && !generator.getCount()) {
-                valid = false;
-                MessageBox.error(
-                    generator.getNavProperty().noItemErrorMessage ||
-                    LibraryBundle.getText("ui5AntaresPro.error.noItem", [generator.getTableTitle()])!
-                );
-                break;
-            }
-        }
-
-        return valid;
-    }
-
     private submit() {
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().submitChanges({
                 groupId: this.getDeferredGroupId(),
-                success: (response?: ISubmitChangesResponse) => {
+                success: (response?: SubmitChangesResponse) => {
                     BusyIndicator.hide();
 
                     const parser = new ResponseParser(response);
@@ -327,7 +149,8 @@ export default class CreateEntry extends ContentGenerator {
                             response: parser.response
                         });
 
-                        this.resetODataBindingMode();
+                        this.resetDefaultBindingMode();
+                        this.getNavigationProperties().forEach(property => property.deregisterP13n());
                         this.getDialogGenerator().getDialog().close();
                     } else {
                         this.fireSubmitError({
@@ -355,7 +178,8 @@ export default class CreateEntry extends ContentGenerator {
                 }
             });
         } else {
-            this.resetODataBindingMode();
+            this.resetDefaultBindingMode();
+            this.getNavigationProperties().forEach(property => property.deregisterP13n());
             this.getDialogGenerator().getDialog().close();
         }
     }

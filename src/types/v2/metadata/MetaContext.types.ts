@@ -1,50 +1,25 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable semi */
-import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
+/* eslint-disable @typescript-eslint/naming-convention */
+import ManagedObject from "sap/ui/base/ManagedObject";
 import { Property } from "sap/ui/model/odata/ODataMetaModel";
-import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
+import { GuidMode, Operation, PropertySettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
 
 declare module "ui5/antares/pro/v2/metadata/MetaContext" {
     export default interface MetaContext {
-        getEntitySet: GetProperty<string>;
-        setEntitySet: SetProperty<string>;
-        getEntitySetType: GetProperty<EntitySetType>;
-        setEntitySetType: SetProperty<EntitySetType>;
-        getNavProperty: GetProperty<INavProperty | undefined>;
-        setNavProperty: SetProperty<INavProperty | undefined>;
-        getProps: GetProperty<IProp[]>;
-        setProps: SetProperty<IProp[]>;
+        getEntityProperties: GetProperty<EntityProperty[]>;
+        setEntityProperties: SetProperty<EntityProperty[]>;
     }
 }
 
-export interface ISettings extends $ManagedObjectSettings {
-    entitySet: string;
-    entitySetType: EntitySetType;
-    navProperty?: INavProperty;
+export interface MetaContextOwner extends ManagedObject {
+    getEntitySet: () => string;
+    getOperation: () => Operation;
+    getPropertySettings: () => PropertySettings[];
+    getPropertyOrder: () => string[];
 }
 
-export interface INavProperty {
-    name: string;
-    multiplicity: AssociationMultiplicity;
-}
-
-export interface INavPropertyExtractionParams {
-    model: ODataModel;
-    entitySet: string;
-    navProperties: string[];
-}
-
-export interface INavPropertyExtraction {
-    name: string;
-    entitySet: string;
-    multiplicity: AssociationMultiplicity;
-}
-
-export type EntitySetType = "Parent" | "Child";
-export type AssociationMultiplicity = "One" | "Many";
-
-export interface IProp {
+export interface EntityProperty {
     key: boolean;
     name: string;
     type: EdmType;
@@ -58,12 +33,18 @@ export interface IProp {
     maxLength?: number;
 }
 
+export interface NavigationInfo {
+    entitySet: string;
+    multiplicity: Multiplicity;
+}
+
 export type MetaModelProperty = Property & {
     "com.sap.vocabularies.Common.v1.Label"?: {
         String: string;
     };
 };
 
+export type Multiplicity = "One" | "Many";
 export type PropertyDisplayFormat = "Date" | "NonNegative" | "UpperCase";
 
 export type EdmType =

@@ -1,41 +1,37 @@
 import String from "sap/ui/model/odata/type/String";
-import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
-import { IStringSettings } from "ui5/antares/pro/types/v2/custom/type/Settings.types";
-import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import ValidateException from "sap/ui/model/ValidateException";
+import CustomStringSettings from "ui5/antares/pro/v2/custom/type/CustomStringSettings";
 
 /**
  * @namespace ui5.antares.pro.v2.custom.type
  */
 export default class CustomString extends String {
-    private property: IProp;
-    private requiredPropertyErrorMessage: string;
-    private validationLogic?: ValidationLogic;
-    private smartField: boolean;
+    private settings: CustomStringSettings;
 
-    constructor(settings: IStringSettings) {
+    constructor(settings: CustomStringSettings) {
         super();
-        this.property = settings.property;
-        this.requiredPropertyErrorMessage = settings.requiredPropertyErrorMessage;
-        this.validationLogic = settings.validationLogic;
-        this.smartField = settings.smartField ?? false;
+        this.settings = settings;
     }
 
     public override async validateValue(value: string | null): Promise<void> {
         super.validateValue(value!);
 
-        if (!this.smartField) {
+        if (this.settings.getFieldType() === "Non-Smart") {
             this.checkRequired(value);
         }
 
-        if (this.validationLogic && value != null && value !== "" && value !== "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
-            return this.validationLogic.evaluate(value);
+        const validationLogic = this.settings.getValidationLogic();
+
+        if (validationLogic && value != null && value !== "" && value !== "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+            return validationLogic.evaluate(value);
         }
     }
 
     private checkRequired(value: string | null) {
-        if (this.property.required && (value == null || value === "" || value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY")) {
-            throw new ValidateException(this.requiredPropertyErrorMessage.replace("{property}", this.property.label));
+        const property = this.settings.getEntityProperty();
+
+        if (property.required && (value == null || value === "" || value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY")) {
+            throw new ValidateException(this.settings.getRequiredPropertyError().replace("{property}", property.label));
         }
     }
 }

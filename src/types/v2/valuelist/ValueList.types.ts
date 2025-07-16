@@ -1,15 +1,12 @@
 /* eslint-disable semi */
+/* eslint-disable @typescript-eslint/naming-convention */
+import Context from "sap/ui/model/odata/v2/Context";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
 declare module "ui5/antares/pro/v2/valuelist/ValueList" {
-    export default interface ValueList {
+    export default interface ValidationLogic {
         getLocalDataProperty: GetProperty<string>;
         setLocalDataProperty: SetProperty<string>;
-        getCollectionPath: GetProperty<string>;
-        getFixedValues: GetProperty<boolean>;
-        setFixedValues: SetProperty<boolean>;
-        getFixedValueSeparator: GetProperty<string>;
-        setFixedValueSeparator: SetProperty<string>;
         getSearchSupported: GetProperty<boolean>;
         setSearchSupported: SetProperty<boolean>;
         getCaseSensitiveSearch: GetProperty<boolean>;
@@ -18,29 +15,40 @@ declare module "ui5/antares/pro/v2/valuelist/ValueList" {
         setTitle: SetProperty<string>;
         getFilterBarErrorMessage: GetProperty<string>;
         setFilterBarErrorMessage: SetProperty<string>;
+        getPathPrefix: GetProperty<string>;
+        setPathPrefix: SetProperty<string>;
+        getLocalDataContext: GetProperty<Context>;
+        setLocalDataContext: SetProperty<Context>;
         getDateRangeOptions: GetProperty<string[] | undefined>;
         setDateRangeOptions: SetProperty<string[] | undefined>;
-        getParameters: GetProperty<ValueListParameter[]>;
-        setParameters: SetProperty<ValueListParameter[]>;
-        getUseChildContext: GetProperty<boolean>;
-        setUseChildContext: SetProperty<boolean>;        
+        getParameters: GetProperty<Parameter[]>;
+        setParameters: SetProperty<Parameter[]>;
+        getPropertyOrder: GetProperty<string[]>;
+        setPropertyOrder: SetProperty<string[]>;
+        getPropertyLabels: GetProperty<PropertyLabel[]>;
+        setPropertyLabels: SetProperty<PropertyLabel[]>;
     }
 }
 
-export interface ISettings {
+export interface Settings {
     localDataProperty: string;
-    collectionPath: string;
-    fixedValues?: boolean;
-    fixedValueSeparator?: string;
+    entitySet: string;
     searchSupported?: boolean;
     caseSensitiveSearch?: boolean;
     title?: string;
     filterBarErrorMessage?: string;
     dateRangeOptions?: string[];
-    parameters: ValueListParameter[];
+    parameters: Parameter[];
+    propertyOrder?: string[];
+    propertyLabels?: PropertyLabel[];
 }
 
-export type ValueListParameter = {
+export interface PropertyLabel {
+    name: string;
+    label: string;
+}
+
+export type Parameter = {
     type: "In" | "InOut" | "Out";
     localDataProperty: string;
     valueListProperty: string;

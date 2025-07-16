@@ -1,21 +1,21 @@
 import Button from "sap/m/Button";
 import Dialog, { EscapeHandler } from "sap/m/Dialog";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
-import { ISettings } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
-import TableGenerator from "ui5/antares/pro/v2/ui/TableGenerator";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { Settings } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
+import Factory from "ui5/antares/pro/v2/ui/Factory";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
  */
 export default class DialogGenerator extends ManagedObject {
-    static metadata: IClassMetadata = {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            dialog: { type: "object", visibility: "public" },
-            operation: { type: "string", visibility: "public" }
+            dialogModel: { type: "object" },
+            dialog: { type: "object" }
         },
         events: {
             submitted: {
@@ -27,26 +27,25 @@ export default class DialogGenerator extends ManagedObject {
         }
     };
 
-    constructor(settings: ISettings) {
+    constructor(settings: Settings) {
         super(settings as $ManagedObjectSettings);
     }
 
     public generate() {
-        const content = this.getOwnerContentGenerator();
-        const parent = this.getOwnerParent();
+        const factory = this.getFactory();
 
         const dialog = new Dialog({
             draggable: true,
             resizable: true,
             title: {
-                path: this.getParentModelName() + ">/formTitle"
+                path: "dialog>/formTitle"
             },
             endButton: this.getEndButton(),
-            escapeHandler: this.onEscape as EscapeHandler
+            escapeHandler: this.onEscape.bind(this) as EscapeHandler
         });
 
-        dialog.setModel(content.getODataModel());
-        dialog.setModel(parent.getModel(this.getParentModelName()), this.getParentModelName());
+        dialog.setModel(factory.getODataModel());
+        dialog.setModel(this.getDialogModel(), "dialog");
 
         if (this.getOperation() !== "Read") {
             dialog.setBeginButton(this.getBeginButton());
@@ -58,10 +57,10 @@ export default class DialogGenerator extends ManagedObject {
     private getBeginButton() {
         return new Button({
             text: {
-                path: this.getParentModelName() + ">/submitButtonText"
+                path: "dialog>/submitButtonText"
             },
             type: {
-                path: this.getParentModelName() + ">/submitButtonType"
+                path: "dialog>/submitButtonType"
             },
             press: () => {
                 this.fireSubmitted({ dialog: this.getDialog() });
@@ -72,10 +71,10 @@ export default class DialogGenerator extends ManagedObject {
     private getEndButton() {
         return new Button({
             text: {
-                path: this.getParentModelName() + ">/closeButtonText"
+                path: "dialog>/closeButtonText"
             },
             type: {
-                path: this.getParentModelName() + ">/closeButtonType"
+                path: "dialog>/closeButtonType"
             },
             press: () => {
                 this.getDialog().close();
@@ -89,36 +88,27 @@ export default class DialogGenerator extends ManagedObject {
         this.fireClosed({ dialog: this.getDialog() });
     }
 
-    private getOwnerParent() {
+    private getOperation() {
         const parent = this.getParent() as ManagedObject;
 
         switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.TableGenerator":
-                return parent as TableGenerator;
+            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
+            case "ui5.antares.pro.v2.ui.GridTableGenerator":
+                return (parent.getParent() as NavigationProperty).getOperation();
             default:
-                return parent as ContentGenerator;
+                return (parent as Factory).getOperation();
         }
     }
 
-    private getOwnerContentGenerator() {
+    private getFactory() {
         const parent = this.getParent() as ManagedObject;
 
         switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.TableGenerator":
-                return parent.getParent() as ContentGenerator;
+            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
+            case "ui5.antares.pro.v2.ui.GridTableGenerator":
+                return (parent.getParent() as NavigationProperty).getOwnerParent();
             default:
-                return parent as ContentGenerator;
-        }
-    }
-
-    private getParentModelName() {
-        const parent = this.getParent() as ManagedObject;
-
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.TableGenerator":
-                return "table";
-            default:
-                return "content";
+                return parent as Factory;
         }
     }
 }

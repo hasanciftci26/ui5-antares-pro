@@ -1,7 +1,6 @@
-import TextArea from "sap/m/TextArea";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
-import { CreateEntry$SubmitSuccessEvent } from "ui5/antares/pro/types/v2/entry/CreateEntry.types";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
@@ -25,22 +24,26 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            metadataLabelEnabled: true,
-            guidVisibilityMode: "All",
-            navProperties: [{
-                name: "toContract",
-                valueInheritance: [{
-                    property: "employeeID",
-                    parentProperty: "ID"
-                }]
-            }, {
-                name: "toCertifications",
-                valueInheritance: [{
-                    property: "employeeID",
-                    parentProperty: "ID"
-                }]
-            }]
+            formType: "SimpleForm",
+            guidVisibilityMode: "All"
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toContract",
+            valueLists: [new ValueList({
+                entitySet: "Countries",
+                localDataProperty: "contractType",
+                caseSensitiveSearch: true,
+                parameters: [{
+                    type: "Out",
+                    localDataProperty: "contractType",
+                    valueListProperty: "code"
+                }, {
+                    type: "DisplayOnly",
+                    valueListProperty: "name"
+                }]
+            })]
+        }));
 
         entry.execute();
     }
@@ -48,12 +51,4 @@ export default class Homepage extends BaseController {
     /* ======================================================================================================================= */
     /* Internal methods                                                                                                        */
     /* ======================================================================================================================= */
-
-    private onSubmitSuccess(event: CreateEntry$SubmitSuccessEvent<{ testID: string; }>) {
-        event.getParameter("data");
-    }
-
-    private onValidateFirstName(element: TextArea) {
-        return element.getValue() !== "";
-    }
 }

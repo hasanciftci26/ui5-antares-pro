@@ -3,9 +3,6 @@
     "sap.app": {
         "id": "ui5.antares.pro",
         "type": "library",
-        "embeds": [
-            "v2/component/entry"
-        ],
         "title": "UI5 Antares Pro",
         "applicationVersion": {
             "version": "1.0.0"

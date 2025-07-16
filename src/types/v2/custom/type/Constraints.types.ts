@@ -1,9 +1,9 @@
-export interface INumberConstraints {
+export interface NumberConstraints {
     precision?: number;
     scale?: number;
-    nullable?: string | boolean
+    nullable?: string | boolean    
 }
 
-export interface IDateTimeConstraints {
+export interface DateTimeConstraints {
     displayFormat: "Date";
 }

@@ -1,0 +1,11 @@
+<core:FragmentDefinition
+    xmlns="sap.ui.table"
+    xmlns:core="sap.ui.core"
+    xmlns:sap.ui.fl="sap.ui.fl"
+>
+    <Table
+        id="ui5AntaresProNavigationGridTable"
+        sap.ui.fl:flexibility="sap/m/flexibility/EngineFlex"
+        selectionMode="Single"
+    />
+</core:FragmentDefinition>

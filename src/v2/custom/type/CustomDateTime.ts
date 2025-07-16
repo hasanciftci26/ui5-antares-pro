@@ -1,41 +1,37 @@
-import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
-import { IDateTimeSettings } from "ui5/antares/pro/types/v2/custom/type/Settings.types";
-import { IProp } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import ValidateException from "sap/ui/model/ValidateException";
 import DateTime from "sap/ui/model/odata/type/DateTime";
+import ValidateException from "sap/ui/model/ValidateException";
+import CustomDateTimeSettings from "ui5/antares/pro/v2/custom/type/CustomDateTimeSettings";
 
 /**
  * @namespace ui5.antares.pro.v2.custom.type
  */
 export default class CustomDateTime extends DateTime {
-    private property: IProp;
-    private requiredPropertyErrorMessage: string;
-    private validationLogic?: ValidationLogic;
-    private smartField: boolean;
+    private settings: CustomDateTimeSettings;
 
-    constructor(settings: IDateTimeSettings) {
-        super(settings.formatOptions, settings.constraints);
-        this.property = settings.property;
-        this.requiredPropertyErrorMessage = settings.requiredPropertyErrorMessage;
-        this.validationLogic = settings.validationLogic;
-        this.smartField = settings.smartField ?? false;
+    constructor(settings: CustomDateTimeSettings) {
+        super(settings.getFormatOptions(), settings.getConstraints());
+        this.settings = settings;
     }
 
     public override async validateValue(value: Date | null): Promise<void> {
         super.validateValue(value!);
 
-        if (!this.smartField) {
+        if (this.settings.getFieldType() === "Non-Smart") {
             this.checkRequired(value);
         }
 
-        if (this.validationLogic && value != null) {
-            return this.validationLogic.evaluate(value);
+        const validationLogic = this.settings.getValidationLogic();
+
+        if (validationLogic && value != null) {
+            return validationLogic.evaluate(value);
         }
     }
 
     private checkRequired(value: Date | null) {
-        if (this.property.required && value == null) {
-            throw new ValidateException(this.requiredPropertyErrorMessage.replace("{property}", this.property.label));
+        const property = this.settings.getEntityProperty();
+
+        if (property.required && value == null) {
+            throw new ValidateException(this.settings.getRequiredPropertyError().replace("{property}", property.label));
         }
     }
 }

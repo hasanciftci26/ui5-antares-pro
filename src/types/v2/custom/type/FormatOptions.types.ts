@@ -1,4 +1,4 @@
-export interface INumberFormatOptions {
+export interface NumberFormatOptions {
     groupingEnabled?: boolean;
     groupingSeparator?: string;
     groupingSize?: number;
@@ -6,6 +6,6 @@ export interface INumberFormatOptions {
     parseEmptyValueToZero?: boolean
 }
 
-export interface IDateTimeFormatOptions {
+export interface DateTimeFormatOptions {
     pattern: string;
 }

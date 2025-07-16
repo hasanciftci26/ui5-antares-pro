@@ -1,14 +1,13 @@
 import ManagedObject from "sap/ui/base/ManagedObject";
-import { IClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { MetaModelProperty } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
-import ContentGenerator from "ui5/antares/pro/v2/ui/ContentGenerator";
 
 /**
  * @namespace ui5.antares.pro.v2.util
  */
 export default class LabelGenerator extends ManagedObject {
-    static metadata: IClassMetadata = {
+    static metadata: ClassMetadata = {
         library: "ui5.antares.pro",
         final: true
     };
@@ -18,21 +17,19 @@ export default class LabelGenerator extends ManagedObject {
     }
 
     public generate(property: MetaModelProperty) {
-        const parent = this.getParent() as MetaContext;
-        const content = this.getOwnerContentGenerator();
-        const entitySet = parent.getEntitySet();
-        const entitySetType = parent.getEntitySetType();
-        const propertyName = entitySetType === "Parent" ? property.name : parent.getNavProperty()?.name + `/${property.name}`;
-        const propertyLabel = content.getPropertySettings().find(prop => prop.name === propertyName)?.label;
+        const parent = this.getOwnerParent();
+        const factory = parent.getFactory();
+        const entitySet = parent.getOwnerParent().getEntitySet();
+        const propertyLabel = parent.getOwnerParent().getPropertySettings().find(prop => prop.name === property.name)?.label;
 
-        if (content.getMetadataLabelEnabled()) {
+        if (factory.getMetadataLabelEnabled()) {
             const labelExtension = property.extensions?.find(ext => ext.name === "label")?.value;
             const labelAnnotation = property["com.sap.vocabularies.Common.v1.Label"]?.String;
 
             return labelAnnotation || labelExtension || propertyLabel || property.name;
         } else {
             const bundleKey = "ui5AntaresPro." + entitySet + "." + property.name;
-            const bundleLabel = content.getConsumerBundleText(bundleKey);
+            const bundleLabel = factory.getOwnerText(bundleKey);
             const result = this.labelize(property.name);
 
             return propertyLabel || bundleLabel || result;
@@ -168,14 +165,7 @@ export default class LabelGenerator extends ManagedObject {
         return word.length > 0 ? word[0].toUpperCase() + word.slice(1) : word;
     }
 
-    private getOwnerContentGenerator() {
-        const parent = this.getParent()!.getParent()!;
-
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.valuelist.ValueList":
-                return parent.getParent() as ContentGenerator;
-            default:
-                return parent as ContentGenerator;
-        }
+    private getOwnerParent() {
+        return this.getParent() as MetaContext;
     }
 }

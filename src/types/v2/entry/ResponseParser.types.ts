@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-export interface ISubmitChangesResponse {
-    __batchResponses: IBatchResponse[];
+export interface SubmitChangesResponse {
+    __batchResponses: BatchResponse[];
 }
 
-export interface IBatchResponse {
-    __changeResponses?: IChangeResponse[];
+export interface BatchResponse {
+    __changeResponses?: ChangeResponse[];
     response?: {
         statusCode?: string;
         statusText?: string;
@@ -15,11 +15,11 @@ export interface IBatchResponse {
     message?: string;
 }
 
-export interface IChangeResponse {
+export interface ChangeResponse {
     $reported?: boolean;
     _imported?: boolean;
     message?: string;
-    response?: IResponse;
+    response?: Response;
     statusCode?: string;
     statusText?: string;
     headers?: Record<string, any>;
@@ -27,7 +27,7 @@ export interface IChangeResponse {
     data?: Record<string, any>;
 }
 
-export interface IResponse {
+export interface Response {
     $reported?: boolean;
     statusCode?: string;
     statusText?: string;
@@ -35,7 +35,7 @@ export interface IResponse {
     body?: string;
 }
 
-export interface IErrorBody {
+export interface ErrorBody {
     message?: string;
     error?: {
         message?: {

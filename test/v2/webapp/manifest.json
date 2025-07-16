@@ -69,16 +69,6 @@
                 "sap.ui.table": {},
                 "sap.ushell": {},
                 "ui5.antares.pro": {}
-            },
-            "components": {
-                "ui5.antares.pro.v2.component.entry": {
-                    "lazy": false
-                }
-            }
-        },
-        "componentUsages": {
-            "ui5AntaresProEntry": {
-                "name": "ui5.antares.pro.v2.component.entry"
             }
         },
         "contentDensities": {

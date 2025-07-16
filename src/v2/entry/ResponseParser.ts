@@ -1,5 +1,5 @@
 import BaseObject from "sap/ui/base/Object";
-import { IErrorBody, ISubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
+import { ErrorBody, SubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
@@ -10,9 +10,9 @@ export default class ResponseParser extends BaseObject {
     public data?: Record<string, any>;
     public errorMessage?: string;
     public status: "Success" | "Error";
-    private rawResponse?: ISubmitChangesResponse;
+    private rawResponse?: SubmitChangesResponse;
 
-    constructor(rawResponse?: ISubmitChangesResponse) {
+    constructor(rawResponse?: SubmitChangesResponse) {
         super();
         this.rawResponse = rawResponse;
     }
@@ -92,7 +92,7 @@ export default class ResponseParser extends BaseObject {
         if (response) {
             if (this.hasBody(response)) {
                 try {
-                    const parsedBody = JSON.parse(response.body) as IErrorBody;
+                    const parsedBody = JSON.parse(response.body) as ErrorBody;
                     this.errorMessage = parsedBody.message || parsedBody.error?.message?.value;
                 } catch (error) {
                     this.errorMessage = LibraryBundle.getText("ui5AntaresPro.error.submit");
