@@ -132,7 +132,7 @@ export default class CustomFilterBar extends SimpleType {
             case "LT":
                 return "<(" + value + ")";
             case "NE":
-                return "!(" + value + ")";
+                return "!=(" + value + ")";
             case "CONTAINS":
                 return "*" + value + "*";
             case "NOT_CONTAINS":
