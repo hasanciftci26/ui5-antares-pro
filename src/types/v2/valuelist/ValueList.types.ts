@@ -1,13 +1,12 @@
 /* eslint-disable semi */
 /* eslint-disable @typescript-eslint/naming-convention */
+import Context from "sap/ui/model/odata/v2/Context";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
 declare module "ui5/antares/pro/v2/valuelist/ValueList" {
     export default interface ValidationLogic {
         getLocalDataProperty: GetProperty<string>;
         setLocalDataProperty: SetProperty<string>;
-        getEntitySet: GetProperty<string>;
-        setEntitySet: SetProperty<string>;
         getSearchSupported: GetProperty<boolean>;
         setSearchSupported: SetProperty<boolean>;
         getCaseSensitiveSearch: GetProperty<boolean>;
@@ -16,14 +15,18 @@ declare module "ui5/antares/pro/v2/valuelist/ValueList" {
         setTitle: SetProperty<string>;
         getFilterBarErrorMessage: GetProperty<string>;
         setFilterBarErrorMessage: SetProperty<string>;
+        getPathPrefix: GetProperty<string>;
+        setPathPrefix: SetProperty<string>;
+        getLocalDataContext: GetProperty<Context>;
+        setLocalDataContext: SetProperty<Context>;
         getDateRangeOptions: GetProperty<string[] | undefined>;
         setDateRangeOptions: SetProperty<string[] | undefined>;
         getParameters: GetProperty<Parameter[]>;
         setParameters: SetProperty<Parameter[]>;
         getPropertyOrder: GetProperty<string[]>;
         setPropertyOrder: SetProperty<string[]>;
-        getPropertyLabels: GetProperty<PropertyLabels[]>;
-        setPropertyLabels: SetProperty<PropertyLabels[]>;
+        getPropertyLabels: GetProperty<PropertyLabel[]>;
+        setPropertyLabels: SetProperty<PropertyLabel[]>;
     }
 }
 
@@ -37,10 +40,10 @@ export interface Settings {
     dateRangeOptions?: string[];
     parameters: Parameter[];
     propertyOrder?: string[];
-    propertyLabels?: string[];
+    propertyLabels?: PropertyLabel[];
 }
 
-export interface PropertyLabels {
+export interface PropertyLabel {
     name: string;
     label: string;
 }

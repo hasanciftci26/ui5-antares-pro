@@ -2,6 +2,7 @@
 import { ButtonType } from "sap/m/library";
 import ManagedObject from "sap/ui/base/ManagedObject";
 import Controller from "sap/ui/core/mvc/Controller";
+import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
@@ -59,4 +60,5 @@ export interface FormUtilityProvider extends ManagedObject {
     getValidationLogicByProperty: (property: string) => ValidationLogic | undefined;
     getValueListByProperty: (property: string) => ValueList | undefined;
     getFormLayout: () => FormLayout | undefined;
+    getContext: () => Context;
 }

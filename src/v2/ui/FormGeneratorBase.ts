@@ -97,6 +97,16 @@ export default abstract class FormGeneratorBase extends ManagedObject {
         }
     }
 
+    protected getPathPrefix() {
+        const parent = this.getParent() as ManagedObject;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
+            return (parent as NavigationProperty).getName();
+        } else {
+            return "";
+        }
+    }
+
     protected getMetaContext() {
         const parent = this.getParent() as ManagedObject;
 
@@ -121,6 +131,10 @@ export default abstract class FormGeneratorBase extends ManagedObject {
             default:
                 return parent as FormUtilityProvider;
         }
+    }
+
+    protected getContext() {
+        return this.getFormUtilityProvider().getContext();
     }
 
     protected getPropertySettings() {

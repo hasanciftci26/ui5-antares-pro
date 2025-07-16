@@ -254,6 +254,7 @@ export default class ControlGenerator extends ManagedObject {
         return new CheckBox({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
+            name: property.name,
             selected: {
                 path: path,
                 type: "sap.ui.model.odata.type.Boolean"
@@ -264,6 +265,7 @@ export default class ControlGenerator extends ManagedObject {
     private getTimePicker(property: EntityProperty, path: string) {
         const timePicker = new TimePicker({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            name: property.name,
             value: {
                 path: path,
                 type: new CustomFilterBar(new CustomFilterBarSettings({
@@ -282,6 +284,7 @@ export default class ControlGenerator extends ManagedObject {
         const input = new Input({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             textAlign: "End",
+            name: property.name,
             value: {
                 path: path,
                 type: new CustomFilterBar(new CustomFilterBarSettings({
@@ -299,6 +302,7 @@ export default class ControlGenerator extends ManagedObject {
     private getStringInput(property: EntityProperty, path: string) {
         const input = new Input({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            name: property.name,
             value: {
                 path: path,
                 type: new CustomFilterBar(new CustomFilterBarSettings({

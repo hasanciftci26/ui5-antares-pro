@@ -1,8 +1,10 @@
+import Input from "sap/m/Input";
 import Label from "sap/m/Label";
 import ManagedObject from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
+import { EntityProperty } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
 import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
 import SimpleFormValidator from "ui5/antares/pro/v2/validation/SimpleFormValidator";
@@ -72,11 +74,31 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
             );
 
             this.setControlLayoutData(property, control);
+
+            if (control instanceof Input) {
+                this.addValueHelp(property, control);
+            }
+
             controls.push(new Label({ text: property.label }));
             controls.push(control);
         }
 
         return controls;
+    }
+
+    private addValueHelp(property: EntityProperty, control: Input) {
+        const valueList = this.getValueListByProperty(property.name);
+
+        if ((property.type !== "Edm.String" && property.type !== "Edm.Guid") || !valueList) {
+            return;
+        }
+
+        control.setShowValueHelp(true);
+        control.attachValueHelpRequest(() => {
+            valueList.setPathPrefix(this.getPathPrefix());
+            valueList.setLocalDataContext(this.getContext());
+            valueList.open();
+        });
     }
 
     private setFormLayoutData(form: SimpleForm) {

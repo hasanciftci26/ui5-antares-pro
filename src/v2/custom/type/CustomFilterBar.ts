@@ -15,6 +15,8 @@ import CustomFilterBarSettings from "ui5/antares/pro/v2/custom/type/CustomFilter
 import NumberManager from "ui5/antares/pro/v2/util/NumberManager";
 import Stream from "sap/ui/model/odata/type/Stream";
 import Time from "sap/ui/model/odata/type/Time";
+import { Operator } from "ui5/antares/pro/types/v2/custom/type/CustomFilterBar.types";
+import FilterOperator from "sap/ui/model/FilterOperator";
 
 /**
  * @namespace ui5.antares.pro.v2.custom.type
@@ -22,11 +24,128 @@ import Time from "sap/ui/model/odata/type/Time";
 export default class CustomFilterBar extends SimpleType {
     private settings: CustomFilterBarSettings;
     private internalType: SimpleType;
+    private operator: Operator;
 
     constructor(settings: CustomFilterBarSettings) {
         super();
         this.settings = settings;
         this.setInternalType();
+    }
+
+    public override formatValue(value: any, targetType: "string") {
+        const formattedValue = this.internalType.formatValue(value, targetType) as string;
+        return this.formatValueWithOperator(formattedValue);
+    }
+
+    public override parseValue(value: string, sourceType: "string") {
+        this.determineOperator(value);
+        return this.internalType.parseValue(value.replace(/[!()*=<>]/g, ""), sourceType);
+    }
+
+    public override validateValue(value: any) {
+        this.internalType.validateValue(value);
+    }
+
+    public getFilterOperator() {
+        switch (this.operator) {
+            case "GE":
+                return FilterOperator.GE;
+            case "GT":
+                return FilterOperator.GT;
+            case "LE":
+                return FilterOperator.LE;
+            case "LT":
+                return FilterOperator.LT;
+            case "NE":
+                return FilterOperator.NE;
+            case "CONTAINS":
+                return FilterOperator.Contains;
+            case "NOT_CONTAINS":
+                return FilterOperator.NotContains;
+            case "STARTS_WITH":
+                return FilterOperator.StartsWith;
+            case "NOT_STARTS_WITH":
+                return FilterOperator.NotStartsWith;
+            case "ENDS_WITH":
+                return FilterOperator.EndsWith;
+            case "NOT_ENDS_WITH":
+                return FilterOperator.NotEndsWith;
+            default:
+                return FilterOperator.EQ;
+        }
+    }
+
+    private determineOperator(value: string) {
+        switch (true) {
+            case value.startsWith(">="):
+                this.operator = "GE";
+                break;
+            case value.startsWith(">"):
+                this.operator = "GT";
+                break;
+            case value.startsWith("<="):
+                this.operator = "LE";
+                break;
+            case value.startsWith("<"):
+                this.operator = "LT";
+                break;
+            case value.startsWith("!="):
+                this.operator = "NE";
+                break;
+            case value.startsWith("*"):
+                if (value.endsWith("*")) {
+                    this.operator = "CONTAINS";
+                } else {
+                    this.operator = "STARTS_WITH";
+                }
+                break;
+            case value.startsWith("!*"):
+                if (value.endsWith("*")) {
+                    this.operator = "NOT_CONTAINS";
+                } else {
+                    this.operator = "NOT_STARTS_WITH";
+                }
+                break;
+            case value.endsWith("*"):
+                if (value.startsWith("!")) {
+                    this.operator = "NOT_ENDS_WITH";
+                } else {
+                    this.operator = "ENDS_WITH";
+                }
+                break;
+            default:
+                this.operator = "NONE";
+                break;
+        }
+    }
+
+    private formatValueWithOperator(value: string) {
+        switch (this.operator) {
+            case "GE":
+                return ">=(" + value + ")";
+            case "GT":
+                return ">(" + value + ")";
+            case "LE":
+                return "<=(" + value + ")";
+            case "LT":
+                return "<(" + value + ")";
+            case "NE":
+                return "!(" + value + ")";
+            case "CONTAINS":
+                return "*" + value + "*";
+            case "NOT_CONTAINS":
+                return "!(*" + value + "*)";
+            case "STARTS_WITH":
+                return "*" + value;
+            case "NOT_STARTS_WITH":
+                return "!(*" + value + ")";
+            case "ENDS_WITH":
+                return value + "*";
+            case "NOT_ENDS_WITH":
+                return "!(" + value + "*)";
+            default:
+                return value;
+        }
     }
 
     private setInternalType() {
