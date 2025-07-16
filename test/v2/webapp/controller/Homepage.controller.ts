@@ -1,5 +1,6 @@
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
@@ -22,33 +23,27 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "EmployeeContracts",
+            entitySet: "Employees",
             formType: "SimpleForm",
-            guidVisibilityMode: "All",
-            valueLists: [
-                new ValueList({
-                    localDataProperty: "employeeID",
-                    entitySet: "Employees",
-                    searchSupported: true,
-                    caseSensitiveSearch: true,
-                    propertyLabels: [{
-                        name: "code",
-                        label: "Country Cdew Test"
-                    }],
-                    parameters: [{
-                        type: "InOut",
-                        localDataProperty: "employeeID",
-                        valueListProperty: "ID"
-                    }, {
-                        type: "DisplayOnly",
-                        valueListProperty: "firstName"
-                    },{
-                        type: "DisplayOnly",
-                        valueListProperty: "lastName"
-                    }]
-                })
-            ]
+            guidVisibilityMode: "All"
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toContract",
+            valueLists: [new ValueList({
+                entitySet: "Countries",
+                localDataProperty: "contractType",
+                caseSensitiveSearch: true,
+                parameters: [{
+                    type: "Out",
+                    localDataProperty: "contractType",
+                    valueListProperty: "code"
+                }, {
+                    type: "DisplayOnly",
+                    valueListProperty: "name"
+                }]
+            })]
+        }));
 
         entry.execute();
     }

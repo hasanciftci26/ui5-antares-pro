@@ -47,7 +47,6 @@ export default class CreateEntry extends Factory {
         await this.createNewEntry(initialData);
         await super.execute();
         this.addNavigationPropertiesToContext();
-
         this.getDialogGenerator().getDialog().open();
 
         BusyIndicator.hide();

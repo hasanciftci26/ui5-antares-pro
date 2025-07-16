@@ -193,8 +193,8 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
         const generator = new ControlGenerator({
             generateFor: "Filterbar",
             dateRangeOptions: this.getDateRangeOptions(),
-            dateTimeSettings: this.getOwnerParent().getDateTimeSettings(),
-            numberSettings: this.getOwnerParent().getNumberSettings()
+            dateTimeSettings: this.getFactory().getDateTimeSettings(),
+            numberSettings: this.getFactory().getNumberSettings()
         });
 
         for (const parameter of parameters) {
@@ -250,7 +250,7 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
     }
 
     private bindGridTable(table: GridTable) {
-        table.setModel(this.getOwnerParent().getODataModel());
+        table.setModel(this.getFactory().getODataModel());
         table.bindRows({
             path: "/" + this.getEntitySet(),
             events: {
@@ -269,8 +269,8 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
         const generator = new ControlGenerator({
             generateFor: "Table",
             dateRangeOptions: this.getDateRangeOptions(),
-            dateTimeSettings: this.getOwnerParent().getDateTimeSettings(),
-            numberSettings: this.getOwnerParent().getNumberSettings()
+            dateTimeSettings: this.getFactory().getDateTimeSettings(),
+            numberSettings: this.getFactory().getNumberSettings()
         });
 
         for (const parameter of parameters) {
@@ -292,7 +292,7 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
     }
 
     private bindResponsiveTable(table: ResponsiveTable) {
-        table.setModel(this.getOwnerParent().getODataModel());
+        table.setModel(this.getFactory().getODataModel());
         table.bindItems({
             path: "/" + this.getEntitySet(),
             template: new ColumnListItem({
@@ -312,8 +312,8 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
         const generator = new ControlGenerator({
             generateFor: "Table",
             dateRangeOptions: this.getDateRangeOptions(),
-            dateTimeSettings: this.getOwnerParent().getDateTimeSettings(),
-            numberSettings: this.getOwnerParent().getNumberSettings()
+            dateTimeSettings: this.getFactory().getDateTimeSettings(),
+            numberSettings: this.getFactory().getNumberSettings()
         });
         const cells: Control[] = [];
 
@@ -357,7 +357,7 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
     }
 
     private setOutValues(context: Context) {
-        const parent = this.getOwnerParent();
+        const parent = this.getFactory();
 
         for (const param of this.getParameters()) {
             if (param.type !== "Out" && param.type !== "InOut") {
@@ -386,8 +386,14 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
         return this.getModel("valueHelpFilter") as JSONModel;
     }
 
-    private getOwnerParent() {
-        return this.getParent() as Factory;
+    private getFactory() {
+        const parent = this.getParent() as ManagedObject;
+
+        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
+            return parent.getParent() as Factory;
+        } else {
+            return this.getParent() as Factory;
+        }
     }
 
     private setInitialFilters() {
