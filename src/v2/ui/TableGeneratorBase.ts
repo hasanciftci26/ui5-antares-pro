@@ -253,6 +253,8 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
         await this.getMetaContext().load();
         this.createEntry();
+        this.setGuidValues();
+        this.inheritValues();
         this.getDialogGenerator().generate();
         this.getFormGenerator().generate();
 
@@ -385,6 +387,58 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             const context = binding.create(undefined, true);
 
             this.getOwnerParent().setContext(context);
+        }
+    }
+
+    private setGuidValues() {
+        const properties = this.getMetaContext().getEntityProperties();
+
+        for (const property of properties) {
+            const factory = this.getFactory();
+            const context = this.getOwnerParent().getContext();
+            const value = context.getProperty(property.name);
+            const hasInheritance = this.getOwnerParent().getInheritValues().some(inherit => inherit.targetProperty === property.name);
+
+            if ((value != null && value !== "") || hasInheritance) {
+                continue;
+            }
+
+            switch (factory.getGuidGenerationMode()) {
+                case "All":
+                    factory.getODataModel().setProperty(context.getPath() + "/" + property.name, window.crypto.randomUUID());
+                    break;
+                case "Key":
+                    if (property.key) {
+                        factory.getODataModel().setProperty(context.getPath() + "/" + property.name, window.crypto.randomUUID());
+                    }
+                    break;
+                case "NonKey":
+                    if (!property.key) {
+                        factory.getODataModel().setProperty(context.getPath() + "/" + property.name, window.crypto.randomUUID());
+                    }
+                    break;
+            }
+        }
+    }
+
+    private inheritValues() {
+        const properties = this.getMetaContext().getEntityProperties();
+
+        for (const property of properties) {
+            const inheritance = this.getOwnerParent().getInheritValues().find(inherit => inherit.targetProperty === property.name);
+
+            if (!inheritance) {
+                continue;
+            }
+
+            const originalValue = this.getOwnerParent().getContext().getProperty(property.name);
+            const parentValue = this.getFactory().getContext().getProperty(inheritance.parentProperty);
+
+            if ((originalValue != null && originalValue !== "") || (parentValue == null || parentValue === "")) {
+                continue;
+            }
+
+            this.getFactory().getODataModel().setProperty(this.getOwnerParent().getContext().getPath() + "/" + property.name, parentValue);
         }
     }
 

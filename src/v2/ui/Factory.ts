@@ -17,7 +17,6 @@ import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
-import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace ui5.antares.pro.v2.ui

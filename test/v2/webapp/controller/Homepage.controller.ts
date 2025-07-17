@@ -23,11 +23,18 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            modelRef: "northwind",
-            entitySet: "Categories",
+            entitySet: "Employees",
             formType: "SimpleForm",
             guidVisibilityMode: "All"
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications",
+            inheritValues: [{
+                parentProperty: "ID",
+                targetProperty: "employeeID"
+            }]
+        }));
 
         entry.execute();
     }

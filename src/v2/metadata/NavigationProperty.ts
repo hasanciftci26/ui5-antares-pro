@@ -14,7 +14,6 @@ import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
-import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace ui5.antares.pro.v2.metadata
@@ -45,6 +44,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             context: { type: "object" },
             propertySettings: { type: "object[]", defaultValue: [] },
             propertyOrder: { type: "string[]", defaultValue: [] },
+            inheritValues: { type: "object[]", defaultValue: [] },
             operation: { type: "string", visibility: "hidden" }
         },
         aggregations: {

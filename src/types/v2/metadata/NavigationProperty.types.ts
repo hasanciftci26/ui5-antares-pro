@@ -62,6 +62,8 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setPropertySettings: SetProperty<PropertySettings[]>;
         getPropertyOrder: GetProperty<string[]>;
         setPropertyOrder: SetProperty<string[]>;
+        getInheritValues: GetProperty<ValueInheritance[]>;
+        setInheritValues: SetProperty<ValueInheritance[]>;
         addValidationLogic: AddAggregation<ValidationLogic>;
         removeValidationLogic: RemoveAggregation<ValidationLogic>;
         getValidationLogics: GetAggregation<ValidationLogic[]>;
@@ -96,9 +98,15 @@ export interface Settings {
     visibleColumnCount?: number;
     propertySettings?: PropertySettings[];
     propertyOrder?: string[];
+    inheritValues?: ValueInheritance[];
     validationLogics?: ValidationLogic[];
     valueLists?: ValueList[];
     formLayout?: FormLayout;
 }
 
 export type TableClass = "sap.m.Table" | "sap.ui.table.Table";
+
+export interface ValueInheritance {
+    parentProperty: string;
+    targetProperty: string;
+}

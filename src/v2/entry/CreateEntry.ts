@@ -47,6 +47,8 @@ export default class CreateEntry extends Factory {
         await this.createNewEntry(initialData);
         await super.execute();
         this.addNavigationPropertiesToContext();
+        this.setGuidValues();
+        this.inheritValues();
         this.getDialogGenerator().getDialog().open();
 
         BusyIndicator.hide();
@@ -70,6 +72,99 @@ export default class CreateEntry extends Factory {
         for (const property of navigationProperties) {
             if (this.getContext().getProperty(property.getName()) == null) {
                 this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.getName(), {});
+            }
+        }
+    }
+
+    private setGuidValues() {
+        this.setParentGuidValues();
+        this.setNavigationGuidValues();
+    }
+
+    private setParentGuidValues() {
+        const properties = this.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Guid");
+
+        for (const property of properties) {
+            const value = this.getContext().getProperty(property.name);
+
+            if (value != null && value !== "") {
+                continue;
+            }
+
+            switch (this.getGuidGenerationMode()) {
+                case "All":
+                    this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.name, window.crypto.randomUUID());
+                    break;
+                case "Key":
+                    if (property.key) {
+                        this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.name, window.crypto.randomUUID());
+                    }
+                    break;
+                case "NonKey":
+                    if (!property.key) {
+                        this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.name, window.crypto.randomUUID());
+                    }
+                    break;
+            }
+        }
+    }
+
+    private setNavigationGuidValues() {
+        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+
+        for (const navigation of navigationProperties) {
+            const properties = navigation.getMetaContext().getEntityProperties();
+
+            for (const property of properties) {
+                const path = navigation.getName() + "/" + property.name;
+                const value = this.getContext().getProperty(path);
+                const hasInheritance = navigation.getInheritValues().some(inherit => inherit.targetProperty === property.name);
+
+                if ((value != null && value !== "") || hasInheritance) {
+                    continue;
+                }
+
+                switch (this.getGuidGenerationMode()) {
+                    case "All":
+                        this.getODataModel().setProperty(this.getContext().getPath() + "/" + path, window.crypto.randomUUID());
+                        break;
+                    case "Key":
+                        if (property.key) {
+                            this.getODataModel().setProperty(this.getContext().getPath() + "/" + path, window.crypto.randomUUID());
+                        }
+                        break;
+                    case "NonKey":
+                        if (!property.key) {
+                            this.getODataModel().setProperty(this.getContext().getPath() + "/" + path, window.crypto.randomUUID());
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    private inheritValues() {
+        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+
+        for (const navigation of navigationProperties) {
+            const properties = navigation.getMetaContext().getEntityProperties();
+
+            for (const property of properties) {
+                const path = navigation.getName() + "/" + property.name;
+                const inheritance = navigation.getInheritValues().find(inherit => inherit.targetProperty === property.name);
+
+                if (!inheritance) {
+                    continue;
+                }
+
+                const originalValue = this.getContext().getProperty(path);
+                const parentValue = this.getContext().getProperty(inheritance.parentProperty);
+
+                if ((originalValue != null && originalValue !== "") || (parentValue == null || parentValue === "")) {
+                    continue;
+                }
+
+                this.getODataModel().setProperty(this.getContext().getPath() + "/" + path, parentValue);
             }
         }
     }
