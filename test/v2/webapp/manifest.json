@@ -27,6 +27,13 @@
                     ]
                 }
             },
+            "northwindService": {
+                "type": "OData",
+                "uri": "/northwind",
+                "settings": {
+                    "odataVersion": "2.0"
+                }
+            },
             "annotation": {
                 "type": "ODataAnnotation",
                 "uri": "annotations/annotation.xml",
@@ -88,6 +95,10 @@
             },
             "": {
                 "dataSource": "mainService",
+                "preload": true
+            },
+            "northwind": {
+                "dataSource": "northwindService",
                 "preload": true
             }
         },

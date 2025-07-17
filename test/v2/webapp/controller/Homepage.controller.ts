@@ -23,40 +23,11 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "EmployeeContracts",
+            modelRef: "northwind",
+            entitySet: "Orders",
             formType: "SimpleForm",
             guidVisibilityMode: "All"
         });
-
-        entry.addValueList(new ValueList({
-            entitySet: "Employees",
-            localDataProperty: "contractType",
-            caseSensitiveSearch: true,
-            parameters: [{
-                type: "Out",
-                localDataProperty: "contractType",
-                valueListProperty: "firstName"
-            }, {
-                type: "DisplayOnly",
-                valueListProperty: "lastName"
-            },{
-                type: "Out",
-                localDataProperty: "contractStart",
-                valueListProperty: "dateOfBirth"
-            },{
-                type: "DisplayOnly",
-                valueListProperty: "hireDate"
-            },{
-                type: "DisplayOnly",
-                valueListProperty: "workingStartTime"
-            },{
-                type: "DisplayOnly",
-                valueListProperty: "performanceRating"
-            },{
-                type: "DisplayOnly",
-                valueListProperty: "salary"
-            }]
-        }));
 
         entry.execute();
     }
