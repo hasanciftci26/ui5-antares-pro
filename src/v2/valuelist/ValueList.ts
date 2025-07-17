@@ -107,7 +107,8 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
         const valueHelpDialog = new ValueHelpDialog({
             title: this.getTitle(),
             supportMultiselect: false,
-            supportRanges: false
+            supportRanges: false,
+            busyIndicatorDelay: 0
         });
 
         this.setValueHelpDialog(valueHelpDialog);
@@ -241,10 +242,12 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
         const table = await this.getValueHelpDialog().getTableAsync();
 
         if (table instanceof GridTable) {
+            table.setBusyIndicatorDelay(0);
             this.bindGridTable(table);
         }
 
         if (table instanceof ResponsiveTable) {
+            table.setBusyIndicatorDelay(0);
             this.bindResponsiveTable(table);
         }
     }

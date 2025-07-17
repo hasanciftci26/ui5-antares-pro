@@ -29,6 +29,19 @@ export default class Homepage extends BaseController {
             guidVisibilityMode: "All"
         });
 
+        entry.addValueList(new ValueList({
+            entitySet: "Customers",
+            localDataProperty: "CustomerID",
+            parameters: [{
+                type: "InOut",
+                localDataProperty: "CustomerID",
+                valueListProperty: "CustomerID"
+            },{
+                type: "DisplayOnly",
+                valueListProperty: "CompanyName"
+            }]
+        }));
+
         entry.execute();
     }
 
