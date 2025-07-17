@@ -143,11 +143,6 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         return this.getValidationLogics().find(logic => logic.getPropertyName() === property);
     }
 
-    public addValueList(valueList: ValueList) {
-        valueList.checkValidity();
-        this.addAggregation("valueLists", valueList);
-    }
-
     public getValueListByProperty(property: string) {
         return this.getValueLists().find(valueList => valueList.getLocalDataProperty() === property);
     }

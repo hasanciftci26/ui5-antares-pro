@@ -73,6 +73,7 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         getValidationLogics: GetAggregation<ValidationLogic[]>;
         removeAllValidationLogics: RemoveAllAggregation;
         destroyValidationLogics: DestroyAggregation;
+        addValueList: AddAggregation<ValueList>;
         removeValueList: RemoveAggregation<ValueList>;
         getValueLists: GetAggregation<ValueList[]>;
         removeAllValueLists: RemoveAllAggregation;
