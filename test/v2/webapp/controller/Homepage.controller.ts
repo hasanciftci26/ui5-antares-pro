@@ -24,23 +24,10 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             modelRef: "northwind",
-            entitySet: "Orders",
+            entitySet: "Categories",
             formType: "SimpleForm",
             guidVisibilityMode: "All"
         });
-
-        entry.addValueList(new ValueList({
-            entitySet: "Customers",
-            localDataProperty: "CustomerID",
-            parameters: [{
-                type: "InOut",
-                localDataProperty: "CustomerID",
-                valueListProperty: "CustomerID"
-            },{
-                type: "DisplayOnly",
-                valueListProperty: "CompanyName"
-            }]
-        }));
 
         entry.execute();
     }

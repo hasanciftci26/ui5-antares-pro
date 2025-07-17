@@ -68,6 +68,8 @@ export default class CustomTypeInitializer extends ManagedObject {
                 return this.getCustomGuid(property, validationLogic);
             case "Edm.String":
                 return this.getCustomString(property, validationLogic);
+            case "Edm.Binary":
+                return "sap.ui.model.odata.type.String";
             default:
                 return "sap.ui.model.odata.type" + property.type.substring(3);
         }
