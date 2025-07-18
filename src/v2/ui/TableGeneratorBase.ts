@@ -255,6 +255,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.createEntry();
         this.setGuidValues();
         this.inheritValues();
+        this.setBooleanValues();
         this.getDialogGenerator().generate();
         this.getFormGenerator().generate();
 
@@ -391,7 +392,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
     }
 
     private setGuidValues() {
-        const properties = this.getMetaContext().getEntityProperties();
+        const properties = this.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Guid");
 
         for (const property of properties) {
             const factory = this.getFactory();
@@ -439,6 +440,26 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             }
 
             this.getFactory().getODataModel().setProperty(this.getOwnerParent().getContext().getPath() + "/" + property.name, parentValue);
+        }
+    }
+
+    private setBooleanValues() {
+        if (!this.getFactory().getBooleanFalseByDefault()) {
+            return;
+        }
+
+        const properties = this.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Boolean");
+
+        for (const property of properties) {
+            const factory = this.getFactory();
+            const context = this.getOwnerParent().getContext();
+            const value = context.getProperty(property.name);
+
+            if (value != null && value !== "") {
+                continue;
+            }
+
+            factory.getODataModel().setProperty(context.getPath() + "/" + property.name, false);
         }
     }
 

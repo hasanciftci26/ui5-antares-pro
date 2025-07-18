@@ -44,6 +44,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
             validationErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.validation") },
             selectRowError: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.selectRow") },
             showErrorMessageBox: { type: "boolean", defaultValue: true },
+            booleanFalseByDefault: { type: "boolean", defaultValue: true },
             dateTimeSettings: { type: "object" },
             numberSettings: { type: "object" },
             contentWrapper: { type: "object" },

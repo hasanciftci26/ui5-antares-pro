@@ -49,6 +49,7 @@ export default class CreateEntry extends Factory {
         this.addNavigationPropertiesToContext();
         this.setGuidValues();
         this.inheritValues();
+        this.setBooleanValues();
         this.getDialogGenerator().getDialog().open();
 
         BusyIndicator.hide();
@@ -113,7 +114,7 @@ export default class CreateEntry extends Factory {
         const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
 
         for (const navigation of navigationProperties) {
-            const properties = navigation.getMetaContext().getEntityProperties();
+            const properties = navigation.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Guid");
 
             for (const property of properties) {
                 const path = navigation.getName() + "/" + property.name;
@@ -165,6 +166,52 @@ export default class CreateEntry extends Factory {
                 }
 
                 this.getODataModel().setProperty(this.getContext().getPath() + "/" + path, parentValue);
+            }
+        }
+    }
+
+    private setBooleanValues() {
+        this.setParentBooleanValues();
+        this.setNavigationBooleanValues();
+    }
+
+    private setParentBooleanValues() {
+        if (!this.getBooleanFalseByDefault()) {
+            return;
+        }
+
+        const properties = this.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Boolean");
+
+        for (const property of properties) {
+            const value = this.getContext().getProperty(property.name);
+
+            if (value != null && value !== "") {
+                continue;
+            }
+
+            this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.name, false);
+        }
+    }
+
+    private setNavigationBooleanValues() {
+        if (!this.getBooleanFalseByDefault()) {
+            return;
+        }
+
+        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+
+        for (const navigation of navigationProperties) {
+            const properties = navigation.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Boolean");
+
+            for (const property of properties) {
+                const path = navigation.getName() + "/" + property.name;
+                const value = this.getContext().getProperty(path);
+
+                if (value != null && value !== "") {
+                    continue;
+                }
+
+                this.getODataModel().setProperty(this.getContext().getPath() + "/" + path, false);
             }
         }
     }

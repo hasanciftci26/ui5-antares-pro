@@ -25,7 +25,11 @@ export default class Homepage extends BaseController {
             controller: this,
             entitySet: "Employees",
             formType: "SimpleForm",
-            guidVisibilityMode: "All"
+            guidVisibilityMode: "All",
+            propertySettings: [{
+                name: "isActive",
+                readonly: true
+            }]
         });
 
         entry.addNavigationProperty(new NavigationProperty({
