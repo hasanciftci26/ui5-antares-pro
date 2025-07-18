@@ -371,7 +371,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         if (this.getFactory().getOperation() === "Create") {
             this.createListBindingEntry();
         } else {
-
+            // TODO
         }
     }
 
@@ -508,6 +508,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         }
 
         BusyIndicator.hide();
+        // TODO
         this.getDialogGenerator().getDialog().close();
     }
 
@@ -515,10 +516,12 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         BusyIndicator.show(0);
 
         this.getOwnerParent().getContext().delete({
-            groupId: this.getFactory().getDeferredGroupId()
+            groupId: "$auto"
         }).then(() => {
             BusyIndicator.hide();
             this.getDialogGenerator().getDialog().close();
+        }).catch((err) => {
+            // TODO
         });
     }
 

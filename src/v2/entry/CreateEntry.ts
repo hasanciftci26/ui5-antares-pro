@@ -234,6 +234,7 @@ export default class CreateEntry extends Factory {
             const proceed = await Promise.resolve(beforeSubmit.call(this.getController(), this.getContext()));
 
             if (!proceed) {
+                BusyIndicator.hide();
                 return;
             }
         }

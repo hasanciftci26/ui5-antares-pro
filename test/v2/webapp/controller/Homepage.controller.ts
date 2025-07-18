@@ -1,5 +1,6 @@
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
+import DeleteEntry from "ui5/antares/pro/v2/entry/DeleteEntry";
 import UpdateEntry from "ui5/antares/pro/v2/entry/UpdateEntry";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
@@ -22,7 +23,7 @@ export default class Homepage extends BaseController {
     /* ======================================================================================================================= */
 
     public onInitClass() {
-        const entry = new UpdateEntry({
+        const entry = new DeleteEntry({
             controller: this,
             entitySet: "Employees",
             formType: "SimpleForm",
@@ -30,11 +31,7 @@ export default class Homepage extends BaseController {
                 datePattern: "d MMMM y",
                 dateTimePattern: "d MMMM y HH:mm",
                 timePattern: "HH:mm"
-            },
-            propertySettings: [{
-                name: "isActive",
-                readonly: true
-            }]
+            }
         });
 
         entry.addNavigationProperty(new NavigationProperty({
