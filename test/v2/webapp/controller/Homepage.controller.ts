@@ -24,14 +24,26 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new UpdateEntry({
             controller: this,
-            modelRef: "northwind",
-            entitySet: "Customers",
-            formType: "SimpleForm"
+            entitySet: "Employees",
+            formType: "SimpleForm",
+            dateTimeSettings: {
+                datePattern: "d MMMM y",
+                dateTimePattern: "d MMMM y HH:mm",
+                timePattern: "HH:mm"
+            },
+            propertySettings: [{
+                name: "isActive",
+                readonly: true
+            }]
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications"
+        }));        
 
         entry.run({
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            CustomerID: "ALFKI"
+            ID: "a1f6e9d0-48b5-4b0f-9a7d-1e230f721d6a"
         });
     }
 

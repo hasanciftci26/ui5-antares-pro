@@ -171,7 +171,8 @@ export default class UpdateEntry extends Factory {
     private createBindingContext(path: string): Promise<void> {
         return new Promise((resolve, reject) => {
             const parameters: any = {
-                groupId: this.getDeferredGroupId()
+                groupId: this.getDeferredGroupId(),
+                expand: this.getNavigationProperties().map(navigation => navigation.getName()).join() || undefined
             };
 
             this.getODataModel().createBindingContext(path, undefined, parameters, (context: Context | null) => {
