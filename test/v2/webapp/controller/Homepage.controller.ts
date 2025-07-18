@@ -1,5 +1,6 @@
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
+import UpdateEntry from "ui5/antares/pro/v2/entry/UpdateEntry";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
@@ -21,27 +22,17 @@ export default class Homepage extends BaseController {
     /* ======================================================================================================================= */
 
     public onInitClass() {
-        const entry = new CreateEntry({
+        const entry = new UpdateEntry({
             controller: this,
-            entitySet: "EmployeeContracts",
-            formType: "SimpleForm",
-            guidVisibilityMode: "All"
+            modelRef: "northwind",
+            entitySet: "Customers",
+            formType: "SimpleForm"
         });
 
-        entry.addValueList(new ValueList({
-            entitySet: "Employees",
-            localDataProperty: "contractType",
-            parameters: [{
-                type: "Out",
-                localDataProperty: "contractType",
-                valueListProperty: "firstName"
-            }, {
-                type: "DisplayOnly",
-                valueListProperty: "isActive"
-            }]
-        }));
-
-        entry.execute({isActive: true});
+        entry.run({
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            CustomerID: "ALFKI"
+        });
     }
 
     /* ======================================================================================================================= */

@@ -16,7 +16,7 @@ export default class CreateEntry extends Factory {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            beforeSubmit: { type: "function", visibility: "public" }
+            beforeSubmit: { type: "function" }
         },
         events: {
             submitSuccess: {
@@ -41,7 +41,7 @@ export default class CreateEntry extends Factory {
         this.getDialogGenerator().attachClosed(this.onDialogClose, this);
     }
 
-    public override async execute<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
+    public async run<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
         BusyIndicator.show(0);
 
         await this.createNewEntry(initialData);
