@@ -23,24 +23,25 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new CreateEntry({
             controller: this,
-            entitySet: "Employees",
+            entitySet: "EmployeeContracts",
             formType: "SimpleForm",
-            guidVisibilityMode: "All",
-            propertySettings: [{
-                name: "isActive",
-                readonly: true
-            }]
+            guidVisibilityMode: "All"
         });
 
-        entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications",
-            inheritValues: [{
-                parentProperty: "ID",
-                targetProperty: "employeeID"
+        entry.addValueList(new ValueList({
+            entitySet: "Employees",
+            localDataProperty: "contractType",
+            parameters: [{
+                type: "Out",
+                localDataProperty: "contractType",
+                valueListProperty: "firstName"
+            }, {
+                type: "DisplayOnly",
+                valueListProperty: "isActive"
             }]
         }));
 
-        entry.execute();
+        entry.execute({isActive: true});
     }
 
     /* ======================================================================================================================= */

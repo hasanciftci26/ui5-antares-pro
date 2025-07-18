@@ -551,7 +551,9 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
             const property = control.getName();
 
             if (control instanceof CheckBox) {
-                filters.push(new Filter(property, "EQ", control.getSelected()));
+                if (this.getValueHelpFilterModel().getProperty("/" + property) != null) {
+                    filters.push(new Filter(property, "EQ", control.getSelected()));
+                }
             } else {
                 const binding = control.getBinding("value") as PropertyBinding;
                 const value = control.getProperty("value");
