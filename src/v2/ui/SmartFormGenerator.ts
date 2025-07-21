@@ -107,13 +107,14 @@ export default class SmartFormGenerator extends FormGeneratorBase {
 
         const field = new SmartField({
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
+            mandatory: property.required,
+            editable: true,
+            visible: property.visible,
+            maxLength: property.maxLength,
             value: {
                 path: this.getPropertyPath(property.name),
                 type: typeInitializer.getCustomType(property, this.getValidationLogicByProperty(property.name))
-            },
-            mandatory: property.required,
-            editable: true,
-            visible: property.visible
+            }
         });
 
         if (propertySettings?.textInEditModeSource) {

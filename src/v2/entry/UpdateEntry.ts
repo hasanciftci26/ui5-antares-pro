@@ -51,6 +51,12 @@ export default class UpdateEntry extends Factory {
         BusyIndicator.show(0);
 
         await this.extractContext(ref);
+
+        if (!this.getContextFound()) {
+            BusyIndicator.hide();
+            return;
+        }
+
         await super.execute();
         this.getDialogGenerator().getDialog().open();
 
@@ -82,7 +88,7 @@ export default class UpdateEntry extends Factory {
     }
 
     private getContextPathFromTable(tableRef: string) {
-        const table = this.getView().byId("tableRef");
+        const table = this.getView().byId(tableRef);
 
         switch (true) {
             case table instanceof ResponsiveTable:
@@ -104,7 +110,7 @@ export default class UpdateEntry extends Factory {
         const item = table.getSelectedItem();
 
         if (!item) {
-            MessageBox.error("");
+            MessageBox.error(this.getSelectRowError());
             this.setContextFound(false);
             return "";
         }
@@ -140,7 +146,7 @@ export default class UpdateEntry extends Factory {
         const selectedIndices = table.getSelectedIndices();
 
         if (!selectedIndices.length) {
-            MessageBox.error("");
+            MessageBox.error(this.getSelectRowError());
             this.setContextFound(false);
             return "";
         }

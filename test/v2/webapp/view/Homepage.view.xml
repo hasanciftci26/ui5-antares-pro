@@ -11,11 +11,100 @@
         title="UI5 Antares Pro Test Application"
     >
         <content>
-            <Text text="Test app" />
-            <Button
-                text="Test"
-                press="onInitClass"
-            />
+            <Table
+                id="tblEmployees"
+                items="{
+                    path: 'company>/Employees',
+                    events: {
+                        change: '.onEmployeesBindingChange'
+                    }
+                }"
+                width="98%"
+                class="sapUiSmallMargin"
+                mode="SingleSelectMaster"
+            >
+                <headerToolbar>
+                    <OverflowToolbar>
+                        <Title id="ttlEmployees" />
+                        <ToolbarSpacer />
+                        <OverflowToolbarButton
+                            icon="sap-icon://add"
+                            press="onCreateNewEmployee"
+                        />
+                        <OverflowToolbarButton
+                            icon="sap-icon://edit"
+                            press="onUpdateEmployee"
+                        />
+                        <OverflowToolbarButton
+                            icon="sap-icon://delete"
+                            press="onDeleteEmployee"
+                        />
+                    </OverflowToolbar>
+                </headerToolbar>
+                <columns>
+                    <Column>
+                        <header>
+                            <Label text="Employee ID" />
+                        </header>
+                    </Column>
+                    <Column>
+                        <header>
+                            <Label text="First Name" />
+                        </header>
+                    </Column>
+                    <Column>
+                        <header>
+                            <Label text="Last Name" />
+                        </header>
+                    </Column>
+                    <Column>
+                        <header>
+                            <Label text="Country" />
+                        </header>
+                    </Column>
+                    <Column>
+                        <header>
+                            <Label text="Date of Birth" />
+                        </header>
+                    </Column>
+                    <Column>
+                        <header>
+                            <Label text="Salary" />
+                        </header>
+                    </Column>
+                </columns>
+                <items>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{company>ID}" />
+                            <Text text="{company>firstName}" />
+                            <Text text="{company>lastName}" />
+                            <Text text="{company>countryCode}" />
+                            <Text
+                                text="{
+                                path: 'company>dateOfBirth',
+                                type: 'sap.ui.model.odata.type.DateTime',
+                                formatOptions: {
+                                    pattern: 'd MMMM y'
+                                }
+                            }"
+                            />
+                            <Text
+                                text="{
+                                path: 'company>salary',
+                                type: 'sap.ui.model.odata.type.Decimal',
+                                formatOptions: {
+                                    decimalSeparator: ',',
+                                    groupingSeparator: '.',
+                                    groupingEnabled: true,
+                                    groupingSize: 3
+                                }
+                            }"
+                            />
+                        </cells>
+                    </ColumnListItem>
+                </items>
+            </Table>
         </content>
     </Page>
 </mvc:View>

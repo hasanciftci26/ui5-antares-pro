@@ -387,6 +387,7 @@ export default class ControlGenerator extends ManagedObject {
             customData: new CustomData({ key: "UI5AntaresProControlType", value: "Standard" }),
             visible: property.visible,
             required: property.required,
+            maxLength: property.maxLength,
             value: {
                 path: path,
                 type: this.getSimpleFormBindingType(property, validationLogic)

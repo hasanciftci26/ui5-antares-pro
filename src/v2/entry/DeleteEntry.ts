@@ -10,6 +10,8 @@ import GridTable from "sap/ui/table/Table";
 import SmartTable from "sap/ui/comp/smarttable/SmartTable";
 import { ListMode } from "sap/m/library";
 import { SelectionMode } from "sap/ui/table/library";
+import { ErrorBody } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
  * @namespace ui5.antares.pro.v2.entry
@@ -49,6 +51,12 @@ export default class DeleteEntry extends Factory {
         BusyIndicator.show(0);
 
         await this.extractContext(ref);
+
+        if (!this.getContextFound()) {
+            BusyIndicator.hide();
+            return;
+        }
+
         await super.execute();
         this.getDialogGenerator().getDialog().open();
 
@@ -80,7 +88,7 @@ export default class DeleteEntry extends Factory {
     }
 
     private getContextPathFromTable(tableRef: string) {
-        const table = this.getView().byId("tableRef");
+        const table = this.getView().byId(tableRef);
 
         switch (true) {
             case table instanceof ResponsiveTable:
@@ -102,7 +110,7 @@ export default class DeleteEntry extends Factory {
         const item = table.getSelectedItem();
 
         if (!item) {
-            MessageBox.error("");
+            MessageBox.error(this.getSelectRowError());
             this.setContextFound(false);
             return "";
         }
@@ -138,7 +146,7 @@ export default class DeleteEntry extends Factory {
         const selectedIndices = table.getSelectedIndices();
 
         if (!selectedIndices.length) {
-            MessageBox.error("");
+            MessageBox.error(this.getSelectRowError());
             this.setContextFound(false);
             return "";
         }
@@ -232,8 +240,22 @@ export default class DeleteEntry extends Factory {
             this.getDialogGenerator().getDialog().close();
         }).catch((err) => {
             BusyIndicator.hide();
-            // TODO
-            this.fireDeleteError();
+            let message = LibraryBundle.getText("ui5AntaresPro.error.delete");
+
+            if (this.hasResponseText(err)) {
+                try {
+                    const response = JSON.parse(err.responseText) as ErrorBody;
+
+                    if (response.error?.message?.value) {
+                        message = response.error.message.value;
+                    }
+                } catch (error) {
+                    console.log("OData V2 deletion response cannot be parsed.");
+                }
+            }
+
+            MessageBox.error(message);
+            this.fireDeleteError({ response: err });
         });
     }
 
@@ -243,5 +265,12 @@ export default class DeleteEntry extends Factory {
 
     private setContextFound(contextFound: boolean) {
         this.setProperty("contextFound", contextFound);
+    }
+
+    private hasResponseText(err: any): err is { responseText: string; } {
+        return typeof err === "object" &&
+            err != null &&
+            "responseText" in err &&
+            typeof err.responseText === "string";
     }
 }
