@@ -53,16 +53,31 @@ export default abstract class FormGeneratorBase extends ManagedObject {
             const navigationProperties = factory.getNavigationProperties().filter(prop => prop.getMultiplicity() === "Many");
 
             if (navigationProperties.length) {
-                return FormLayout.getDefaultInstance({
-                    labelSpanXL: 4,
-                    labelSpanL: 4,
-                    labelSpanM: 4,
-                    labelSpanS: 4,
-                    emptySpanXL: 4,
-                    emptySpanL: 4,
-                    emptySpanM: 4,
-                    emptySpanS: 4
-                });
+                const operation = this.getFactory().getOperation();
+
+                if (operation === "Create" || operation === "Update") {
+                    return FormLayout.getDefaultInstance({
+                        labelSpanXL: 4,
+                        labelSpanL: 4,
+                        labelSpanM: 4,
+                        labelSpanS: 4,
+                        emptySpanXL: 4,
+                        emptySpanL: 4,
+                        emptySpanM: 4,
+                        emptySpanS: 4
+                    });
+                } else {
+                    return FormLayout.getDefaultInstance({
+                        labelSpanXL: 5,
+                        labelSpanL: 5,
+                        labelSpanM: 5,
+                        labelSpanS: 5,
+                        emptySpanXL: 3,
+                        emptySpanL: 3,
+                        emptySpanM: 3,
+                        emptySpanS: 3
+                    });
+                }
             } else {
                 return FormLayout.getDefaultInstance();
             }
