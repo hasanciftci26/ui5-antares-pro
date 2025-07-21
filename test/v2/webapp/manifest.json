@@ -34,6 +34,13 @@
                     "odataVersion": "2.0"
                 }
             },
+            "companyManagementService": {
+                "type": "OData",
+                "uri": "/company-management",
+                "settings": {
+                    "odataVersion": "2.0"
+                }
+            },
             "annotation": {
                 "type": "ODataAnnotation",
                 "uri": "annotations/annotation.xml",
@@ -99,6 +106,10 @@
             },
             "northwind": {
                 "dataSource": "northwindService",
+                "preload": true
+            },
+            "company": {
+                "dataSource": "companyManagementService",
                 "preload": true
             }
         },

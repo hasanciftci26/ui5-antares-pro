@@ -1,0 +1,15 @@
+ID,employeeID,title,authority,issuedDate,expiryDate,score
+f47ac10b-58cc-4372-a567-0e02b2c3d479,a1f6e9d0-48b5-4b0f-9a7d-1e230f721d6a,Project Management Professional,PMI,2018-05-20,2023-05-19,92
+1c6e3a8f-13b3-4f2b-a92a-c9f8e276f32b,5e4c2a43-93ab-4bca-b6f7-58f0b6712920,AWS Certified Solutions Architect,Amazon,2019-11-15,2022-11-14,88
+4e3c2d7a-8e35-4f6c-bfc5-0d5922bf092a,5e4c2a43-93ab-4bca-b6f7-58f0b6712920,Certified Scrum Master,Scrum Alliance,2021-01-10,2024-01-09,95
+b3e5ac42-7c9e-4b31-9d14-e1d5b2f2a1c1,cf725ad3-1f6a-43f4-bd04-0b72f0629a90,Microsoft Certified: Azure Fundamentals,Microsoft,2020-03-12,2023-03-11,85
+d8650bb8-4d37-4a6e-b172-59c45dfd6527,c356e540-986d-48f0-bf90-30d11bbd5d51,Certified Data Scientist,Data Institute,2017-07-01,2022-06-30,90
+8a427e22-09fc-4f18-a721-94f5c55f4ea7,b3e229f4-f1aa-48a7-8a7a-7ffb9bc86519,Google Ads Certification,Google,2021-12-20,2023-12-19,87
+f6d23157-c20f-4c19-a409-bb8b82ccf3ec,1dd55f9a-c5af-4f99-a5d9-0e9b03a1e7c8,Certified Information Systems Security Professional (CISSP),ISC2,2016-10-30,2021-10-29,93
+7e5a224f-1d92-4c9d-99de-8b30ef9b1983,91a6d5e8-17c4-4e54-92ab-04f5a02c064d,Oracle Certified Java Programmer,Oracle,2019-04-15,2024-04-14,89
+6c85b34a-6c90-41d3-b0b4-bc580a172edb,66d6d88e-f246-44da-b91a-e8d58de4ca89,Certified Kubernetes Administrator,Cloud Native Computing Foundation,2020-08-20,2023-08-19,90
+b8d7e514-5d7f-44ee-8147-f84a1a2109f3,7c5b2906-2827-4e99-9567-d280d7b0a8f9,Six Sigma Green Belt,ASQ,2015-05-12,2020-05-11,86
+3a4b1e8f-8f7e-4d3a-a9e7-28f68a1b90f2,f3ef94f4-12ab-4cdb-8c2f-71a3d3f26d3f,ITIL Foundation,AXELOS,2017-01-10,2022-01-09,88
+d9c7e3f1-0e1b-4f8a-8bbf-4a3d59a9d1c5,bd9f7a6a-7a69-4f1b-aabe-3a98f3a90f5a,Certified Ethical Hacker,EC-Council,2018-09-15,2021-09-14,92
+5f30d8a7-1a59-4c19-9275-3b1c5f95a52b,e842c041-1d0b-4230-a6a3-3d0113b776d2,Microsoft Certified: Azure Data Engineer,Microsoft,2019-06-10,2022-06-09,90
+8f8b7b7a-5d25-4c11-9b69-6e13dce0bf6d,c1de9e23-2c42-40a3-bd4b-4c2f8a438f8a,Google Cloud Professional Data Engineer,Google,2020-12-01,2023-11-30,88

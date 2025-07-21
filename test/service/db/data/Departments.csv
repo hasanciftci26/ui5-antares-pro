@@ -1,0 +1,26 @@
+ID;name;companyCode
+D001;Research & Development;CMP001
+D002;Sales;CMP001
+D003;Customer Support;CMP001
+D004;Human Resources;CMP001
+D005;IT Services;CMP001
+D006;Project Management;CMP002
+D007;Engineering;CMP002
+D008;Environmental Compliance;CMP002
+D009;Procurement;CMP002
+D010;Finance;CMP002
+D011;Investment Banking;CMP003
+D012;Risk Management;CMP003
+D013;Audit & Compliance;CMP003
+D014;Customer Relations;CMP003
+D015;Information Technology;CMP003
+D016;Production;CMP004
+D017;Quality Control;CMP004
+D018;Maintenance;CMP004
+D019;Research & Development;CMP004
+D020;Logistics;CMP004
+D021;Operations;CMP005
+D022;Fleet Management;CMP005
+D023;Customer Service;CMP005
+D024;Health & Safety;CMP005
+D025;Sales & Marketing;CMP005

@@ -25,6 +25,7 @@ export default class Homepage extends BaseController {
     public onInitClass() {
         const entry = new DeleteEntry({
             controller: this,
+            modelRef: "company",
             entitySet: "Employees",
             formType: "SimpleForm",
             dateTimeSettings: {
