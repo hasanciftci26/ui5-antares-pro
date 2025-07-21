@@ -176,13 +176,13 @@ export default class UpdateEntry extends Factory {
 
     private createBindingContext(path: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            const parameters: any = {
-                groupId: this.getDeferredGroupId(),
-                expand: this.getNavigationProperties().map(navigation => navigation.getName()).join() || undefined
-            };
+            const expand = this.getNavigationProperties().map(navigation => navigation.getName()).join();
+            let parameters: { expand: string; } | undefined;
 
-            if (!parameters.expand) {
-                delete parameters.expand;
+            if (expand) {
+                parameters = {
+                    expand: expand
+                };
             }
 
             this.getODataModel().createBindingContext(path, undefined, parameters, (context: Context | null) => {
@@ -193,8 +193,6 @@ export default class UpdateEntry extends Factory {
                     reject("The BindingContext was not created successfully.");
                 }
             });
-
-            this.getODataModel().submitChanges({ groupId: this.getDeferredGroupId() });
         });
     }
 
@@ -260,7 +258,6 @@ export default class UpdateEntry extends Factory {
     private submit() {
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().submitChanges({
-                groupId: this.getDeferredGroupId(),
                 success: (response?: SubmitChangesResponse) => {
                     BusyIndicator.hide();
 
