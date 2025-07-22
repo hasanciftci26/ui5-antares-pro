@@ -32,6 +32,8 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setUpdateFormTitle: SetProperty<string | undefined>;
         getDeleteFormTitle: GetProperty<string | undefined>;
         setDeleteFormTitle: SetProperty<string | undefined>;
+        getReadFormTitle: GetProperty<string | undefined>;
+        setReadFormTitle: SetProperty<string | undefined>;
         getTableLayoutData: GetProperty<LayoutData | undefined>;
         setTableLayoutData: SetProperty<LayoutData>;
         getCreateButtonText: GetProperty<string>;
@@ -51,7 +53,7 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         getCloseButtonType: GetProperty<ButtonType>;
         setCloseButtonType: SetProperty<ButtonType>;
         getVisibleColumnCount: GetProperty<number>;
-        setVisibleColumnCount: SetProperty<number>;        
+        setVisibleColumnCount: SetProperty<number>;
         getEntitySet: GetProperty<string>;
         setEntitySet: SetProperty<string>;
         getMultiplicity: GetProperty<Multiplicity>;
@@ -75,7 +77,7 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         removeAllValueLists: RemoveAllAggregation;
         destroyValueLists: DestroyAggregation;
         getFormLayout: GetAggregation<FormLayout>;
-        setFormLayout: SetAggregation<FormLayout>;        
+        setFormLayout: SetAggregation<FormLayout>;
     }
 }
 
@@ -87,6 +89,7 @@ export interface Settings {
     createFormTitle?: string;
     updateFormTitle?: string;
     deleteFormTitle?: string;
+    readFormTitle?: string;
     createButtonText?: string;
     createButtonType?: ButtonType;
     updateButtonText?: string;

@@ -43,6 +43,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             createFormTitle: { type: "string" },
             updateFormTitle: { type: "string" },
             deleteFormTitle: { type: "string" },
+            readFormTitle: { type: "string" },
             createButtonText: { type: "string" },
             createButtonType: { type: "string" },
             updateButtonText: { type: "string" },
@@ -202,6 +203,9 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             case "Delete":
                 content.push(this.getTableDeleteButton());
                 break;
+            case "Read":
+                content.push(this.getTableDisplayButton());
+                break;
         }
 
         content.push(this.getTableSettingsButton());
@@ -234,6 +238,15 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         button.attachPress(this.onDelete, this);
         return button;
     }
+
+    private getTableDisplayButton() {
+        const button = new OverflowToolbarButton({
+            icon: "sap-icon://display"
+        });
+
+        button.attachPress(this.onDisplay, this);
+        return button;
+    }    
 
     private getTableSettingsButton() {
         const button = new OverflowToolbarButton({
@@ -317,6 +330,30 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
         this.getDialogGenerator().getDialog().open();
     }
+
+    private async onDisplay() {
+        const selectedContext = this.getSelectedRowContext();
+
+        if (!selectedContext) {
+            MessageBox.error(this.getFactory().getSelectRowError());
+            return;
+        }
+
+        this.getOwnerParent().setContext(selectedContext);
+        this.getOwnerParent().setOperation("Read");
+        this.setFormTitle(this.getReadFormTitle() || LibraryBundle.getText(
+            "ui5AntaresPro.title.readEntry",
+            [this.getOwnerParent().getEntitySet()]
+        ));
+
+        await this.getMetaContext().load();
+        this.getDialogGenerator().generate();
+        this.getFormGenerator().generate();
+
+        this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
+        this.getDialogGenerator().getDialog().open();
+    }    
 
     private onSettings(event: Button$PressEvent) {
         Engine.getInstance().show(this.getTableInstance(), ["Columns"], {

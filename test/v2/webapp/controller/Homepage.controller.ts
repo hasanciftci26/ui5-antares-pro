@@ -6,6 +6,7 @@ import ListBinding from "sap/ui/model/ListBinding";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
 import DeleteEntry from "ui5/antares/pro/v2/entry/DeleteEntry";
+import DisplayEntry from "ui5/antares/pro/v2/entry/DisplayEntry";
 import UpdateEntry from "ui5/antares/pro/v2/entry/UpdateEntry";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 
@@ -40,6 +41,9 @@ export default class Homepage extends BaseController {
             guidVisibilityMode: "All",
             metadataLabelEnabled: true,
             propertySettings: [{
+                name: "ID",
+                readonly: true
+            }, {
                 name: "firstName",
                 required: true
             }, {
@@ -47,6 +51,18 @@ export default class Homepage extends BaseController {
                 required: true
             }]
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications",
+            inheritValues: [{
+                parentProperty: "ID",
+                targetProperty: "employeeID"
+            }],
+            propertySettings: [{
+                name: "employeeID",
+                readonly: true
+            }]
+        }));
 
         entry.run();
     }
@@ -69,6 +85,7 @@ export default class Homepage extends BaseController {
 
         entry.addNavigationProperty(new NavigationProperty({
             name: "toCertifications",
+            tableClass: "sap.ui.table.Table",
             inheritValues: [{
                 parentProperty: "ID",
                 targetProperty: "employeeID"
@@ -89,7 +106,24 @@ export default class Homepage extends BaseController {
 
         entry.addNavigationProperty(new NavigationProperty({
             name: "toCertifications"
-        }));        
+        }));
+
+        entry.run("tblEmployees");
+    }
+
+    public onDisplayEmployee() {
+        const entry = new DisplayEntry({
+            controller: this,
+            entitySet: "Employees",
+            modelRef: "company",
+            guidVisibilityMode: "All",
+            metadataLabelEnabled: true
+        });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications",
+            readFormTitle: "Test"
+        }));
 
         entry.run("tblEmployees");
     }

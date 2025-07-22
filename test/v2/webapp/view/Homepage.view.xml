@@ -39,6 +39,10 @@
                             icon="sap-icon://delete"
                             press="onDeleteEmployee"
                         />
+                        <OverflowToolbarButton
+                            icon="sap-icon://display"
+                            press="onDisplayEmployee"
+                        />
                     </OverflowToolbar>
                 </headerToolbar>
                 <columns>
