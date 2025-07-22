@@ -246,7 +246,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
         button.attachPress(this.onDisplay, this);
         return button;
-    }    
+    }
 
     private getTableSettingsButton() {
         const button = new OverflowToolbarButton({
@@ -275,6 +275,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getFormGenerator().generate();
 
         this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.addCustomContentIntoDialog();
         this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
         this.getDialogGenerator().getDialog().open();
     }
@@ -301,6 +302,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getFormGenerator().generate();
 
         this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.addCustomContentIntoDialog();
         this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
         this.getDialogGenerator().getDialog().open();
     }
@@ -327,6 +329,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getFormGenerator().generate();
 
         this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.addCustomContentIntoDialog();
         this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
         this.getDialogGenerator().getDialog().open();
     }
@@ -351,9 +354,16 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getFormGenerator().generate();
 
         this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.addCustomContentIntoDialog();
         this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
         this.getDialogGenerator().getDialog().open();
-    }    
+    }
+
+    private addCustomContentIntoDialog() {
+        for (const content of this.getOwnerParent().getCustomContents()) {
+            this.getDialogGenerator().getDialog().insertContent(content.getContent(), content.getIndex());
+        }
+    }
 
     private onSettings(event: Button$PressEvent) {
         Engine.getInstance().show(this.getTableInstance(), ["Columns"], {

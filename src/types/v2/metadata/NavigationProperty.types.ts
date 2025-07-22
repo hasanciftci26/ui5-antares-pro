@@ -14,6 +14,7 @@ import {
 } from "ui5/antares/pro/types/Global.types";
 import { Multiplicity } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { PropertySettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
+import CustomContent from "ui5/antares/pro/v2/custom/CustomContent";
 import CustomElement from "ui5/antares/pro/v2/custom/CustomElement";
 import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
@@ -83,6 +84,11 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         removeCustomElement: RemoveAggregation<CustomElement>;
         removeAllCustomElements: RemoveAllAggregation;
         destroyCustomElements: DestroyAggregation;
+        addCustomContent: AddAggregation<CustomContent>;
+        getCustomContents: GetAggregation<CustomContent[]>;
+        removeCustomContent: RemoveAggregation<CustomContent>;
+        removeAllCustomContents: RemoveAllAggregation;
+        destroyCustomContents: DestroyAggregation;        
     }
 }
 
@@ -111,6 +117,7 @@ export interface Settings {
     valueLists?: ValueList[];
     formLayout?: FormLayout;
     customElements?: CustomElement[];
+    customContents?: CustomContent[];
 }
 
 export type TableClass = "sap.m.Table" | "sap.ui.table.Table";

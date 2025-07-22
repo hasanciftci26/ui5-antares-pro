@@ -79,6 +79,11 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 multiple: true,
                 singularName: "customElement"
             },
+            customContents: {
+                type: "ui5.antares.pro.v2.custom.CustomContent",
+                multiple: true,
+                singularName: "customContent"
+            },
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,
@@ -229,6 +234,10 @@ export default abstract class Factory extends BaseContext implements MetaContext
         for (const navigation of multiNavigations) {
             this.getDialogGenerator().getDialog().addContent(navigation.getContent());
         }
+
+        for (const content of this.getCustomContents()) {
+            this.getDialogGenerator().getDialog().insertContent(content.getContent(), content.getIndex());
+        }
     }
 
     private addContentIntoWrapper(wrapper: ContentWrapper) {
@@ -259,6 +268,10 @@ export default abstract class Factory extends BaseContext implements MetaContext
         for (const navigation of multiNavigations) {
             wrapper.addItem(navigation.getContent());
         }
+
+        for (const content of this.getCustomContents()) {
+            wrapper.insertItem(content.getContent(), content.getIndex());
+        }
     }
 
     private addContentAsContent(wrapper: Grid | HorizontalLayout | VerticalLayout) {
@@ -273,6 +286,10 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
         for (const navigation of multiNavigations) {
             wrapper.addContent(navigation.getContent());
+        }
+
+        for (const content of this.getCustomContents()) {
+            wrapper.insertContent(content.getContent(), content.getIndex());
         }
     }
 

@@ -69,7 +69,12 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
                 type: "ui5.antares.pro.v2.custom.CustomElement",
                 multiple: true,
                 singularName: "customElement"
-            },            
+            },
+            customContents: {
+                type: "ui5.antares.pro.v2.custom.CustomContent",
+                multiple: true,
+                singularName: "customContent"
+            },
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,
@@ -189,7 +194,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
 
     public getCustomElementByProperty(property: string) {
         return this.getCustomElements().find(element => element.getPropertyName() === property);
-    }    
+    }
 
     private setMetaContext(metaContext: MetaContext) {
         this.setAggregation("metaContext", metaContext);
