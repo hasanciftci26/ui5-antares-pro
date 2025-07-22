@@ -67,20 +67,26 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
         });
 
         for (const property of properties) {
-            const control = generator.generate(
-                property,
-                this.getPropertyPath(property.name),
-                this.getValidationLogicByProperty(property.name)
-            );
-
-            this.setControlLayoutData(property, control);
-
-            if (control instanceof Input) {
-                this.addValueHelp(property, control);
-            }
-
+            const customElement = this.getCustomElementByProperty(property.name);
             controls.push(new Label({ text: property.label }));
-            controls.push(control);
+
+            if (customElement) {
+                controls.push(customElement.getElement() as Control);
+            } else {
+                const control = generator.generate(
+                    property,
+                    this.getPropertyPath(property.name),
+                    this.getValidationLogicByProperty(property.name)
+                );
+
+                this.setControlLayoutData(property, control);
+
+                if (control instanceof Input) {
+                    this.addValueHelp(property, control);
+                }
+
+                controls.push(control);
+            }
         }
 
         return controls;

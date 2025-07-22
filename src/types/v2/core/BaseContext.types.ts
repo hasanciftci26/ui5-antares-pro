@@ -14,6 +14,7 @@ import {
     NumberSettings,
     PropertySettings
 } from "ui5/antares/pro/types/v2/ui/Factory.types";
+import CustomElement from "ui5/antares/pro/v2/custom/CustomElement";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
@@ -62,6 +63,7 @@ export interface Settings {
     validationLogics?: ValidationLogic[];
     valueLists?: ValueList[];
     formLayout?: FormLayout;
+    customElements?: CustomElement[];
 }
 
 export interface FormUtilityProvider extends ManagedObject {
@@ -69,4 +71,5 @@ export interface FormUtilityProvider extends ManagedObject {
     getValueListByProperty: (property: string) => ValueList | undefined;
     getFormLayout: () => FormLayout | undefined;
     getContext: () => Context;
+    getCustomElementByProperty: (property: string) => CustomElement | undefined;
 }

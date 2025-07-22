@@ -44,9 +44,6 @@ export default class Homepage extends BaseController {
                 name: "ID",
                 readonly: true
             }, {
-                name: "firstName",
-                required: true
-            }, {
                 name: "lastName",
                 required: true
             }]

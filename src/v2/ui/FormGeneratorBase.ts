@@ -21,6 +21,10 @@ export default abstract class FormGeneratorBase extends ManagedObject {
     public abstract setForm(form: Control): void;
     public abstract validate(): Promise<boolean>;
 
+    public getCustomElementByProperty(property: string) {
+        return this.getFormUtilityProvider().getCustomElementByProperty(property);
+    }    
+
     protected getDateTimeSettings() {
         return this.getFactory().getDateTimeSettings();
     }

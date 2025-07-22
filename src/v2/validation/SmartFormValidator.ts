@@ -3,6 +3,7 @@ import SmartField from "sap/ui/comp/smartfield/SmartField";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { ControlType } from "ui5/antares/pro/types/v2/ui/FormGeneratorBase.types";
+import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 
 /**
@@ -45,6 +46,22 @@ export default class SmartFormValidator extends ManagedObject {
                             }
                         }
                     }
+                } else if (controlType === "Custom") {
+                    const propertyName = control.getCustomData().find(data => data.getKey() === "UI5AntaresProPropertyName");
+
+                    if (!propertyName) {
+                        continue;
+                    }
+
+                    const customElement = this.getOwnerParent().getCustomElementByProperty(propertyName.getValue());
+
+                    if (customElement) {
+                        const result = await customElement.validate();
+
+                        if (!result) {
+                            valid = false;
+                        }
+                    }
                 }
             }
         }
@@ -54,5 +71,9 @@ export default class SmartFormValidator extends ManagedObject {
 
     private hasMessage(error: unknown): error is { message: string } {
         return typeof error === "object" && error !== null && "message" in error;
+    }
+
+    private getOwnerParent() {
+        return this.getParent() as FormGeneratorBase;
     }
 }

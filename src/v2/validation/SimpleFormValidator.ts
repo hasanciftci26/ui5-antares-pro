@@ -6,6 +6,7 @@ import CustomDateTimePicker from "ui5/antares/pro/v2/custom/control/CustomDateTi
 import CustomInput from "ui5/antares/pro/v2/custom/control/CustomInput";
 import CustomSelect from "ui5/antares/pro/v2/custom/control/CustomSelect";
 import CustomTimePicker from "ui5/antares/pro/v2/custom/control/CustomTimePicker";
+import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
 import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 
 /**
@@ -52,9 +53,29 @@ export default class SimpleFormValidator extends ManagedObject {
 
                         break;
                 }
+            } else if (controlType === "Custom") {
+                const propertyName = control.getCustomData().find(data => data.getKey() === "UI5AntaresProPropertyName");
+
+                if (!propertyName) {
+                    continue;
+                }
+
+                const customElement = this.getOwnerParent().getCustomElementByProperty(propertyName.getValue());
+
+                if (customElement) {
+                    const result = await customElement.validate();
+
+                    if (!result) {
+                        valid = false;
+                    }
+                }
             }
         }
 
         return valid;
+    }
+
+    private getOwnerParent() {
+        return this.getParent() as FormGeneratorBase;
     }
 }

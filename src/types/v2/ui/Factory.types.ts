@@ -18,6 +18,7 @@ import {
     SetAggregation,
     SetProperty
 } from "ui5/antares/pro/types/Global.types";
+import CustomElement from "ui5/antares/pro/v2/custom/CustomElement";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
 import ValidationLogic from "ui5/antares/pro/v2/validation/ValidationLogic";
@@ -82,6 +83,10 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         destroyValueLists: DestroyAggregation;
         getFormLayout: GetAggregation<FormLayout>;
         setFormLayout: SetAggregation<FormLayout>;
+        getCustomElements: GetAggregation<CustomElement[]>;
+        removeCustomElement: RemoveAggregation<CustomElement>;
+        removeAllCustomElements: RemoveAllAggregation;
+        destroyCustomElements: DestroyAggregation;        
     }
 }
 

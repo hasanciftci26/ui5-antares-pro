@@ -2,6 +2,7 @@ import FlexBox from "sap/m/FlexBox";
 import HBox from "sap/m/HBox";
 import VBox from "sap/m/VBox";
 import ManagedObject from "sap/ui/base/ManagedObject";
+import CustomData from "sap/ui/core/CustomData";
 import Grid from "sap/ui/layout/Grid";
 import HorizontalLayout from "sap/ui/layout/HorizontalLayout";
 import VerticalLayout from "sap/ui/layout/VerticalLayout";
@@ -11,6 +12,7 @@ import { FormUtilityProvider, Settings } from "ui5/antares/pro/types/v2/core/Bas
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { ContentWrapper, Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
 import BaseContext from "ui5/antares/pro/v2/core/BaseContext";
+import CustomElement from "ui5/antares/pro/v2/custom/CustomElement";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import DialogGenerator from "ui5/antares/pro/v2/ui/DialogGenerator";
 import FormGeneratorBase from "ui5/antares/pro/v2/ui/FormGeneratorBase";
@@ -72,6 +74,11 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 type: "ui5.antares.pro.v2.ui.FormLayout",
                 multiple: false
             },
+            customElements: {
+                type: "ui5.antares.pro.v2.custom.CustomElement",
+                multiple: true,
+                singularName: "customElement"
+            },
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,
@@ -131,6 +138,24 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
     public getOperation() {
         return this.getProperty("operation") as Operation;
+    }
+
+    public addCustomElement(customElement: CustomElement) {
+        customElement.getElement().addCustomData(new CustomData({
+            key: "UI5AntaresProControlType",
+            value: "Custom"
+        }));
+
+        customElement.getElement().addCustomData(new CustomData({
+            key: "UI5AntaresProPropertyName",
+            value: customElement.getPropertyName()
+        }));
+
+        this.addAggregation("customElements", customElement);
+    }
+
+    public getCustomElementByProperty(property: string) {
+        return this.getCustomElements().find(element => element.getPropertyName() === property);
     }
 
     protected setOperation(operation: Operation) {

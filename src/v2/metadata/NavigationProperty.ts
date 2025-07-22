@@ -14,6 +14,8 @@ import SimpleFormGenerator from "ui5/antares/pro/v2/ui/SimpleFormGenerator";
 import SmartFormGenerator from "ui5/antares/pro/v2/ui/SmartFormGenerator";
 import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import CustomElement from "ui5/antares/pro/v2/custom/CustomElement";
+import CustomData from "sap/ui/core/CustomData";
 
 /**
  * @namespace ui5.antares.pro.v2.metadata
@@ -63,6 +65,11 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
                 type: "ui5.antares.pro.v2.ui.FormLayout",
                 multiple: false
             },
+            customElements: {
+                type: "ui5.antares.pro.v2.custom.CustomElement",
+                multiple: true,
+                singularName: "customElement"
+            },            
             metaContext: {
                 type: "ui5.antares.pro.v2.metadata.MetaContext",
                 multiple: false,
@@ -165,6 +172,24 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             this.getTableGenerator().deregisterP13n();
         }
     }
+
+    public addCustomElement(customElement: CustomElement) {
+        customElement.getElement().addCustomData(new CustomData({
+            key: "UI5AntaresProControlType",
+            value: "Custom"
+        }));
+
+        customElement.getElement().addCustomData(new CustomData({
+            key: "UI5AntaresProPropertyName",
+            value: customElement.getPropertyName()
+        }));
+
+        this.addAggregation("customElements", customElement);
+    }
+
+    public getCustomElementByProperty(property: string) {
+        return this.getCustomElements().find(element => element.getPropertyName() === property);
+    }    
 
     private setMetaContext(metaContext: MetaContext) {
         this.setAggregation("metaContext", metaContext);

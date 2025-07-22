@@ -5,6 +5,7 @@ import Group from "sap/ui/comp/smartform/Group";
 import GroupElement from "sap/ui/comp/smartform/GroupElement";
 import Layout from "sap/ui/comp/smartform/Layout";
 import SmartForm from "sap/ui/comp/smartform/SmartForm";
+import Control from "sap/ui/core/Control";
 import CustomData from "sap/ui/core/CustomData";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { EntityProperty } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
@@ -69,13 +70,22 @@ export default class SmartFormGenerator extends FormGeneratorBase {
         const properties = this.getMetaContext().getEntityProperties();
 
         for (const property of properties) {
-            const control = this.getControl(property);
-            this.setControlLayoutData(property, control);
+            const customElement = this.getCustomElementByProperty(property.name);
 
-            elements.push(new GroupElement({
-                label: new Label({ text: property.label }),
-                elements: control
-            }));
+            if (customElement) {
+                elements.push(new GroupElement({
+                    label: new Label({ text: property.label }),
+                    elements: customElement.getElement() as Control
+                }));
+            } else {
+                const control = this.getControl(property);
+                this.setControlLayoutData(property, control);
+
+                elements.push(new GroupElement({
+                    label: new Label({ text: property.label }),
+                    elements: control
+                }));
+            }
         }
 
         return elements;
