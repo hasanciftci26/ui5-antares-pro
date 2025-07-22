@@ -26,6 +26,8 @@ import Engine from "sap/m/p13n/Engine";
 import SelectionController from "sap/m/p13n/SelectionController";
 import Event from "sap/ui/base/Event";
 import { Button$PressEvent } from "sap/m/Button";
+import { ErrorBody, SubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
+import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -264,13 +266,30 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getDialogGenerator().getDialog().open();
     }
 
-    private onUpdate() {
+    private async onUpdate() {
         const selectedContext = this.getSelectedRowContext();
 
         if (!selectedContext) {
             MessageBox.error(this.getFactory().getSelectRowError());
             return;
         }
+
+        this.getOwnerParent().setContext(selectedContext);
+        this.getOwnerParent().setOperation("Update");
+        this.setSubmitButtonText(this.getUpdateButtonText());
+        this.setSubmitButtonType(this.getUpdateButtonType());
+        this.setFormTitle(this.getUpdateFormTitle() || LibraryBundle.getText(
+            "ui5AntaresPro.title.updateEntry",
+            [this.getOwnerParent().getEntitySet()]
+        ));
+
+        await this.getMetaContext().load();
+        this.getDialogGenerator().generate();
+        this.getFormGenerator().generate();
+
+        this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.getDialogGenerator().getDialog().setBindingContext(this.getOwnerParent().getContext());
+        this.getDialogGenerator().getDialog().open();
     }
 
     private async onDelete() {
@@ -371,7 +390,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         if (this.getFactory().getOperation() === "Create") {
             this.createListBindingEntry();
         } else {
-            // TODO
+            this.createNewEntry();
         }
     }
 
@@ -389,6 +408,15 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
             this.getOwnerParent().setContext(context);
         }
+    }
+
+    private createNewEntry() {
+        const factory = this.getFactory();
+        const context = factory.getODataModel().createEntry("/" + this.getOwnerParent().getEntitySet(), {
+            groupId: factory.getDeferredGroupId()
+        }) as Context;
+
+        this.getOwnerParent().setContext(context);
     }
 
     private setGuidValues() {
@@ -507,9 +535,13 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             return;
         }
 
-        BusyIndicator.hide();
-        // TODO
-        this.getDialogGenerator().getDialog().close();
+        if (this.getFactory().getOperation() === "Create") {
+            BusyIndicator.hide();
+            this.getDialogGenerator().getDialog().close();
+            return;
+        }
+
+        this.submitChanges();
     }
 
     private delete() {
@@ -521,8 +553,80 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             BusyIndicator.hide();
             this.getDialogGenerator().getDialog().close();
         }).catch((err) => {
-            // TODO
+            BusyIndicator.hide();
+            let message = LibraryBundle.getText("ui5AntaresPro.error.delete");
+
+            if (this.hasResponseText(err)) {
+                try {
+                    const response = JSON.parse(err.responseText) as ErrorBody;
+
+                    if (response.error?.message?.value) {
+                        message = response.error.message.value;
+                    }
+                } catch (error) {
+                    console.log("OData V2 deletion response cannot be parsed.");
+                }
+            }
+
+            MessageBox.error(message);
         });
+    }
+
+    private submitChanges() {
+        const factory = this.getFactory();
+
+        if (factory.getODataModel().hasPendingChanges(true)) {
+            if (this.getOwnerParent().getOperation() === "Create") {
+                factory.getODataModel().submitChanges({
+                    groupId: factory.getDeferredGroupId(),
+                    success: (response?: SubmitChangesResponse) => {
+                        BusyIndicator.hide();
+                        this.onSubmitSuccess(response);
+                    },
+                    error: (err?: Record<string, any>) => {
+                        BusyIndicator.hide();
+                        this.onSubmitError(err);
+                    }
+                });
+            } else {
+                factory.getODataModel().submitChanges({
+                    success: (response?: SubmitChangesResponse) => {
+                        BusyIndicator.hide();
+                        this.onSubmitSuccess(response);
+                    },
+                    error: (err?: Record<string, any>) => {
+                        BusyIndicator.hide();
+                        this.onSubmitError(err);
+                    }
+                });
+            }
+        } else {
+            this.getDialogGenerator().getDialog().close();
+        }
+    }
+
+    private onSubmitSuccess(response?: SubmitChangesResponse) {
+        const factory = this.getFactory();
+        const parser = new ResponseParser(response);
+        parser.parse();
+
+        if (parser.status === "Success") {
+            this.getDialogGenerator().getDialog().close();
+        } else {
+            if (parser.errorMessage && factory.getShowErrorMessageBox()) {
+                MessageBox.error(parser.errorMessage);
+            }
+        }
+    }
+
+    private onSubmitError(err?: Record<string, any>) {
+        const factory = this.getFactory();
+        const parser = new ResponseParser();
+        parser.parseError(err);
+
+        if (parser.errorMessage && factory.getShowErrorMessageBox()) {
+            MessageBox.error(parser.errorMessage);
+        }
     }
 
     private getP13nStateChangeHandler() {
@@ -531,6 +635,13 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
     private setP13nStateChangeHandler(p13nStateChangeHandler: (event: Event) => void) {
         this.setProperty("p13nStateChangeHandler", p13nStateChangeHandler);
+    }
+
+    private hasResponseText(err: any): err is { responseText: string; } {
+        return typeof err === "object" &&
+            err != null &&
+            "responseText" in err &&
+            typeof err.responseText === "string";
     }
 
     private setDefaultTableTitle() {

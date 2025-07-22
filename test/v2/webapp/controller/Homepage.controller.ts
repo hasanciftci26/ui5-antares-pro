@@ -68,7 +68,11 @@ export default class Homepage extends BaseController {
         });
 
         entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications"
+            name: "toCertifications",
+            inheritValues: [{
+                parentProperty: "ID",
+                targetProperty: "employeeID"
+            }]
         }));
 
         entry.run("tblEmployees");
