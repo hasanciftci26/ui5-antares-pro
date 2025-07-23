@@ -194,6 +194,14 @@ export default abstract class Factory extends BaseContext implements MetaContext
         this.getDialogGenerator().getDialog().setBindingContext(this.getContext());
     }
 
+    protected async executeComponent(container: VBox) {
+        await this.loadMetaContexts();
+        await this.generateContent(true);
+        this.addContentIntoComponent(container);
+        container.setModel(this.getODataModel());
+        container.setBindingContext(this.getContext());
+    }
+
     private async loadMetaContexts() {
         await this.getMetaContext().load();
 
@@ -202,8 +210,11 @@ export default abstract class Factory extends BaseContext implements MetaContext
         }
     }
 
-    private async generateContent() {
-        this.getDialogGenerator().generate();
+    private async generateContent(useComponent = false) {
+        if (!useComponent) {
+            this.getDialogGenerator().generate();
+        }
+
         this.getFormGenerator().generate();
 
         for (const property of this.getNavigationProperties()) {
@@ -218,6 +229,16 @@ export default abstract class Factory extends BaseContext implements MetaContext
             this.addContentIntoWrapper(contentWrapper);
         } else {
             this.addContentIntoDialog();
+        }
+    }
+
+    private addContentIntoComponent(container: VBox) {
+        const contentWrapper = this.getContentWrapper();
+
+        if (contentWrapper) {
+            this.addContentIntoWrapper(contentWrapper, container);
+        } else {
+            this.addContentIntoContainer(container);
         }
     }
 
@@ -240,7 +261,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
         }
     }
 
-    private addContentIntoWrapper(wrapper: ContentWrapper) {
+    private addContentIntoWrapper(wrapper: ContentWrapper, container?: VBox) {
         switch (true) {
             case wrapper instanceof VBox:
             case wrapper instanceof HBox:
@@ -252,7 +273,11 @@ export default abstract class Factory extends BaseContext implements MetaContext
                 break;
         }
 
-        this.getDialogGenerator().getDialog().addContent(wrapper);
+        if (container) {
+            container.addItem(wrapper);
+        } else {
+            this.getDialogGenerator().getDialog().addContent(wrapper);
+        }
     }
 
     private addContentAsItem(wrapper: VBox | HBox | FlexBox) {
@@ -290,6 +315,25 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
         for (const content of this.getCustomContents()) {
             wrapper.insertContent(content.getContent(), content.getIndex());
+        }
+    }
+
+    private addContentIntoContainer(container: VBox) {
+        const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
+        const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+
+        container.addItem(this.getFormGenerator().getForm());
+
+        for (const navigation of singleNavigations) {
+            container.addItem(navigation.getContent());
+        }
+
+        for (const navigation of multiNavigations) {
+            container.addItem(navigation.getContent());
+        }
+
+        for (const content of this.getCustomContents()) {
+            container.insertItem(content.getContent(), content.getIndex());
         }
     }
 

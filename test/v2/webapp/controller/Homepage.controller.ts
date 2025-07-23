@@ -33,35 +33,36 @@ export default class Homepage extends BaseController {
     }
 
     public onCreateNewEmployee() {
-        const entry = new CreateEntry({
-            controller: this,
-            entitySet: "Employees",
-            modelRef: "company",
-            formType: "SimpleForm",
-            guidVisibilityMode: "All",
-            metadataLabelEnabled: true,
-            propertySettings: [{
-                name: "ID",
-                readonly: true
-            }, {
-                name: "lastName",
-                required: true
-            }]
-        });
+        this.getRouter().navTo("RouteNewEntry");
+        // const entry = new CreateEntry({
+        //     controller: this,
+        //     entitySet: "Employees",
+        //     modelRef: "company",
+        //     formType: "SimpleForm",
+        //     guidVisibilityMode: "All",
+        //     metadataLabelEnabled: true,
+        //     propertySettings: [{
+        //         name: "ID",
+        //         readonly: true
+        //     }, {
+        //         name: "lastName",
+        //         required: true
+        //     }]
+        // });
 
-        entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications",
-            inheritValues: [{
-                parentProperty: "ID",
-                targetProperty: "employeeID"
-            }],
-            propertySettings: [{
-                name: "employeeID",
-                readonly: true
-            }]
-        }));
+        // entry.addNavigationProperty(new NavigationProperty({
+        //     name: "toCertifications",
+        //     inheritValues: [{
+        //         parentProperty: "ID",
+        //         targetProperty: "employeeID"
+        //     }],
+        //     propertySettings: [{
+        //         name: "employeeID",
+        //         readonly: true
+        //     }]
+        // }));
 
-        entry.run();
+        // entry.run();
     }
 
     public onUpdateEmployee() {

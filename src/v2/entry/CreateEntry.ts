@@ -1,4 +1,5 @@
 import MessageBox from "sap/m/MessageBox";
+import VBox from "sap/m/VBox";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Context from "sap/ui/model/odata/v2/Context";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
@@ -53,6 +54,19 @@ export default class CreateEntry extends Factory {
         this.getDialogGenerator().getDialog().open();
 
         BusyIndicator.hide();
+    }
+
+    public async initComponent(container: VBox, initialData?: Record<string, any>) {
+        container.setBusy(true);
+
+        await this.createNewEntry(initialData);
+        await super.executeComponent(container);
+        this.addNavigationPropertiesToContext();
+        this.setGuidValues();
+        this.inheritValues();
+        this.setBooleanValues();
+
+        container.setBusy(false);
     }
 
     private async createNewEntry(initialData?: Record<string, any>) {

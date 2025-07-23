@@ -4,6 +4,8 @@ import Model from "sap/ui/model/Model";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import Component from "test/v2/ui5/antares/pro/Component";
+import Control from "sap/ui/core/Control";
+import View from "sap/ui/core/mvc/View";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -79,6 +81,10 @@ export default class BaseController extends Controller {
     public getBundleText(key: string, parameters?: (string | number | boolean)[]) {
         const bundle = this.getResourceBundle();
         return bundle.getText(key, parameters) || "The Resource Bundle text was not found. Contact your administrator.";
+    }
+
+    public getById<T extends Control = Control>(id: string): T {
+        return (this.getView() as View).byId(id) as T;
     }
 
     private getResourceBundle() {

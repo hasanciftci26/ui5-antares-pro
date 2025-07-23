@@ -83,6 +83,16 @@
                 "sap.ui.table": {},
                 "sap.ushell": {},
                 "ui5.antares.pro": {}
+            },
+            "components": {
+                "ui5.antares.pro.v2.component.create": {
+                    "lazy": false
+                }
+            }
+        },
+        "componentUsages": {
+            "ui5AntaresProCreateEntry": {
+                "name": "ui5.antares.pro.v2.component.create"
             }
         },
         "contentDensities": {
@@ -137,12 +147,27 @@
                     "target": [
                         "TargetHomepage"
                     ]
+                },
+                {
+                    "name": "RouteNewEntry",
+                    "pattern": "new-entry",
+                    "target": [
+                        "TargetNewEntry"
+                    ]
                 }
             ],
             "targets": {
                 "TargetHomepage": {
                     "id": "Homepage",
                     "name": "Homepage",
+                    "type": "View",
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false
+                },
+                "TargetNewEntry": {
+                    "id": "NewEntry",
+                    "name": "NewEntry",
                     "type": "View",
                     "viewType": "XML",
                     "transition": "slide",
