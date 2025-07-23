@@ -15,8 +15,17 @@
                 id="ccUI5AntaresProUpdateEntry"
                 usage="ui5AntaresProUpdateEntry"
                 componentCreated="onUpdateEntryComponentCreated"
-                propagateModel="true"
             />
         </content>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Button
+                    text="Update"
+                    type="Emphasized"
+                    press="onUpdateEmployee"
+                />
+            </OverflowToolbar>
+        </footer>
     </Page>
 </mvc:View>

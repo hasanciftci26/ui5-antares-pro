@@ -74,7 +74,33 @@ export default class UpdateEntry extends Factory {
 
         await super.executeComponent(container);
         container.setBusy(false);
-    }    
+    }
+
+    public async commit() {
+        BusyIndicator.show(0);
+
+        this.correctFixedValueListValues();
+        const formValidation = await this.validateForms();
+
+        if (!formValidation) {
+            BusyIndicator.hide();
+            MessageBox.error(this.getValidationErrorMessage());
+            return;
+        }
+
+        const beforeSubmit = this.getBeforeSubmit();
+
+        if (beforeSubmit) {
+            const proceed = await Promise.resolve(beforeSubmit.call(this.getController(), this.getContext()));
+
+            if (!proceed) {
+                BusyIndicator.hide();
+                return;
+            }
+        }
+
+        this.submit(true);
+    }
 
     private async extractContext<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         const path = this.getContextPath<T>(ref);
@@ -268,7 +294,7 @@ export default class UpdateEntry extends Factory {
         }
     }
 
-    private submit() {
+    private submit(submittedByComponent = false) {
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().submitChanges({
                 success: (response?: SubmitChangesResponse) => {
@@ -284,9 +310,11 @@ export default class UpdateEntry extends Factory {
                             response: parser.response
                         });
 
-                        this.resetDefaultBindingMode();
-                        this.getNavigationProperties().forEach(property => property.deregisterP13n());
-                        this.getDialogGenerator().getDialog().close();
+                        if (!submittedByComponent) {
+                            this.resetDefaultBindingMode();
+                            this.getNavigationProperties().forEach(property => property.deregisterP13n());
+                            this.getDialogGenerator().getDialog().close();
+                        }
                     } else {
                         this.fireSubmitError({
                             response: parser.response
@@ -313,9 +341,11 @@ export default class UpdateEntry extends Factory {
                 }
             });
         } else {
-            this.resetDefaultBindingMode();
-            this.getNavigationProperties().forEach(property => property.deregisterP13n());
-            this.getDialogGenerator().getDialog().close();
+            if (!submittedByComponent) {
+                this.resetDefaultBindingMode();
+                this.getNavigationProperties().forEach(property => property.deregisterP13n());
+                this.getDialogGenerator().getDialog().close();
+            }
         }
     }
 

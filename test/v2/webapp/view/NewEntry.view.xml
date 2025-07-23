@@ -15,8 +15,17 @@
                 id="ccUI5AntaresProCreateEntry"
                 usage="ui5AntaresProCreateEntry"
                 componentCreated="onCreateEntryComponentCreated"
-                propagateModel="true"
             />
         </content>
+        <footer>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <Button
+                    text="Create"
+                    type="Emphasized"
+                    press="onCreateEmployee"
+                />
+            </OverflowToolbar>
+        </footer>        
     </Page>
 </mvc:View>

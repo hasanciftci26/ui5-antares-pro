@@ -69,6 +69,32 @@ export default class CreateEntry extends Factory {
         container.setBusy(false);
     }
 
+    public async commit() {
+        BusyIndicator.show(0);
+
+        this.correctFixedValueListValues();
+        const formValidation = await this.validateForms();
+
+        if (!formValidation) {
+            BusyIndicator.hide();
+            MessageBox.error(this.getValidationErrorMessage());
+            return;
+        }
+
+        const beforeSubmit = this.getBeforeSubmit();
+
+        if (beforeSubmit) {
+            const proceed = await Promise.resolve(beforeSubmit.call(this.getController(), this.getContext()));
+
+            if (!proceed) {
+                BusyIndicator.hide();
+                return;
+            }
+        }
+
+        this.submit(true);
+    }
+
     private async createNewEntry(initialData?: Record<string, any>) {
         await this.getODataModel().getMetaModel().loaded();
 
@@ -289,7 +315,7 @@ export default class CreateEntry extends Factory {
         }
     }
 
-    private submit() {
+    private submit(submittedByComponent = false) {
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().submitChanges({
                 groupId: this.getDeferredGroupId(),
@@ -306,9 +332,11 @@ export default class CreateEntry extends Factory {
                             response: parser.response
                         });
 
-                        this.resetDefaultBindingMode();
-                        this.getNavigationProperties().forEach(property => property.deregisterP13n());
-                        this.getDialogGenerator().getDialog().close();
+                        if (!submittedByComponent) {
+                            this.resetDefaultBindingMode();
+                            this.getNavigationProperties().forEach(property => property.deregisterP13n());
+                            this.getDialogGenerator().getDialog().close();
+                        }
                     } else {
                         this.fireSubmitError({
                             response: parser.response
@@ -335,9 +363,11 @@ export default class CreateEntry extends Factory {
                 }
             });
         } else {
-            this.resetDefaultBindingMode();
-            this.getNavigationProperties().forEach(property => property.deregisterP13n());
-            this.getDialogGenerator().getDialog().close();
+            if (!submittedByComponent) {
+                this.resetDefaultBindingMode();
+                this.getNavigationProperties().forEach(property => property.deregisterP13n());
+                this.getDialogGenerator().getDialog().close();
+            }
         }
     }
 }
