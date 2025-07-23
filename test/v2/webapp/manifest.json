@@ -87,12 +87,18 @@
             "components": {
                 "ui5.antares.pro.v2.component.create": {
                     "lazy": false
+                },
+                "ui5.antares.pro.v2.component.update": {
+                    "lazy": false
                 }
             }
         },
         "componentUsages": {
             "ui5AntaresProCreateEntry": {
                 "name": "ui5.antares.pro.v2.component.create"
+            },
+            "ui5AntaresProUpdateEntry": {
+                "name": "ui5.antares.pro.v2.component.update"
             }
         },
         "contentDensities": {
@@ -154,6 +160,13 @@
                     "target": [
                         "TargetNewEntry"
                     ]
+                },
+                {
+                    "name": "RouteEditEntry",
+                    "pattern": "edit-entry",
+                    "target": [
+                        "TargetEditEntry"
+                    ]
                 }
             ],
             "targets": {
@@ -168,6 +181,14 @@
                 "TargetNewEntry": {
                     "id": "NewEntry",
                     "name": "NewEntry",
+                    "type": "View",
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false
+                },
+                "TargetEditEntry": {
+                    "id": "EditEntry",
+                    "name": "EditEntry",
                     "type": "View",
                     "viewType": "XML",
                     "transition": "slide",

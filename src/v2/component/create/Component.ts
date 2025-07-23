@@ -21,7 +21,7 @@ export default class Component extends UIComponent {
         super.init();
     }
 
-    public createContent() {
+    public override createContent() {
         const vbox = new VBox({
             busyIndicatorDelay: 0
         });

@@ -1,0 +1,22 @@
+<mvc:View
+    controllerName="test.v2.ui5.antares.pro.controller.EditEntry"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+>
+    <Page
+        id="EditEntry"
+        showHeader="true"
+        title="UI5 Antares Pro Test Application"
+    >
+        <content>
+            <core:ComponentContainer
+                id="ccUI5AntaresProUpdateEntry"
+                usage="ui5AntaresProUpdateEntry"
+                componentCreated="onUpdateEntryComponentCreated"
+                propagateModel="true"
+            />
+        </content>
+    </Page>
+</mvc:View>
