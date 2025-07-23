@@ -10,6 +10,7 @@ import GridTable from "sap/ui/table/Table";
 import SmartTable from "sap/ui/comp/smarttable/SmartTable";
 import { ListMode } from "sap/m/library";
 import { SelectionMode } from "sap/ui/table/library";
+import VBox from "sap/m/VBox";
 
 /**
  * @namespace ui5.antares.pro.v2.entry
@@ -43,6 +44,24 @@ export default class DisplayEntry extends Factory {
         await super.execute();
         this.getDialogGenerator().getDialog().open();
 
+        BusyIndicator.hide();
+    }
+
+    public async initComponent(container: VBox, ref: Context | string | Record<string, any>) {
+        container.setBusy(true);
+        await this.extractContext(ref);
+
+        if (!this.getContextFound()) {
+            return;
+        }
+
+        await super.executeComponent(container);
+        container.setBusy(false);
+    }
+
+    public async reload<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
+        BusyIndicator.show(0);
+        await this.extractContext(ref);
         BusyIndicator.hide();
     }
 

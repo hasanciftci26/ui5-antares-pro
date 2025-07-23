@@ -12,6 +12,7 @@ import { ListMode } from "sap/m/library";
 import { SelectionMode } from "sap/ui/table/library";
 import { ErrorBody } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
+import VBox from "sap/m/VBox";
 
 /**
  * @namespace ui5.antares.pro.v2.entry
@@ -60,6 +61,41 @@ export default class DeleteEntry extends Factory {
         await super.execute();
         this.getDialogGenerator().getDialog().open();
 
+        BusyIndicator.hide();
+    }
+
+    public async initComponent(container: VBox, ref: Context | string | Record<string, any>) {
+        container.setBusy(true);
+        await this.extractContext(ref);
+
+        if (!this.getContextFound()) {
+            return;
+        }
+
+        await super.executeComponent(container);
+        container.setBusy(false);
+    }
+
+    public async commit() {
+        BusyIndicator.show(0);
+
+        const beforeDelete = this.getBeforeDelete();
+
+        if (beforeDelete) {
+            const proceed = await Promise.resolve(beforeDelete.call(this.getController(), this.getContext()));
+
+            if (!proceed) {
+                BusyIndicator.hide();
+                return;
+            }
+        }
+
+        this.delete(true);
+    }
+
+    public async reload<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
+        BusyIndicator.show(0);
+        await this.extractContext(ref);
         BusyIndicator.hide();
     }
 
@@ -222,7 +258,7 @@ export default class DeleteEntry extends Factory {
         this.resetDefaultBindingMode();
     }
 
-    private delete() {
+    private delete(deletedByComponent = false) {
         this.getContext().delete({
             groupId: "$auto"
         }).then(() => {
@@ -233,9 +269,11 @@ export default class DeleteEntry extends Factory {
                 data: this.getContext().getObject()
             });
 
-            this.resetDefaultBindingMode();
-            this.getNavigationProperties().forEach(property => property.deregisterP13n());
-            this.getDialogGenerator().getDialog().close();
+            if (!deletedByComponent) {
+                this.resetDefaultBindingMode();
+                this.getNavigationProperties().forEach(property => property.deregisterP13n());
+                this.getDialogGenerator().getDialog().close();
+            }
         }).catch((err) => {
             BusyIndicator.hide();
             let message = LibraryBundle.getText("ui5AntaresPro.error.delete");

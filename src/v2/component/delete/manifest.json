@@ -1,10 +1,10 @@
 {
     "_version": "1.72.0",
     "sap.app": {
-        "id": "ui5.antares.pro.v2.component.update",
+        "id": "ui5.antares.pro.v2.component.delete",
         "type": "component",
         "embeddedBy": "../../../",
-        "title": "UI5 Antares Pro Update Entry Component",
+        "title": "UI5 Antares Pro Delete Entry Component",
         "applicationVersion": {
             "version": "1.0.0"
         }
@@ -18,7 +18,7 @@
         }
     },
     "sap.ui5": {
-        "componentName": "ui5.antares.pro.v2.component.update",
+        "componentName": "ui5.antares.pro.v2.component.delete",
         "dependencies": {
             "minUI5Version": "1.135.0",
             "libs": {

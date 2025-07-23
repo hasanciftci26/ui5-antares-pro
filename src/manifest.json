@@ -6,7 +6,9 @@
         "title": "UI5 Antares Pro",
         "embeds": [
             "v2/component/create",
-            "v2/component/update"
+            "v2/component/update",
+            "v2/component/delete",
+            "v2/component/display"
         ],
         "applicationVersion": {
             "version": "1.0.0"
