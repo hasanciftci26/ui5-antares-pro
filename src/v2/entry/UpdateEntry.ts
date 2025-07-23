@@ -102,6 +102,18 @@ export default class UpdateEntry extends Factory {
         this.submit(true);
     }
 
+    public async reload<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
+        BusyIndicator.show(0);
+        await this.extractContext(ref);
+        BusyIndicator.hide();
+    }
+
+    public reset() {
+        if (this.getODataModel().hasPendingChanges(true)) {
+            this.getODataModel().resetChanges([this.getContext().getPath()]);
+        }
+    }
+
     private async extractContext<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         const path = this.getContextPath<T>(ref);
 

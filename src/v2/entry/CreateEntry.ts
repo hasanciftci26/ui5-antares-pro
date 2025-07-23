@@ -95,6 +95,20 @@ export default class CreateEntry extends Factory {
         this.submit(true);
     }
 
+    public async reload<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
+        await this.createNewEntry(initialData);
+        this.addNavigationPropertiesToContext();
+        this.setGuidValues();
+        this.inheritValues();
+        this.setBooleanValues();
+    }
+
+    public reset() {
+        if (this.getODataModel().hasPendingChanges(true)) {
+            this.getODataModel().resetChanges([this.getContext().getPath()]);
+        }
+    }
+
     private async createNewEntry(initialData?: Record<string, any>) {
         await this.getODataModel().getMetaModel().loaded();
 
