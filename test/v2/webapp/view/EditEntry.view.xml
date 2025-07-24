@@ -11,11 +11,7 @@
         title="UI5 Antares Pro Test Application"
     >
         <content>
-            <core:ComponentContainer
-                id="ccUI5AntaresProUpdateEntry"
-                usage="ui5AntaresProUpdateEntry"
-                componentCreated="onUpdateEntryComponentCreated"
-            />
+            <core:ComponentContainer id="ccUI5AntaresProUpdateEntry" />
         </content>
         <footer>
             <OverflowToolbar>

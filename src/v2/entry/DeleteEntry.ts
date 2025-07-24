@@ -23,7 +23,8 @@ export default class DeleteEntry extends Factory {
         final: true,
         properties: {
             beforeDelete: { type: "function" },
-            contextFound: { type: "boolean", visibility: "hidden" }
+            contextFound: { type: "boolean", visibility: "hidden" },
+            componentRoot: { type: "object", visibility: "hidden" }
         },
         events: {
             deleteSuccess: {
@@ -66,6 +67,7 @@ export default class DeleteEntry extends Factory {
 
     public async initComponent(container: VBox, ref: Context | string | Record<string, any>) {
         container.setBusy(true);
+        this.setComponentRoot(container);
         await this.extractContext(ref);
 
         if (!this.getContextFound()) {
@@ -95,7 +97,9 @@ export default class DeleteEntry extends Factory {
 
     public async reload<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         BusyIndicator.show(0);
+        this.enableTwoWayBinding();
         await this.extractContext(ref);
+        this.getComponentRoot().setBindingContext(this.getContext());
         BusyIndicator.hide();
     }
 
@@ -269,8 +273,9 @@ export default class DeleteEntry extends Factory {
                 data: this.getContext().getObject()
             });
 
+            this.resetDefaultBindingMode();
+
             if (!deletedByComponent) {
-                this.resetDefaultBindingMode();
                 this.getNavigationProperties().forEach(property => property.deregisterP13n());
                 this.getDialogGenerator().getDialog().close();
             }
@@ -308,5 +313,13 @@ export default class DeleteEntry extends Factory {
             err != null &&
             "responseText" in err &&
             typeof err.responseText === "string";
+    }
+
+    private getComponentRoot() {
+        return this.getProperty("componentRoot") as VBox;
+    }
+
+    private setComponentRoot(componentRoot: VBox) {
+        this.setProperty("componentRoot", componentRoot);
     }
 }

@@ -17,7 +17,8 @@ export default class CreateEntry extends Factory {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            beforeSubmit: { type: "function" }
+            beforeSubmit: { type: "function" },
+            componentRoot: { type: "object", visibility: "hidden" }
         },
         events: {
             submitSuccess: {
@@ -59,6 +60,7 @@ export default class CreateEntry extends Factory {
     public async initComponent(container: VBox, initialData?: Record<string, any>) {
         container.setBusy(true);
 
+        this.setComponentRoot(container);
         await this.createNewEntry(initialData);
         await super.executeComponent(container);
         this.addNavigationPropertiesToContext();
@@ -96,14 +98,18 @@ export default class CreateEntry extends Factory {
     }
 
     public async reload<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
+        this.enableTwoWayBinding();
         await this.createNewEntry(initialData);
         this.addNavigationPropertiesToContext();
         this.setGuidValues();
         this.inheritValues();
         this.setBooleanValues();
+        this.getComponentRoot().setBindingContext(this.getContext());
     }
 
     public reset() {
+        this.resetDefaultBindingMode();
+
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().resetChanges([this.getContext().getPath()]);
         }
@@ -346,8 +352,9 @@ export default class CreateEntry extends Factory {
                             response: parser.response
                         });
 
+                        this.resetDefaultBindingMode();
+
                         if (!submittedByComponent) {
-                            this.resetDefaultBindingMode();
                             this.getNavigationProperties().forEach(property => property.deregisterP13n());
                             this.getDialogGenerator().getDialog().close();
                         }
@@ -377,11 +384,20 @@ export default class CreateEntry extends Factory {
                 }
             });
         } else {
+            this.resetDefaultBindingMode();
+
             if (!submittedByComponent) {
-                this.resetDefaultBindingMode();
                 this.getNavigationProperties().forEach(property => property.deregisterP13n());
                 this.getDialogGenerator().getDialog().close();
             }
         }
     }
+
+    private getComponentRoot() {
+        return this.getProperty("componentRoot") as VBox;
+    }
+
+    private setComponentRoot(componentRoot: VBox) {
+        this.setProperty("componentRoot", componentRoot);
+    }    
 }

@@ -163,7 +163,7 @@
                 },
                 {
                     "name": "RouteEditEntry",
-                    "pattern": "edit-entry",
+                    "pattern": "edit-entry/{employeeID}",
                     "target": [
                         "TargetEditEntry"
                     ]

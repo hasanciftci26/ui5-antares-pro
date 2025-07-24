@@ -1,55 +1,63 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import Component from "sap/ui/core/Component";
-import ComponentContainer, { ComponentContainer$ComponentCreatedEvent } from "sap/ui/core/ComponentContainer";
+import ComponentContainer from "sap/ui/core/ComponentContainer";
+import { Route$PatternMatchedEvent } from "sap/ui/core/routing/Route";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
 import UpdateComponent from "ui5/antares/pro/v2/component/update/Component";
 import UpdateEntry from "ui5/antares/pro/v2/entry/UpdateEntry";
-import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
  */
 export default class EditEntry extends BaseController {
+    private employeeID: string;
+    private updateComponent?: UpdateComponent;
 
     /* ======================================================================================================================= */
     /* Lifecycle methods                                                                                                       */
     /* ======================================================================================================================= */
 
     public onInit(): void {
-
+        this.getRouter().getRoute("RouteEditEntry")?.attachPatternMatched(this.onObjectMatched, this);
     }
 
     /* ======================================================================================================================= */
     /* Event Handlers                                                                                                          */
     /* ======================================================================================================================= */
 
-    public onUpdateEntryComponentCreated(event: ComponentContainer$ComponentCreatedEvent) {
-        const component = event.getParameter("component") as UpdateComponent;
+    /* ======================================================================================================================= */
+    /* Internal methods                                                                                                        */
+    /* ======================================================================================================================= */
+
+    private onObjectMatched(event: Route$PatternMatchedEvent) {
+        this.employeeID = (event.getParameter("arguments") as { employeeID: string; }).employeeID;
+
+        if (this.updateComponent) {
+            this.updateComponent.getEntryInstance().reload<{ ID: string; }>({
+                ID: this.employeeID
+            });
+        } else {
+            this.createComponent();
+        }
+    }
+
+    private async createComponent() {
+        const owner = this.getOwnerComponent() as Component;
         const entry = new UpdateEntry({
             controller: this,
             entitySet: "Employees",
             modelRef: "company"
         });
 
-        entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications"
-        }));
+        this.updateComponent = await Promise.resolve(owner.createComponent({
+            usage: "ui5AntaresProUpdateEntry"
+        })) as UpdateComponent;
 
-        component.run<{ ID: string; }>(entry, {
-            ID: "5e4c2a43-93ab-4bca-b6f7-58f0b6712920"
+        this.getById<ComponentContainer>("ccUI5AntaresProUpdateEntry").setComponent(this.updateComponent);
+
+        this.updateComponent.run<{ ID: string; }>(entry, {
+            ID: this.employeeID
         });
     }
-
-    public onUpdateEmployee() {
-        const component = Component.getComponentById(
-            this.getById<ComponentContainer>("ccUI5AntaresProUpdateEntry").getComponent() as string
-        ) as UpdateComponent;
-
-        component.getEntryInstance().commit();
-    }
-
-    /* ======================================================================================================================= */
-    /* Internal methods                                                                                                        */
-    /* ======================================================================================================================= */
 }

@@ -106,16 +106,16 @@ export default abstract class BaseContext extends ManagedObject {
         }
     }
 
+    protected enableTwoWayBinding() {
+        this.getODataModel().setDefaultBindingMode("TwoWay");
+    }
+
     private getDefaultBindingMode() {
         return this.getProperty("defaultBindingMode") as BindingMode;
     }
 
     private setDefaultBindingMode(defaultBindingMode: BindingMode) {
         this.setProperty("defaultBindingMode", defaultBindingMode);
-    }
-
-    private enableTwoWayBinding() {
-        this.getODataModel().setDefaultBindingMode("TwoWay");
     }
 
     private setDeferredGroups() {

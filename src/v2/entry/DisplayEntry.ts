@@ -20,7 +20,8 @@ export default class DisplayEntry extends Factory {
         library: "ui5.antares.pro",
         final: true,
         properties: {
-            contextFound: { type: "boolean", visibility: "hidden" }
+            contextFound: { type: "boolean", visibility: "hidden" },
+            componentRoot: { type: "object", visibility: "hidden" }
         }
     };
 
@@ -49,6 +50,7 @@ export default class DisplayEntry extends Factory {
 
     public async initComponent(container: VBox, ref: Context | string | Record<string, any>) {
         container.setBusy(true);
+        this.setComponentRoot(container);
         await this.extractContext(ref);
 
         if (!this.getContextFound()) {
@@ -62,6 +64,7 @@ export default class DisplayEntry extends Factory {
     public async reload<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         BusyIndicator.show(0);
         await this.extractContext(ref);
+        this.getComponentRoot().setBindingContext(this.getContext());
         BusyIndicator.hide();
     }
 
@@ -213,5 +216,13 @@ export default class DisplayEntry extends Factory {
 
     private setContextFound(contextFound: boolean) {
         this.setProperty("contextFound", contextFound);
+    }
+
+    private getComponentRoot() {
+        return this.getProperty("componentRoot") as VBox;
+    }
+
+    private setComponentRoot(componentRoot: VBox) {
+        this.setProperty("componentRoot", componentRoot);
     }
 }

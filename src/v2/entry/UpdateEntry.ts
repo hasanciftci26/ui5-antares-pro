@@ -23,7 +23,8 @@ export default class UpdateEntry extends Factory {
         final: true,
         properties: {
             beforeSubmit: { type: "function" },
-            contextFound: { type: "boolean", visibility: "hidden" }
+            contextFound: { type: "boolean", visibility: "hidden" },
+            componentRoot: { type: "object", visibility: "hidden" }
         },
         events: {
             submitSuccess: {
@@ -66,6 +67,7 @@ export default class UpdateEntry extends Factory {
 
     public async initComponent(container: VBox, ref: Context | string | Record<string, any>) {
         container.setBusy(true);
+        this.setComponentRoot(container);
         await this.extractContext(ref);
 
         if (!this.getContextFound()) {
@@ -104,11 +106,15 @@ export default class UpdateEntry extends Factory {
 
     public async reload<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         BusyIndicator.show(0);
+        this.enableTwoWayBinding();
         await this.extractContext(ref);
+        this.getComponentRoot().setBindingContext(this.getContext());
         BusyIndicator.hide();
     }
 
     public reset() {
+        this.resetDefaultBindingMode();
+
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().resetChanges([this.getContext().getPath()]);
         }
@@ -322,8 +328,9 @@ export default class UpdateEntry extends Factory {
                             response: parser.response
                         });
 
+                        this.resetDefaultBindingMode();
+
                         if (!submittedByComponent) {
-                            this.resetDefaultBindingMode();
                             this.getNavigationProperties().forEach(property => property.deregisterP13n());
                             this.getDialogGenerator().getDialog().close();
                         }
@@ -353,8 +360,9 @@ export default class UpdateEntry extends Factory {
                 }
             });
         } else {
+            this.resetDefaultBindingMode();
+
             if (!submittedByComponent) {
-                this.resetDefaultBindingMode();
                 this.getNavigationProperties().forEach(property => property.deregisterP13n());
                 this.getDialogGenerator().getDialog().close();
             }
@@ -367,5 +375,13 @@ export default class UpdateEntry extends Factory {
 
     private setContextFound(contextFound: boolean) {
         this.setProperty("contextFound", contextFound);
+    }
+
+    private getComponentRoot() {
+        return this.getProperty("componentRoot") as VBox;
+    }
+
+    private setComponentRoot(componentRoot: VBox) {
+        this.setProperty("componentRoot", componentRoot);
     }
 }

@@ -27,21 +27,42 @@
                     <OverflowToolbar>
                         <Title id="ttlEmployees" />
                         <ToolbarSpacer />
-                        <OverflowToolbarButton
-                            icon="sap-icon://add"
-                            press="onCreateNewEmployee"
+                        <Button
+                            text="Create with Dialog"
+                            press="onCreateNewEmployeeDialog"
                         />
-                        <OverflowToolbarButton
-                            icon="sap-icon://edit"
-                            press="onUpdateEmployee"
+                        <Button
+                            text="Update with Dialog"
+                            press="onUpdateEmployeeDialog"
                         />
-                        <OverflowToolbarButton
-                            icon="sap-icon://delete"
-                            press="onDeleteEmployee"
+                        <Button
+                            text="Delete with Dialog"
+                            press="onDeleteEmployeeDialog"
                         />
-                        <OverflowToolbarButton
-                            icon="sap-icon://display"
-                            press="onDisplayEmployee"
+                        <Button
+                            text="Display with Dialog"
+                            press="onDisplayEmployeeDialog"
+                        />
+                        <ToolbarSeparator />
+                        <Button
+                            text="Create with Component"
+                            press="onCreateNewEmployeeComponent"
+                            type="Emphasized"
+                        />
+                        <Button
+                            text="Update with Component"
+                            press="onUpdateEmployeeComponent"
+                            type="Emphasized"
+                        />
+                        <Button
+                            text="Delete with Component"
+                            press="onDeleteEmployeeComponent"
+                            type="Emphasized"
+                        />
+                        <Button
+                            text="Display with Component"
+                            press="onDisplayEmployeeComponent"
+                            type="Emphasized"
                         />
                     </OverflowToolbar>
                 </headerToolbar>
