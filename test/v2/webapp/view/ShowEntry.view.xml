@@ -1,0 +1,17 @@
+<mvc:View
+    controllerName="test.v2.ui5.antares.pro.controller.ShowEntry"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+>
+    <Page
+        id="ShowEntry"
+        showHeader="true"
+        title="UI5 Antares Pro Test Application"
+    >
+        <content>
+            <core:ComponentContainer id="ccUI5AntaresProDisplayEntry" />
+        </content>
+    </Page>
+</mvc:View>

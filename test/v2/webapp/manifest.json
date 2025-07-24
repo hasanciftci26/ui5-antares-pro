@@ -90,6 +90,12 @@
                 },
                 "ui5.antares.pro.v2.component.update": {
                     "lazy": false
+                },
+                "ui5.antares.pro.v2.component.delete": {
+                    "lazy": false
+                },
+                "ui5.antares.pro.v2.component.display": {
+                    "lazy": false
                 }
             }
         },
@@ -99,6 +105,12 @@
             },
             "ui5AntaresProUpdateEntry": {
                 "name": "ui5.antares.pro.v2.component.update"
+            },
+            "ui5AntaresProDeleteEntry": {
+                "name": "ui5.antares.pro.v2.component.delete"
+            },
+            "ui5AntaresProDisplayEntry": {
+                "name": "ui5.antares.pro.v2.component.display"
             }
         },
         "contentDensities": {
@@ -167,6 +179,20 @@
                     "target": [
                         "TargetEditEntry"
                     ]
+                },
+                {
+                    "name": "RouteRemoveEntry",
+                    "pattern": "remove-entry/{employeeID}",
+                    "target": [
+                        "TargetRemoveEntry"
+                    ]
+                },
+                {
+                    "name": "RouteShowEntry",
+                    "pattern": "show-entry/{employeeID}",
+                    "target": [
+                        "TargetShowEntry"
+                    ]
                 }
             ],
             "targets": {
@@ -189,6 +215,22 @@
                 "TargetEditEntry": {
                     "id": "EditEntry",
                     "name": "EditEntry",
+                    "type": "View",
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false
+                },
+                "TargetRemoveEntry": {
+                    "id": "RemoveEntry",
+                    "name": "RemoveEntry",
+                    "type": "View",
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false
+                },
+                "TargetShowEntry": {
+                    "id": "ShowEntry",
+                    "name": "ShowEntry",
                     "type": "View",
                     "viewType": "XML",
                     "transition": "slide",

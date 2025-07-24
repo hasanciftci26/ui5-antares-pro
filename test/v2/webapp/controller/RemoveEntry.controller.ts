@@ -4,22 +4,22 @@ import Component from "sap/ui/core/Component";
 import ComponentContainer from "sap/ui/core/ComponentContainer";
 import { Route$PatternMatchedEvent } from "sap/ui/core/routing/Route";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
-import UpdateComponent from "ui5/antares/pro/v2/component/update/Component";
-import UpdateEntry from "ui5/antares/pro/v2/entry/UpdateEntry";
+import DeleteComponent from "ui5/antares/pro/v2/component/delete/Component";
+import DeleteEntry from "ui5/antares/pro/v2/entry/DeleteEntry";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
  */
-export default class EditEntry extends BaseController {
+export default class RemoveEntry extends BaseController {
     private employeeID: string;
-    private updateComponent?: UpdateComponent;
+    private deleteComponent?: DeleteComponent;
 
     /* ======================================================================================================================= */
     /* Lifecycle methods                                                                                                       */
     /* ======================================================================================================================= */
 
     public onInit(): void {
-        this.getRouter().getRoute("RouteEditEntry")?.attachPatternMatched(this.onObjectMatched, this);
+        this.getRouter().getRoute("RouteRemoveEntry")?.attachPatternMatched(this.onObjectMatched, this);
     }
 
     /* ======================================================================================================================= */
@@ -33,9 +33,8 @@ export default class EditEntry extends BaseController {
     private onObjectMatched(event: Route$PatternMatchedEvent) {
         this.employeeID = (event.getParameter("arguments") as { employeeID: string; }).employeeID;
 
-        if (this.updateComponent) {
-            this.updateComponent.getEntryInstance().reset();
-            this.updateComponent.getEntryInstance().reload<{ ID: string; }>({
+        if (this.deleteComponent) {
+            this.deleteComponent.getEntryInstance().reload<{ ID: string; }>({
                 ID: this.employeeID
             });
         } else {
@@ -45,19 +44,19 @@ export default class EditEntry extends BaseController {
 
     private async createComponent() {
         const owner = this.getOwnerComponent() as Component;
-        const entry = new UpdateEntry({
+        const entry = new DeleteEntry({
             controller: this,
             entitySet: "Employees",
             modelRef: "company"
         });
 
-        this.updateComponent = await Promise.resolve(owner.createComponent({
-            usage: "ui5AntaresProUpdateEntry"
-        })) as UpdateComponent;
+        this.deleteComponent = await Promise.resolve(owner.createComponent({
+            usage: "ui5AntaresProDeleteEntry"
+        })) as DeleteComponent;
 
-        this.getById<ComponentContainer>("ccUI5AntaresProUpdateEntry").setComponent(this.updateComponent);
+        this.getById<ComponentContainer>("ccUI5AntaresProDeleteEntry").setComponent(this.deleteComponent);
 
-        this.updateComponent.run<{ ID: string; }>(entry, {
+        this.deleteComponent.run<{ ID: string; }>(entry, {
             ID: this.employeeID
         });
     }

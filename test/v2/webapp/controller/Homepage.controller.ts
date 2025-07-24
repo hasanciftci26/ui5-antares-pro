@@ -103,7 +103,7 @@ export default class Homepage extends BaseController {
 
         const employeeID = (selectedItem.getBindingContext("company") as Context).getProperty("ID") as string;
 
-        this.getRouter().navTo("RouteEditEntry", {
+        this.getRouter().navTo("RouteRemoveEntry", {
             employeeID: employeeID
         });
     }
@@ -118,7 +118,7 @@ export default class Homepage extends BaseController {
 
         const employeeID = (selectedItem.getBindingContext("company") as Context).getProperty("ID") as string;
 
-        this.getRouter().navTo("RouteEditEntry", {
+        this.getRouter().navTo("RouteShowEntry", {
             employeeID: employeeID
         });
     }
