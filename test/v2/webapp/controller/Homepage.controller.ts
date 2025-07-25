@@ -11,6 +11,7 @@ import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
 import DeleteEntry from "ui5/antares/pro/v2/entry/DeleteEntry";
 import DisplayEntry from "ui5/antares/pro/v2/entry/DisplayEntry";
 import UpdateEntry from "ui5/antares/pro/v2/entry/UpdateEntry";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -40,6 +41,16 @@ export default class Homepage extends BaseController {
             entitySet: "Employees",
             modelRef: "company"
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toContract",
+            index: 0
+        }));
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications",
+            index: 0
+        }));        
 
         entry.run();
     }

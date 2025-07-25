@@ -40,6 +40,7 @@ export interface Settings {
     modelRef?: string | ODataModel;
     resourceModelRef?: string | ResourceModel;
     deferredGroupId?: string;
+    index?: number;
     formType?: FormType;
     formTitle?: string;
     submitButtonText?: string;

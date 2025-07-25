@@ -29,6 +29,8 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
     export default interface Factory {
         getContext: GetProperty<Context>;
         setContext: SetProperty<Context>;
+        getIndex: GetProperty<number | undefined>;
+        setIndex: SetProperty<number | undefined>;
         getFormType: GetProperty<FormType>;
         setFormType: SetProperty<FormType>;
         getFormTitle: GetProperty<string>;

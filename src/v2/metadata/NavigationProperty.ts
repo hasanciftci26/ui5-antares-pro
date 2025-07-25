@@ -26,6 +26,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         final: true,
         properties: {
             name: { type: "string" },
+            index: { type: "int" },
             tableClass: { type: "string", defaultValue: "sap.ui.table.Table" },
             tableTitle: { type: "string" },
             tableLayoutData: { type: "object" },

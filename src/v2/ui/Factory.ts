@@ -29,6 +29,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
         abstract: true,
         properties: {
             context: { type: "object" },
+            index: { type: "int" },
             formType: { type: "string", defaultValue: "SmartForm" },
             formTitle: { type: "string", },
             submitButtonText: { type: "string" },
@@ -245,15 +246,19 @@ export default abstract class Factory extends BaseContext implements MetaContext
     private addContentIntoDialog() {
         const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
         const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+        let index = 0;
 
-        this.getDialogGenerator().getDialog().addContent(this.getFormGenerator().getForm());
+        this.getDialogGenerator().getDialog().insertContent(this.getFormGenerator().getForm(), this.getIndex() ?? index);
+        index++;
 
         for (const navigation of singleNavigations) {
-            this.getDialogGenerator().getDialog().addContent(navigation.getContent());
+            this.getDialogGenerator().getDialog().insertContent(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const navigation of multiNavigations) {
-            this.getDialogGenerator().getDialog().addContent(navigation.getContent());
+            this.getDialogGenerator().getDialog().insertContent(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const content of this.getCustomContents()) {
@@ -283,15 +288,19 @@ export default abstract class Factory extends BaseContext implements MetaContext
     private addContentAsItem(wrapper: VBox | HBox | FlexBox) {
         const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
         const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+        let index = 0;
 
-        wrapper.addItem(this.getFormGenerator().getForm());
+        wrapper.insertItem(this.getFormGenerator().getForm(), this.getIndex() ?? index);
+        index++;
 
         for (const navigation of singleNavigations) {
-            wrapper.addItem(navigation.getContent());
+            wrapper.insertItem(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const navigation of multiNavigations) {
-            wrapper.addItem(navigation.getContent());
+            wrapper.insertItem(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const content of this.getCustomContents()) {
@@ -302,15 +311,19 @@ export default abstract class Factory extends BaseContext implements MetaContext
     private addContentAsContent(wrapper: Grid | HorizontalLayout | VerticalLayout) {
         const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
         const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+        let index = 0;
 
-        wrapper.addContent(this.getFormGenerator().getForm());
+        wrapper.insertContent(this.getFormGenerator().getForm(), this.getIndex() ?? index);
+        index++;
 
         for (const navigation of singleNavigations) {
-            wrapper.addContent(navigation.getContent());
+            wrapper.insertContent(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const navigation of multiNavigations) {
-            wrapper.addContent(navigation.getContent());
+            wrapper.insertContent(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const content of this.getCustomContents()) {
@@ -321,15 +334,19 @@ export default abstract class Factory extends BaseContext implements MetaContext
     private addContentIntoContainer(container: VBox) {
         const singleNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
         const multiNavigations = this.getNavigationProperties().filter(property => property.getMultiplicity() === "Many");
+        let index = 0;
 
-        container.addItem(this.getFormGenerator().getForm());
+        container.insertItem(this.getFormGenerator().getForm(), this.getIndex() ?? index);
+        index++;
 
         for (const navigation of singleNavigations) {
-            container.addItem(navigation.getContent());
+            container.insertItem(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const navigation of multiNavigations) {
-            container.addItem(navigation.getContent());
+            container.insertItem(navigation.getContent(), navigation.getIndex() ?? index);
+            index++;
         }
 
         for (const content of this.getCustomContents()) {

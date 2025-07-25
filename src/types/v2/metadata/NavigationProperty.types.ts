@@ -24,6 +24,8 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
     export default interface NavigationProperty {
         getName: GetProperty<string>;
         setName: SetProperty<string>;
+        getIndex: GetProperty<number | undefined>;
+        setIndex: SetProperty<number | undefined>;
         getTableClass: GetProperty<TableClass>;
         setTableClass: SetProperty<TableClass>;
         getTableTitle: GetProperty<string | undefined>;
@@ -88,12 +90,13 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         getCustomContents: GetAggregation<CustomContent[]>;
         removeCustomContent: RemoveAggregation<CustomContent>;
         removeAllCustomContents: RemoveAllAggregation;
-        destroyCustomContents: DestroyAggregation;        
+        destroyCustomContents: DestroyAggregation;
     }
 }
 
 export interface Settings {
     name: string;
+    index?: number;
     tableClass?: TableClass;
     tableTitle?: string;
     tableLayoutData?: LayoutData;
