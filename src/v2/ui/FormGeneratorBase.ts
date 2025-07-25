@@ -93,55 +93,50 @@ export default abstract class FormGeneratorBase extends ManagedObject {
     protected getFormTitle() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return (parent as NavigationProperty).getFormTitle();
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return;
-            default:
-                const factory = parent as Factory;
-                const containsSingleNavigation = factory.getNavigationProperties().some(navigation => navigation.getMultiplicity() === "One");
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getFormTitle();
+        } else if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
+            return;
+        } else {
+            const factory = parent as Factory;
+            const containsSingleNavigation = factory.getNavigationProperties().some(navigation => navigation.getMultiplicity() === "One");
 
-                if (containsSingleNavigation) {
-                    return factory.getFormTitle();
-                } else {
-                    return;
-                }
+            if (containsSingleNavigation) {
+                return factory.getFormTitle();
+            } else {
+                return;
+            }
         }
     }
 
     protected getFactory() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return parent.getParent() as Factory;
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return (parent.getParent() as NavigationProperty).getOwnerParent();
-            default:
-                return parent as Factory;
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getParent() as Factory;
+        } else if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
+            return (parent.getParent() as NavigationProperty).getOwnerParent();
+        } else {
+            return parent as Factory;
         }
     }
 
     protected getPropertyPath(property: string) {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                const navigationProperty = (parent as NavigationProperty).getName();
-                return navigationProperty + "/" + property;
-            default:
-                return property;
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            const navigationProperty = parent.getName();
+            return navigationProperty + "/" + property;
         }
+
+        return property;
     }
 
     protected getPathPrefix() {
         const parent = this.getParent() as ManagedObject;
 
-        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
-            return (parent as NavigationProperty).getName();
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getName();
         } else {
             return "";
         }
@@ -150,27 +145,23 @@ export default abstract class FormGeneratorBase extends ManagedObject {
     protected getMetaContext() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return (parent as NavigationProperty).getMetaContext();
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return (parent.getParent() as NavigationProperty).getMetaContext();
-            default:
-                return (parent as Factory).getMetaContext();
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getMetaContext();
+        } else if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
+            return (parent.getParent() as NavigationProperty).getMetaContext();
         }
+
+        return (parent as Factory).getMetaContext();
     }
 
     protected getFormUtilityProvider() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return parent.getParent() as FormUtilityProvider;
-            default:
-                return parent as FormUtilityProvider;
+        if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
+            return parent.getParent() as FormUtilityProvider;
         }
+
+        return parent as FormUtilityProvider;
     }
 
     protected getContext() {
@@ -180,15 +171,13 @@ export default abstract class FormGeneratorBase extends ManagedObject {
     protected getPropertySettings() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return (parent as NavigationProperty).getPropertySettings();
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return (parent.getParent() as NavigationProperty).getPropertySettings();
-            default:
-                return (parent as Factory).getPropertySettings();
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getPropertySettings();
+        } else if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
+            return (parent.getParent() as NavigationProperty).getPropertySettings();
         }
+
+        return (parent as Factory).getPropertySettings();
     }
 
     protected getSinglePropertySettings(property: string) {
@@ -205,25 +194,26 @@ export default abstract class FormGeneratorBase extends ManagedObject {
 
     private isParentFactory() {
         const parent = this.getParent() as ManagedObject;
+        const relevantParents = [
+            "ui5.antares.pro.v2.metadata.NavigationProperty",
+            "ui5.antares.pro.v2.ui.ResponsiveTableGenerator",
+            "ui5.antares.pro.v2.ui.GridTableGenerator"
+        ];
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return false;
-            default:
-                return true;
+        if (parent.isA(relevantParents)) {
+            return false;
         }
+
+        return true;
     }
 
     private isParentOneNavigationProperty() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return (parent as NavigationProperty).getMultiplicity() === "One";
-            default:
-                return false;
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getMultiplicity() === "One";
         }
+
+        return false;
     }
 }

@@ -156,40 +156,35 @@ export default class ValidationLogic extends ManagedObject {
     private getFactory() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return (parent as NavigationProperty).getOwnerParent();
-            default:
-                return parent as Factory;
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getOwnerParent();
         }
+
+        return parent as Factory;
     }
 
     private getContext() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return (parent as NavigationProperty).getContext();
-            default:
-                return (parent as Factory).getContext();
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getContext();
         }
+
+        return (parent as Factory).getContext();
     }
 
     private getPropertyPath(property: string) {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                const navigationProperty = parent as NavigationProperty;
-
-                if (navigationProperty.getMultiplicity() === "One") {
-                    return navigationProperty.getName() + "/" + property;
-                } else {
-                    return property;
-                }
-            default:
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            if (parent.getMultiplicity() === "One") {
+                return parent.getName() + "/" + property;
+            } else {
                 return property;
+            }
         }
+
+        return property;
     }
 
     private hasValue1(condition: Condition): condition is Extract<Condition, { value1: any; }> {

@@ -2,6 +2,7 @@ import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject
 import UI5Element from "sap/ui/core/Element";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Settings } from "ui5/antares/pro/types/v2/custom/CustomElement.types";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
 
 /**
@@ -35,10 +36,10 @@ export default class CustomElement<T extends UI5Element = UI5Element> extends Ma
     private getFactory() {
         const parent = this.getParent() as ManagedObject;
 
-        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
             return parent.getParent() as Factory;
-        } else {
-            return parent as Factory;
         }
+
+        return parent as Factory;
     }
 }

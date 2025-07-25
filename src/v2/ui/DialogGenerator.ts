@@ -91,24 +91,20 @@ export default class DialogGenerator extends ManagedObject {
     private getOperation() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return (parent.getParent() as NavigationProperty).getOperation();
-            default:
-                return (parent as Factory).getOperation();
+        if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
+            return (parent.getParent() as NavigationProperty).getOperation();
         }
+
+        return (parent as Factory).getOperation();
     }
 
     private getFactory() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.ui.ResponsiveTableGenerator":
-            case "ui5.antares.pro.v2.ui.GridTableGenerator":
-                return (parent.getParent() as NavigationProperty).getOwnerParent();
-            default:
-                return parent as Factory;
+        if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
+            return (parent.getParent() as NavigationProperty).getOwnerParent();
         }
+
+        return parent as Factory;
     }
 }

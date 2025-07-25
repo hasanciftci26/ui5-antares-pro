@@ -54,6 +54,11 @@ export default class Homepage extends BaseController {
         });
 
         entry.addNavigationProperty(new NavigationProperty({
+            name: "toContract"
+        }));
+
+
+        entry.addNavigationProperty(new NavigationProperty({
             name: "toCertifications"
         }));
 

@@ -32,6 +32,7 @@ import Filter from "sap/ui/model/Filter";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import CustomFilterBar from "ui5/antares/pro/v2/custom/type/CustomFilterBar";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 
 /**
  * @namespace ui5.antares.pro.v2.valuelist
@@ -392,11 +393,11 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
     private getFactory() {
         const parent = this.getParent() as ManagedObject;
 
-        if (parent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
             return parent.getParent() as Factory;
-        } else {
-            return this.getParent() as Factory;
         }
+
+        return this.getParent() as Factory;
     }
 
     private setInitialFilters() {

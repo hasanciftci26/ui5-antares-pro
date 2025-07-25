@@ -9,8 +9,10 @@ import {
     NavigationInfo,
     PropertyDisplayFormat
 } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
+import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
 import LabelGenerator from "ui5/antares/pro/v2/util/LabelGenerator";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace ui5.antares.pro.v2.metadata
@@ -92,20 +94,19 @@ export default class MetaContext extends ManagedObject {
     public getFactory() {
         const parent = this.getParent() as ManagedObject;
 
-        switch (parent.getMetadata().getName()) {
-            case "ui5.antares.pro.v2.metadata.NavigationProperty":
-                return parent.getParent() as Factory;
-            case "ui5.antares.pro.v2.valuelist.ValueList":
-                const grandParent = parent.getParent() as ManagedObject;
+        if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+            return parent.getParent() as Factory;
+        } else if (parent.isA<ValueList>("ui5.antares.pro.v2.valuelist.ValueList")) {
+            const grandParent = parent.getParent() as ManagedObject;
 
-                if (grandParent.getMetadata().getName() === "ui5.antares.pro.v2.metadata.NavigationProperty") {
-                    return grandParent.getParent() as Factory;
-                } else {
-                    return parent.getParent() as Factory;
-                }
-            default:
-                return parent as Factory;
+            if (grandParent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
+                return grandParent.getParent() as Factory;
+            } else {
+                return parent.getParent() as Factory;
+            }
         }
+
+        return parent as Factory;
     }
 
     private isKeyProperty(entityType: EntityType, property: MetaModelProperty) {
