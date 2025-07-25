@@ -31,7 +31,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
             context: { type: "object" },
             index: { type: "int" },
             formType: { type: "string", defaultValue: "SmartForm" },
-            formTitle: { type: "string", },
+            dialogTitle: { type: "string", },
             submitButtonText: { type: "string" },
             submitButtonType: { type: "string", defaultValue: "Emphasized" },
             closeButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.close") },
@@ -355,27 +355,27 @@ export default abstract class Factory extends BaseContext implements MetaContext
     }
 
     private setDefaultValues() {
-        this.setDefaultFormTitle();
+        this.setDefaultDialogTitle();
         this.setDefaultSubmitButtonText();
     }
 
-    private setDefaultFormTitle() {
-        if (this.getFormTitle()) {
+    private setDefaultDialogTitle() {
+        if (this.getDialogTitle()) {
             return;
         }
 
         switch (this.getOperation()) {
             case "Create":
-                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.createEntry", [this.getEntitySet()]));
+                this.setDialogTitle(LibraryBundle.getText("ui5AntaresPro.title.createEntry", [this.getEntitySet()]));
                 break;
             case "Update":
-                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()]));
+                this.setDialogTitle(LibraryBundle.getText("ui5AntaresPro.title.updateEntry", [this.getEntitySet()]));
                 break;
             case "Delete":
-                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()]));
+                this.setDialogTitle(LibraryBundle.getText("ui5AntaresPro.title.deleteEntry", [this.getEntitySet()]));
                 break;
             case "Read":
-                this.setFormTitle(LibraryBundle.getText("ui5AntaresPro.title.readEntry", [this.getEntitySet()]));
+                this.setDialogTitle(LibraryBundle.getText("ui5AntaresPro.title.readEntry", [this.getEntitySet()]));
                 break;
         }
     }
@@ -404,7 +404,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
 
     private setFactoryModel() {
         const model = new JSONModel({
-            formTitle: this.getFormTitle(),
+            dialogTitle: this.getDialogTitle(),
             submitButtonText: this.getSubmitButtonText(),
             submitButtonType: this.getSubmitButtonType(),
             closeButtonText: this.getCloseButtonText(),
@@ -415,7 +415,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
         this.setModel(model, "factory");
 
         this.bindProperties([
-            "formTitle",
+            "dialogTitle",
             "submitButtonText",
             "submitButtonType",
             "closeButtonText",

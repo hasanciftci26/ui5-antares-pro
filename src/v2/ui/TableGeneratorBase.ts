@@ -39,11 +39,11 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         properties: {
             tableTitle: { type: "string", defaultValue: "" },
             count: { type: "int", defaultValue: 0 },
-            formTitle: { type: "string", defaultValue: "" },
-            createFormTitle: { type: "string" },
-            updateFormTitle: { type: "string" },
-            deleteFormTitle: { type: "string" },
-            readFormTitle: { type: "string" },
+            dialogTitle: { type: "string", defaultValue: "" },
+            createDialogTitle: { type: "string" },
+            updateDialogTitle: { type: "string" },
+            deleteDialogTitle: { type: "string" },
+            readDialogTitle: { type: "string" },
             createButtonText: { type: "string" },
             createButtonType: { type: "string" },
             updateButtonText: { type: "string" },
@@ -261,7 +261,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getOwnerParent().setOperation("Create");
         this.setSubmitButtonText(this.getCreateButtonText());
         this.setSubmitButtonType(this.getCreateButtonType());
-        this.setFormTitle(this.getCreateFormTitle() || LibraryBundle.getText(
+        this.setDialogTitle(this.getCreateDialogTitle() || LibraryBundle.getText(
             "ui5AntaresPro.title.createEntry",
             [this.getOwnerParent().getEntitySet()]
         ));
@@ -292,7 +292,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getOwnerParent().setOperation("Update");
         this.setSubmitButtonText(this.getUpdateButtonText());
         this.setSubmitButtonType(this.getUpdateButtonType());
-        this.setFormTitle(this.getUpdateFormTitle() || LibraryBundle.getText(
+        this.setDialogTitle(this.getUpdateDialogTitle() || LibraryBundle.getText(
             "ui5AntaresPro.title.updateEntry",
             [this.getOwnerParent().getEntitySet()]
         ));
@@ -319,7 +319,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.getOwnerParent().setOperation("Delete");
         this.setSubmitButtonText(this.getDeleteButtonText());
         this.setSubmitButtonType(this.getDeleteButtonType());
-        this.setFormTitle(this.getDeleteFormTitle() || LibraryBundle.getText(
+        this.setDialogTitle(this.getDeleteDialogTitle() || LibraryBundle.getText(
             "ui5AntaresPro.title.deleteEntry",
             [this.getOwnerParent().getEntitySet()]
         ));
@@ -344,7 +344,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
         this.getOwnerParent().setContext(selectedContext);
         this.getOwnerParent().setOperation("Read");
-        this.setFormTitle(this.getReadFormTitle() || LibraryBundle.getText(
+        this.setDialogTitle(this.getReadDialogTitle() || LibraryBundle.getText(
             "ui5AntaresPro.title.readEntry",
             [this.getOwnerParent().getEntitySet()]
         ));
@@ -707,7 +707,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         const model = new JSONModel({
             tableTitle: this.getTableTitle(),
             count: this.getCount(),
-            formTitle: this.getFormTitle(),
+            dialogTitle: this.getDialogTitle(),
             submitButtonText: this.getSubmitButtonText(),
             submitButtonType: this.getSubmitButtonType(),
             closeButtonText: this.getCloseButtonText(),
@@ -720,7 +720,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.bindProperties([
             "tableTitle",
             "count",
-            "formTitle",
+            "dialogTitle",
             "submitButtonText",
             "submitButtonType",
             "closeButtonText",

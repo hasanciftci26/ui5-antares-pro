@@ -42,7 +42,7 @@ export interface Settings {
     deferredGroupId?: string;
     index?: number;
     formType?: FormType;
-    formTitle?: string;
+    dialogTitle?: string;
     submitButtonText?: string;
     submitButtonType?: ButtonType;
     closeButtonText?: string;

@@ -9,16 +9,16 @@ declare module "ui5/antares/pro/v2/ui/TableGeneratorBase" {
         setTableTitle: SetProperty<string>;
         getCount: GetProperty<number>;
         setCount: SetProperty<number>;
-        getFormTitle: GetProperty<string>;
-        setFormTitle: SetProperty<string>;
-        getCreateFormTitle: GetProperty<string | undefined>;
-        setCreateFormTitle: SetProperty<string | undefined>;
-        getUpdateFormTitle: GetProperty<string | undefined>;
-        setUpdateFormTitle: SetProperty<string | undefined>;
-        getDeleteFormTitle: GetProperty<string | undefined>;
-        setDeleteFormTitle: SetProperty<string | undefined>;
-        getReadFormTitle: GetProperty<string | undefined>;
-        setReadFormTitle: SetProperty<string | undefined>;
+        getDialogTitle: GetProperty<string>;
+        setDialogTitle: SetProperty<string>;
+        getCreateDialogTitle: GetProperty<string | undefined>;
+        setCreateDialogTitle: SetProperty<string | undefined>;
+        getUpdateDialogTitle: GetProperty<string | undefined>;
+        setUpdateDialogTitle: SetProperty<string | undefined>;
+        getDeleteDialogTitle: GetProperty<string | undefined>;
+        setDeleteDialogTitle: SetProperty<string | undefined>;
+        getReadDialogTitle: GetProperty<string | undefined>;
+        setReadDialogTitle: SetProperty<string | undefined>;
         getCreateButtonText: GetProperty<string>;
         setCreateButtonText: SetProperty<string>;
         getCreateButtonType: GetProperty<ButtonType>;
@@ -46,10 +46,10 @@ declare module "ui5/antares/pro/v2/ui/TableGeneratorBase" {
 
 export interface Settings {
     tableTitle?: string;
-    createFormTitle?: string;
-    updateFormTitle?: string;
-    deleteFormTitle?: string;
-    readFormTitle?: string;
+    createDialogTitle?: string;
+    updateDialogTitle?: string;
+    deleteDialogTitle?: string;
+    readDialogTitle?: string;
     createButtonText: string;
     createButtonType: ButtonType;
     updateButtonText: string;

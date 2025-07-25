@@ -38,7 +38,7 @@ export default class DialogGenerator extends ManagedObject {
             draggable: true,
             resizable: true,
             title: {
-                path: "dialog>/formTitle"
+                path: "dialog>/dialogTitle"
             },
             endButton: this.getEndButton(),
             escapeHandler: this.onEscape.bind(this) as EscapeHandler

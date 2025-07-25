@@ -42,16 +42,6 @@ export default class Homepage extends BaseController {
             modelRef: "company"
         });
 
-        entry.addNavigationProperty(new NavigationProperty({
-            name: "toContract",
-            index: 0
-        }));
-
-        entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications",
-            index: 0
-        }));        
-
         entry.run();
     }
 
@@ -61,6 +51,10 @@ export default class Homepage extends BaseController {
             entitySet: "Employees",
             modelRef: "company"
         });
+
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications"
+        }));
 
         entry.run("tblEmployees");
     }
