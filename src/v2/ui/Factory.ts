@@ -30,8 +30,9 @@ export default abstract class Factory extends BaseContext implements MetaContext
         properties: {
             context: { type: "object" },
             index: { type: "int" },
+            dialogTitle: { type: "string" },
             formType: { type: "string", defaultValue: "SmartForm" },
-            dialogTitle: { type: "string", },
+            formTitle: { type: "string" },
             submitButtonText: { type: "string" },
             submitButtonType: { type: "string", defaultValue: "Emphasized" },
             closeButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.close") },

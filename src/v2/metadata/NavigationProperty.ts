@@ -30,6 +30,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             tableClass: { type: "string", defaultValue: "sap.ui.table.Table" },
             tableTitle: { type: "string" },
             tableLayoutData: { type: "object" },
+            formTitle: { type: "string" },
             createDialogTitle: { type: "string" },
             updateDialogTitle: { type: "string" },
             deleteDialogTitle: { type: "string" },

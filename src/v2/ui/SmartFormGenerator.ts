@@ -41,6 +41,7 @@ export default class SmartFormGenerator extends FormGeneratorBase {
 
     public generate() {
         const form = new SmartForm({
+            title: this.getFormTitle(),
             editable: true,
             editTogglable: false,
             validationMode: "Standard",

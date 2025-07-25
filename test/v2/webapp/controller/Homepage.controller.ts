@@ -39,7 +39,8 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            modelRef: "company"
+            modelRef: "company",
+            formTitle: "New Employee"
         });
 
         entry.run();

@@ -30,6 +30,10 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setTableClass: SetProperty<TableClass>;
         getTableTitle: GetProperty<string | undefined>;
         setTableTitle: SetProperty<string | undefined>;
+        getTableLayoutData: GetProperty<LayoutData | undefined>;
+        setTableLayoutData: SetProperty<LayoutData>;
+        getFormTitle: GetProperty<string | undefined>;
+        setFormTitle: SetProperty<string | undefined>;
         getCreateDialogTitle: GetProperty<string | undefined>;
         setCreateDialogTitle: SetProperty<string | undefined>;
         getUpdateDialogTitle: GetProperty<string | undefined>;
@@ -38,8 +42,6 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setDeleteDialogTitle: SetProperty<string | undefined>;
         getReadDialogTitle: GetProperty<string | undefined>;
         setReadDialogTitle: SetProperty<string | undefined>;
-        getTableLayoutData: GetProperty<LayoutData | undefined>;
-        setTableLayoutData: SetProperty<LayoutData>;
         getCreateButtonText: GetProperty<string>;
         setCreateButtonText: SetProperty<string>;
         getCreateButtonType: GetProperty<ButtonType>;
@@ -100,6 +102,7 @@ export interface Settings {
     tableClass?: TableClass;
     tableTitle?: string;
     tableLayoutData?: LayoutData;
+    formTitle?: string;
     createDialogTitle?: string;
     updateDialogTitle?: string;
     deleteDialogTitle?: string;

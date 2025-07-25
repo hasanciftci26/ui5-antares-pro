@@ -35,6 +35,7 @@ export default class SimpleFormGenerator extends FormGeneratorBase {
 
     public generate() {
         const form = new SimpleForm({
+            title: this.getFormTitle(),
             editable: true,
             adjustLabelSpan: false,
             content: this.getFormContent()

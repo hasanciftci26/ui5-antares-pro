@@ -31,10 +31,12 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         setContext: SetProperty<Context>;
         getIndex: GetProperty<number | undefined>;
         setIndex: SetProperty<number | undefined>;
-        getFormType: GetProperty<FormType>;
-        setFormType: SetProperty<FormType>;
         getDialogTitle: GetProperty<string>;
         setDialogTitle: SetProperty<string>;
+        getFormType: GetProperty<FormType>;
+        setFormType: SetProperty<FormType>;
+        getFormTitle: GetProperty<string | undefined>;
+        setFormTitle: SetProperty<string | undefined>;                
         getSubmitButtonText: GetProperty<string>;
         setSubmitButtonText: SetProperty<string>;
         getSubmitButtonType: GetProperty<ButtonType>;

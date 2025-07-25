@@ -41,8 +41,9 @@ export interface Settings {
     resourceModelRef?: string | ResourceModel;
     deferredGroupId?: string;
     index?: number;
-    formType?: FormType;
     dialogTitle?: string;
+    formType?: FormType;
+    formTitle?: string;
     submitButtonText?: string;
     submitButtonType?: ButtonType;
     closeButtonText?: string;
@@ -75,4 +76,5 @@ export interface FormUtilityProvider extends ManagedObject {
     getFormLayout: () => FormLayout | undefined;
     getContext: () => Context;
     getCustomElementByProperty: (property: string) => CustomElement | undefined;
+    getFormTitle: () => string | undefined;
 }
