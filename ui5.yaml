@@ -8,6 +8,9 @@ framework:
   libraries:
     - name: sap.ui.core
     - name: sap.m
+    - name: sap.ui.comp
+    - name: sap.ui.table
+    - name: sap.ui.layout
 resources:
   configuration:
     paths:

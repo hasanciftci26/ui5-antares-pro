@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "UI5 Antares Pro",
   "scripts": {
-    "build": "ui5 build --config=ui5-npm.yaml --clean-dest --exclude-task=minify",
+    "build": "ui5 build --config=ui5-npm.yaml --clean-dest",
     "prepack": "npm run build && rimraf --glob dist/**/*.d.ts.map",
     "local-install-v2": "npm pack && npm --prefix test/v2 run install-tgz"
   },

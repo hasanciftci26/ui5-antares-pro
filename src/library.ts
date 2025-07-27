@@ -5,7 +5,10 @@ const library = Lib.init({
     apiVersion: 2,
     dependencies: [
         "sap.ui.core",
-        "sap.m"
+        "sap.m",
+        "sap.ui.comp",
+        "sap.ui.table",
+        "sap.ui.layout"
     ],
     controls: [],
     noLibraryCSS: true,

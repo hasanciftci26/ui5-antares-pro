@@ -13,6 +13,15 @@
 		<dependency>
 			<libraryName>sap.m</libraryName>
 		</dependency>
+		<dependency>
+			<libraryName>sap.ui.comp</libraryName>
+		</dependency>
+		<dependency>
+			<libraryName>sap.ui.table</libraryName>
+		</dependency>
+		<dependency>
+			<libraryName>sap.ui.layout</libraryName>
+		</dependency>
 	</dependencies>
 	<appData></appData>
 </library>
