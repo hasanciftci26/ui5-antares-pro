@@ -96,16 +96,9 @@ export default abstract class FormGeneratorBase extends ManagedObject {
         if (parent.isA<NavigationProperty>("ui5.antares.pro.v2.metadata.NavigationProperty")) {
             return parent.getFormTitle();
         } else if (parent.isA(["ui5.antares.pro.v2.ui.ResponsiveTableGenerator", "ui5.antares.pro.v2.ui.GridTableGenerator"])) {
-            return;
+            return (parent.getParent() as NavigationProperty).getFormTitle();
         } else {
-            const factory = parent as Factory;
-            const containsSingleNavigation = factory.getNavigationProperties().some(navigation => navigation.getMultiplicity() === "One");
-
-            if (containsSingleNavigation) {
-                return factory.getFormTitle();
-            } else {
-                return;
-            }
+            return (parent as Factory).getFormTitle();
         }
     }
 
