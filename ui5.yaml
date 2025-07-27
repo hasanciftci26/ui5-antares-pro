@@ -4,7 +4,7 @@ metadata:
   name: ui5.antares.pro
 framework:
   name: SAPUI5
-  version: 1.135.0
+  version: 1.136.3
   libraries:
     - name: sap.ui.core
     - name: sap.m

@@ -72,7 +72,7 @@
             "ui5.antares.pro": "./resources/ui5/antares/pro"
         },
         "dependencies": {
-            "minUI5Version": "1.135.0",
+            "minUI5Version": "1.136.3",
             "libs": {
                 "sap.m": {},
                 "sap.ui.core": {},

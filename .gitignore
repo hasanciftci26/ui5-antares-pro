@@ -2,3 +2,4 @@ node_modules
 dist
 *.tgz
 test/**/package-lock.json
+package-lock.json
