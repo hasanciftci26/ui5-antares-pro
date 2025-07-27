@@ -42,7 +42,9 @@
             "i18n": {
                 "bundleUrl": "i18n/i18n.properties",
                 "supportedLocales": [
-                    ""
+                    "",
+                    "tr",
+                    "de"
                 ],
                 "fallbackLocale": ""
             }

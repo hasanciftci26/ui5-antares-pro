@@ -40,13 +40,14 @@ export default class Homepage extends BaseController {
             controller: this,
             entitySet: "Employees",
             modelRef: "company",
-            formTitle: "New Employee"
+            propertySettings: [{
+                name: "firstName",
+                required: true
+            }, {
+                name: "lastName",
+                required: true
+            }]
         });
-
-        entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications",
-            tableClass: "sap.m.Table"
-        }));        
 
         entry.run();
     }
