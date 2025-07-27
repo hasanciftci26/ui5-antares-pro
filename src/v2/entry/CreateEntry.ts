@@ -120,8 +120,7 @@ export default class CreateEntry extends Factory {
 
         const context = this.getODataModel().createEntry("/" + this.getEntitySet(), {
             groupId: this.getDeferredGroupId(),
-            properties: initialData,
-            expand: this.getNavigationProperties().map(property => property.getName()).join() || undefined
+            properties: initialData
         }) as Context;
 
         this.setContext(context);
