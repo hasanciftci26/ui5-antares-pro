@@ -28,6 +28,7 @@ import Event from "sap/ui/base/Event";
 import { Button$PressEvent } from "sap/m/Button";
 import { ErrorBody, SubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponseParser.types";
 import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
+import ListBinding from "sap/ui/model/ListBinding";
 
 /**
  * @namespace ui5.antares.pro.v2.ui
@@ -55,6 +56,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             closeButtonText: { type: "string" },
             closeButtonType: { type: "string" },
             visibleColumnCount: { type: "int" },
+            visibleColumns: { type: "string[]", visibility: "hidden" },
             tableInstance: { type: "object", visibility: "hidden" },
             p13nStateChangeHandler: { type: "function", visibility: "hidden" }
         },
@@ -182,6 +184,14 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         if (tableLayoutData) {
             this.getTableInstance().setLayoutData(tableLayoutData);
         }
+    }
+
+    protected getVisibleColumns() {
+        return this.getProperty("visibleColumns") as string[];
+    }
+
+    protected setVisibleColumns(visibleColumns: string[]) {
+        this.setProperty("visibleColumns", visibleColumns);
     }
 
     private getToolbarContent() {
@@ -395,17 +405,22 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             });
         } else {
             const columns = tableInstance.getColumns();
+            const visibleColumns: string[] = [];
             columns.forEach(column => column.setVisible(false));
 
             state.Columns.forEach((selectedColumn, index) => {
                 const column = columns.find(column => column.data("p13nKey") === selectedColumn.key);
 
                 if (column) {
+                    visibleColumns.push(selectedColumn.key);
                     column.setVisible(true);
                     tableInstance.removeColumn(column);
                     tableInstance.insertColumn(column, index);
                 }
             });
+
+            this.setVisibleColumns(visibleColumns);
+            (tableInstance.getBinding("items") as ListBinding).refresh(true);
         }
     }
 

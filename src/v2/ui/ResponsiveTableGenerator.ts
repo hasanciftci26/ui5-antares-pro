@@ -30,16 +30,14 @@ export default class ResponsiveTableGenerator extends TableGeneratorBase {
 
     public async generate() {
         const table = await this.loadTable();
-        const template = new ColumnListItem();
-        const p13nProperties = this.addColumns(table, template);
+        const p13nProperties = this.addColumns(table);
 
         this.initialize();
         table.setHeaderToolbar(this.getToolbar());
-        // table.addStyleClass("sapUiSmallMargin");
 
         table.bindItems({
             path: this.getOwnerParent().getName(),
-            template: template,
+            factory: this.tableFactory.bind(this),
             events: {
                 change: (event: Binding$ChangeEvent) => {
                     const length = (event.getSource() as ODataListBinding).getLength();
@@ -55,14 +53,10 @@ export default class ResponsiveTableGenerator extends TableGeneratorBase {
         this.setTableLayoutData();
     }
 
-    private addColumns(table: Table, template: ColumnListItem) {
+    private addColumns(table: Table) {
         const properties = this.getMetaContext().getEntityProperties().filter(prop => prop.visible);
         const p13nProperties: P13nProperty[] = [];
-        const generator = new ControlGenerator({
-            generateFor: "Table",
-            dateTimeSettings: this.getFactory().getDateTimeSettings(),
-            numberSettings: this.getFactory().getNumberSettings()
-        });
+        const visibleColumns: string[] = [];
         let index = 0;
 
         for (const property of properties) {
@@ -78,16 +72,42 @@ export default class ResponsiveTableGenerator extends TableGeneratorBase {
                 header: new Label({ text: property.label }),
             }));
 
-            template.addCell(generator.generate(property, property.name));
+            if (index < this.getVisibleColumnCount()) {
+                visibleColumns.push(property.name);
+            }
+
             index++;
         }
 
+        this.setVisibleColumns(visibleColumns);
         return p13nProperties;
+    }
+
+    private tableFactory(id: string) {
+        const properties = this.getMetaContext().getEntityProperties().filter(prop => prop.visible);
+        const generator = new ControlGenerator({
+            generateFor: "Table",
+            dateTimeSettings: this.getFactory().getDateTimeSettings(),
+            numberSettings: this.getFactory().getNumberSettings()
+        });
+        const template = new ColumnListItem({
+            id: id
+        });
+
+        for (const column of this.getVisibleColumns()) {
+            const property = properties.find(property => property.name === column);
+
+            if (property) {
+                template.addCell(generator.generate(property, property.name));
+            }
+        }
+
+        return template;
     }
 
     private async loadTable() {
         const table = await Fragment.load({
-            id: "gridTable" + Date.now(),
+            id: "responsiveTable" + Date.now(),
             name: "ui5.antares.pro.v2.ui.static.ResponsiveTable"
         }) as Table;
 

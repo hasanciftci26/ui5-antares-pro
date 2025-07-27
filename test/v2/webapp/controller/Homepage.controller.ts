@@ -43,6 +43,11 @@ export default class Homepage extends BaseController {
             formTitle: "New Employee"
         });
 
+        entry.addNavigationProperty(new NavigationProperty({
+            name: "toCertifications",
+            tableClass: "sap.m.Table"
+        }));        
+
         entry.run();
     }
 
@@ -59,7 +64,8 @@ export default class Homepage extends BaseController {
 
 
         entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications"
+            name: "toCertifications",
+            tableClass: "sap.m.Table"
         }));
 
         entry.run("tblEmployees");
