@@ -22,7 +22,7 @@ export default class CustomGuid extends Guid {
 
         const validationLogic = this.settings.getValidationLogic();
 
-        if (validationLogic && value != null && value !== "" && value !== "00000000-0000-0000-0000-000000000000") {
+        if (validationLogic && value != null && value !== "") {
             return validationLogic.evaluate(value);
         }
     }
@@ -30,7 +30,7 @@ export default class CustomGuid extends Guid {
     private checkRequired(value: string | null) {
         const property = this.settings.getEntityProperty();
 
-        if (property.required && (value == null || value === "" || value === "00000000-0000-0000-0000-000000000000")) {
+        if (property.required && (value == null || value === "")) {
             throw new ValidateException(this.settings.getRequiredPropertyError().replace("{property}", property.label));
         }
     }

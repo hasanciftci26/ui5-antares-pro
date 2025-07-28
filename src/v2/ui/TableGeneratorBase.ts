@@ -278,9 +278,6 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
         await this.getMetaContext().load();
         this.createEntry();
-        this.setGuidValues();
-        this.inheritValues();
-        this.setBooleanValues();
         this.getDialogGenerator().generate();
         this.getFormGenerator().generate();
 
@@ -461,12 +458,12 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
         if (tableInstance instanceof GridTable) {
             const binding = tableInstance.getBinding("rows") as ODataListBinding;
-            const context = binding.create(undefined, true);
+            const context = binding.create(this.getInitialEntryData(), true);
 
             this.getOwnerParent().setContext(context);
         } else {
             const binding = tableInstance.getBinding("items") as ODataListBinding;
-            const context = binding.create(undefined, true);
+            const context = binding.create(this.getInitialEntryData(), true);
 
             this.getOwnerParent().setContext(context);
         }
@@ -479,9 +476,95 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         }) as Context;
 
         this.getOwnerParent().setContext(context);
+        this.setGuidValuesIntoContext();
+        this.inheritValuesIntoContext();
+        this.setBooleanValuesIntoContext();
     }
 
-    private setGuidValues() {
+    private getInitialEntryData() {
+        const data: Record<string, any> = {};
+
+        this.setGuidValuesIntoInitialData(data);
+        this.inheritValuesIntoInitialData(data);
+        this.setBooleanValuesIntoInitialData(data);
+
+        if (Object.keys(data).length) {
+            return data;
+        }
+
+        return;
+    }
+
+    private setGuidValuesIntoInitialData(data: Record<string, any>) {
+        const properties = this.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Guid");
+
+        for (const property of properties) {
+            const factory = this.getFactory();
+            const value = data[property.name];
+            const hasInheritance = this.getOwnerParent().getInheritValues().some(inherit => inherit.targetProperty === property.name);
+
+            if ((value != null && value !== "") || hasInheritance) {
+                continue;
+            }
+
+            switch (factory.getGuidGenerationMode()) {
+                case "All":
+                    data[property.name] = window.crypto.randomUUID();
+                    break;
+                case "Key":
+                    if (property.key) {
+                        data[property.name] = window.crypto.randomUUID();
+                    }
+                    break;
+                case "NonKey":
+                    if (!property.key) {
+                        data[property.name] = window.crypto.randomUUID();
+                    }
+                    break;
+            }
+        }
+    }
+
+    private inheritValuesIntoInitialData(data: Record<string, any>) {
+        const properties = this.getMetaContext().getEntityProperties();
+
+        for (const property of properties) {
+            const inheritance = this.getOwnerParent().getInheritValues().find(inherit => inherit.targetProperty === property.name);
+
+            if (!inheritance) {
+                continue;
+            }
+
+            const originalValue = data[property.name];
+            const parentValue = this.getFactory().getContext().getProperty(inheritance.parentProperty);
+
+            if ((originalValue != null && originalValue !== "") || (parentValue == null || parentValue === "")) {
+                continue;
+            }
+
+            data[property.name] = parentValue;
+        }
+    }
+
+    private setBooleanValuesIntoInitialData(data: Record<string, any>) {
+        if (!this.getFactory().getBooleanFalseByDefault()) {
+            return;
+        }
+
+        const properties = this.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Boolean");
+
+        for (const property of properties) {
+            const value = data[property.name];
+
+            if (value != null && value !== "") {
+                continue;
+            }
+
+            data[property.name] = false;
+        }
+    }
+
+    private setGuidValuesIntoContext() {
         const properties = this.getMetaContext().getEntityProperties().filter(property => property.type === "Edm.Guid");
 
         for (const property of properties) {
@@ -512,7 +595,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         }
     }
 
-    private inheritValues() {
+    private inheritValuesIntoContext() {
         const properties = this.getMetaContext().getEntityProperties();
 
         for (const property of properties) {
@@ -533,7 +616,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         }
     }
 
-    private setBooleanValues() {
+    private setBooleanValuesIntoContext() {
         if (!this.getFactory().getBooleanFalseByDefault()) {
             return;
         }
@@ -550,17 +633,6 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             }
 
             factory.getODataModel().setProperty(context.getPath() + "/" + property.name, false);
-        }
-    }
-
-    private correctFixedValueListValues() {
-        const context = this.getOwnerParent().getContext();
-        const data = context.getObject() as Record<string, any>;
-
-        for (const property in data) {
-            if (data[property] === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY" || data[property] === "00000000-0000-0000-0000-000000000000") {
-                this.getFactory().getODataModel().setProperty(context.getPath() + `/${property}`, null);
-            }
         }
     }
 
@@ -588,7 +660,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
 
     private async submit() {
         BusyIndicator.show(0);
-        this.correctFixedValueListValues();
+        
         const validation = await this.getFormGenerator().validate();
 
         if (!validation) {

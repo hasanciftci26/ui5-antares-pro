@@ -22,7 +22,7 @@ export default class CustomString extends String {
 
         const validationLogic = this.settings.getValidationLogic();
 
-        if (validationLogic && value != null && value !== "" && value !== "UI5_ANTARES_PRO_SELECT_EMPTY_KEY") {
+        if (validationLogic && value != null && value !== "") {
             return validationLogic.evaluate(value);
         }
     }
@@ -30,7 +30,7 @@ export default class CustomString extends String {
     private checkRequired(value: string | null) {
         const property = this.settings.getEntityProperty();
 
-        if (property.required && (value == null || value === "" || value === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY")) {
+        if (property.required && (value == null || value === "")) {
             throw new ValidateException(this.settings.getRequiredPropertyError().replace("{property}", property.label));
         }
     }

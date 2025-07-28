@@ -81,7 +81,6 @@ export default class UpdateEntry extends Factory {
     public async commit() {
         BusyIndicator.show(0);
 
-        this.correctFixedValueListValues();
         const formValidation = await this.validateForms();
 
         if (!formValidation) {
@@ -256,7 +255,6 @@ export default class UpdateEntry extends Factory {
     private async onDialogSubmit(event: DialogGenerator$SubmittedEvent) {
         BusyIndicator.show(0);
 
-        this.correctFixedValueListValues();
         const formValidation = await this.validateForms();
 
         if (!formValidation) {
@@ -300,16 +298,6 @@ export default class UpdateEntry extends Factory {
         }
 
         return validations.every(validation => validation);
-    }
-
-    private correctFixedValueListValues() {
-        const data = this.getContext().getObject() as Record<string, any>;
-
-        for (const property in data) {
-            if (data[property] === "UI5_ANTARES_PRO_SELECT_EMPTY_KEY" || data[property] === "00000000-0000-0000-0000-000000000000") {
-                this.getODataModel().setProperty(this.getContext().getPath() + `/${property}`, null);
-            }
-        }
     }
 
     private submit(submittedByComponent = false) {
