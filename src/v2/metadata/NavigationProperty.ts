@@ -44,6 +44,8 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             closeButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.close") },
             closeButtonType: { type: "string", defaultValue: "Default" },
             visibleColumnCount: { type: "int", defaultValue: 5 },
+            noEntryErrorEnabled: { type: "boolean", defaultValue: false },
+            noEntryErrorMessage: { type: "string" },
             entitySet: { type: "string" },
             multiplicity: { type: "string" },
             context: { type: "object" },
@@ -173,6 +175,14 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         }
 
         return this.getFormGenerator().validate();
+    }
+
+    public hasNoEntryError() {
+        if (this.getMultiplicity() === "One") {
+            return false;
+        }
+
+        return this.getTableGenerator().getCount() === 0;
     }
 
     public setOperation(operation: Operation) {

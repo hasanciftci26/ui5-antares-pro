@@ -60,6 +60,10 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
         setCloseButtonType: SetProperty<ButtonType>;
         getVisibleColumnCount: GetProperty<number>;
         setVisibleColumnCount: SetProperty<number>;
+        getNoEntryErrorEnabled: GetProperty<boolean>;
+        setNoEntryErrorEnabled: SetProperty<boolean>;
+        getNoEntryErrorMessage: GetProperty<string | undefined>;
+        setNoEntryErrorMessage: SetProperty<string>;
         getEntitySet: GetProperty<string>;
         setEntitySet: SetProperty<string>;
         getMultiplicity: GetProperty<Multiplicity>;
@@ -116,6 +120,8 @@ export interface Settings {
     closeButtonText?: string;
     closeButtonType?: ButtonType;
     visibleColumnCount?: number;
+    noEntryErrorEnabled?: boolean;
+    noEntryErrorMessage?: string;
     propertySettings?: PropertySettings[];
     propertyOrder?: string[];
     inheritValues?: ValueInheritance[];

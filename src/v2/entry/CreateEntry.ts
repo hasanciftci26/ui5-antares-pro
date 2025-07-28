@@ -8,6 +8,7 @@ import { SubmitChangesResponse } from "ui5/antares/pro/types/v2/entry/ResponsePa
 import { DialogGenerator$ClosedEvent, DialogGenerator$SubmittedEvent } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
 import ResponseParser from "ui5/antares/pro/v2/entry/ResponseParser";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
+import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
  * @namespace ui5.antares.pro.v2.entry
@@ -77,6 +78,11 @@ export default class CreateEntry extends Factory {
         if (!formValidation) {
             BusyIndicator.hide();
             MessageBox.error(this.getValidationErrorMessage());
+            return;
+        }
+
+        if (this.hasNoEntryError()) {
+            BusyIndicator.hide();
             return;
         }
 
@@ -272,6 +278,11 @@ export default class CreateEntry extends Factory {
             return;
         }
 
+        if (this.hasNoEntryError()) {
+            BusyIndicator.hide();
+            return;
+        }
+
         const beforeSubmit = this.getBeforeSubmit();
 
         if (beforeSubmit) {
@@ -307,6 +318,27 @@ export default class CreateEntry extends Factory {
         }
 
         return validations.every(validation => validation);
+    }
+
+    private hasNoEntryError() {
+        const navigationProperties = this.getNavigationProperties().filter(navigation => navigation.getMultiplicity() === "Many");
+        let hasError = false;
+
+        for (const navigation of navigationProperties) {
+            if (!navigation.getNoEntryErrorEnabled()) {
+                continue;
+            }
+
+            if (navigation.hasNoEntryError()) {
+                hasError = true;
+                MessageBox.error(navigation.getNoEntryErrorMessage() || LibraryBundle.getText("ui5AntaresPro.error.noItem", [
+                    navigation.getTableTitle()
+                ]));
+                break;
+            }
+        }
+
+        return hasError;
     }
 
     private submit(submittedByComponent = false) {
@@ -373,5 +405,5 @@ export default class CreateEntry extends Factory {
 
     private setComponentRoot(componentRoot: VBox) {
         this.setProperty("componentRoot", componentRoot);
-    }    
+    }
 }

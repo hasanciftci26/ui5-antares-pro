@@ -784,6 +784,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         }
 
         this.setTableTitle(this.getOwnerParent().getEntitySet());
+        this.getOwnerParent().setTableTitle(this.getOwnerParent().getEntitySet());
     }
 
     private getTableModel() {

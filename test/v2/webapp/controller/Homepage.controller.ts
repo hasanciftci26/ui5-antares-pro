@@ -49,7 +49,13 @@ export default class Homepage extends BaseController {
         });
 
         entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications"
+            name: "toCertifications",
+            noEntryErrorEnabled: true,
+            noEntryErrorMessage: "Test",
+            inheritValues: [{
+                parentProperty: "ID",
+                targetProperty: "employeeID"
+            }]
         }));
 
         entry.run();
