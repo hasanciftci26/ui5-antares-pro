@@ -110,6 +110,11 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         await this.getMetaContext().load();
 
         if (navigationInfo.multiplicity === "One") {
+            if (this.getOwnerParent().getOperation() === "Create") {
+                throw new Error("Cannot create entity; deep create on navigation property '"
+                    + this.getName() + "' with single cardinality is not supported (not supported by standard SAPUI5 Library)");
+            }
+
             this.setContext(parent.getContext());
         }
     }

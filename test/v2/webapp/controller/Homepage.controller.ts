@@ -49,16 +49,7 @@ export default class Homepage extends BaseController {
         });
 
         entry.addNavigationProperty(new NavigationProperty({
-            name: "toCertifications",
-            tableClass: "sap.m.Table",
-            inheritValues: [{
-                parentProperty: "ID",
-                targetProperty: "employeeID"
-            }],
-            propertySettings: [{
-                name: "employeeID",
-                readonly: true
-            }]
+            name: "toCertifications"
         }));
 
         entry.run();

@@ -48,7 +48,6 @@ export default class CreateEntry extends Factory {
 
         await this.createNewEntry(initialData);
         await super.execute();
-        this.addNavigationPropertiesToContext();
         this.setGuidValues();
         this.inheritValues();
         this.setBooleanValues();
@@ -63,7 +62,6 @@ export default class CreateEntry extends Factory {
         this.setComponentRoot(container);
         await this.createNewEntry(initialData);
         await super.executeComponent(container);
-        this.addNavigationPropertiesToContext();
         this.setGuidValues();
         this.inheritValues();
         this.setBooleanValues();
@@ -99,7 +97,6 @@ export default class CreateEntry extends Factory {
     public async reload<T extends Record<string, any> = Record<string, any>>(initialData?: T) {
         this.enableTwoWayBinding();
         await this.createNewEntry(initialData);
-        this.addNavigationPropertiesToContext();
         this.setGuidValues();
         this.inheritValues();
         this.setBooleanValues();
@@ -123,16 +120,6 @@ export default class CreateEntry extends Factory {
         }) as Context;
 
         this.setContext(context);
-    }
-
-    private addNavigationPropertiesToContext() {
-        const navigationProperties = this.getNavigationProperties().filter(property => property.getMultiplicity() === "One");
-
-        for (const property of navigationProperties) {
-            if (this.getContext().getProperty(property.getName()) == null) {
-                this.getODataModel().setProperty(this.getContext().getPath() + "/" + property.getName(), {});
-            }
-        }
     }
 
     private setGuidValues() {
