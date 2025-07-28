@@ -39,7 +39,6 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
-            modelRef: "company",
             propertySettings: [{
                 name: "firstName",
                 required: true

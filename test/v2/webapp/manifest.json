@@ -18,6 +18,13 @@
         "dataSources": {
             "mainService": {
                 "type": "OData",
+                "uri": "/company-management",
+                "settings": {
+                    "odataVersion": "2.0"
+                }
+            },
+            "mockService": {
+                "type": "OData",
                 "uri": "/mock/v2/antares/pro/",
                 "settings": {
                     "odataVersion": "2.0",
@@ -30,13 +37,6 @@
             "northwindService": {
                 "type": "OData",
                 "uri": "/northwind",
-                "settings": {
-                    "odataVersion": "2.0"
-                }
-            },
-            "companyManagementService": {
-                "type": "OData",
-                "uri": "/company-management",
                 "settings": {
                     "odataVersion": "2.0"
                 }
@@ -132,12 +132,12 @@
                 "dataSource": "mainService",
                 "preload": true
             },
-            "northwind": {
-                "dataSource": "northwindService",
+            "mock": {
+                "dataSource": "mockService",
                 "preload": true
             },
-            "company": {
-                "dataSource": "companyManagementService",
+            "northwind": {
+                "dataSource": "northwindService",
                 "preload": true
             }
         },

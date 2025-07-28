@@ -14,7 +14,7 @@
             <Table
                 id="tblEmployees"
                 items="{
-                    path: 'company>/Employees',
+                    path: '/Employees',
                     events: {
                         change: '.onEmployeesBindingChange'
                     }
@@ -101,13 +101,13 @@
                 <items>
                     <ColumnListItem>
                         <cells>
-                            <Text text="{company>ID}" />
-                            <Text text="{company>firstName}" />
-                            <Text text="{company>lastName}" />
-                            <Text text="{company>countryCode}" />
+                            <Text text="{ID}" />
+                            <Text text="{firstName}" />
+                            <Text text="{lastName}" />
+                            <Text text="{countryCode}" />
                             <Text
                                 text="{
-                                path: 'company>dateOfBirth',
+                                path: 'dateOfBirth',
                                 type: 'sap.ui.model.odata.type.DateTime',
                                 formatOptions: {
                                     pattern: 'd MMMM y'
@@ -116,7 +116,7 @@
                             />
                             <Text
                                 text="{
-                                path: 'company>salary',
+                                path: 'salary',
                                 type: 'sap.ui.model.odata.type.Decimal',
                                 formatOptions: {
                                     decimalSeparator: ',',
