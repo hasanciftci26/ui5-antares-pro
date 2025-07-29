@@ -1,6 +1,6 @@
 {
   "name": "ui5-antares-pro",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "UI5 Antares Pro",
   "scripts": {
     "build": "ui5 build --config=ui5-npm.yaml --clean-dest",
