@@ -6,7 +6,7 @@
 [UI5_LICENSE]: https://tools.hana.ondemand.com/developer-license-3_2.txt
 [UI5_COMPONENT_CONTAINER]: https://sapui5.hana.ondemand.com/#/api/sap.ui.core.ComponentContainer
 [UI5_DIALOG]: https://sapui5.hana.ondemand.com/#/api/sap.m.Dialog
-[UI5_V2_ODATA]: https://sapui5.hana.ondemand.com/#/api/sap.m.Dialog
+[UI5_V2_ODATA]: https://sapui5.hana.ondemand.com/#/api/sap.ui.model.odata.v2.ODataModel
 
 **UI5 Antares Pro** is a modular SAPUI5 library designed to standardize and accelerate the implementation of CRUD operations for OData EntitySets in enterprise applications.
 
@@ -39,10 +39,8 @@ This library leverages standard classes and components provided by the [SAPUI5][
 
 Careful attention must be paid to the licensing restrictions when integrating **UI5 Antares Pro** in projects that include SAPUI5 dependencies.
 
+This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/hasanciftci26/ui5-antares-pro/blob/master/LICENSE) file for details.
+
 ## Benefits
 
 UI5 Antares Pro promotes consistency, reusability, and reduced development effort across SAPUI5-based projects, making it a valuable foundation for scalable and maintainable enterprise UI development.
-
-## License
-
-This project is licensed under the Apache License 2.0 - see the [LICENSE](https://github.com/hasanciftci26/ui5-antares-pro/blob/master/LICENSE) file for details.
