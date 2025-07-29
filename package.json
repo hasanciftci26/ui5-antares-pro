@@ -18,10 +18,11 @@
   "repository": {
     "url": "https://github.com/hasanciftci26/ui5-antares-pro"
   },
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "files": [
     "dist",
     "ui5.yaml",
+    "LICENSE",
     "README.md"
   ],
   "types": "dist/index.d.ts",
