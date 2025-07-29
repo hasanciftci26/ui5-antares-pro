@@ -57,6 +57,7 @@ export interface Settings {
     selectRowError?: string;
     showErrorMessageBox?: boolean;
     booleanFalseByDefault?: boolean;
+    autoCloseOnSuccess?: boolean;
     dateTimeSettings?: DateTimeSettings;
     numberSettings?: NumberSettings;
     contentWrapper?: ContentWrapper;

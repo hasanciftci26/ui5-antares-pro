@@ -103,6 +103,14 @@ export default class DeleteEntry extends Factory {
         BusyIndicator.hide();
     }
 
+    public getDialogInstance() {
+        return this.getDialogGenerator().getDialog();
+    }
+
+    public close() {
+        this.getDialogInstance().close();
+    }
+
     private async extractContext<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         const path = this.getContextPath<T>(ref);
 
@@ -277,7 +285,10 @@ export default class DeleteEntry extends Factory {
 
             if (!deletedByComponent) {
                 this.getNavigationProperties().forEach(property => property.deregisterP13n());
-                this.getDialogGenerator().getDialog().close();
+
+                if (this.getAutoCloseOnSuccess()) {
+                    this.getDialogGenerator().getDialog().close();
+                }
             }
         }).catch((err) => {
             BusyIndicator.hide();

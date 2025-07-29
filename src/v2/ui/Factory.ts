@@ -49,6 +49,7 @@ export default abstract class Factory extends BaseContext implements MetaContext
             selectRowError: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.error.selectRow") },
             showErrorMessageBox: { type: "boolean", defaultValue: true },
             booleanFalseByDefault: { type: "boolean", defaultValue: true },
+            autoCloseOnSuccess: { type: "boolean", defaultValue: true },
             dateTimeSettings: { type: "object" },
             numberSettings: { type: "object" },
             contentWrapper: { type: "object" },

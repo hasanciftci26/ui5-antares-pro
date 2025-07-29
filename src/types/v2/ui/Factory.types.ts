@@ -61,6 +61,8 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
         setShowErrorMessageBox: SetProperty<boolean>;
         getBooleanFalseByDefault: GetProperty<boolean>;
         setBooleanFalseByDefault: SetProperty<boolean>;
+        getAutoCloseOnSuccess: GetProperty<boolean>;
+        setAutoCloseOnSuccess: SetProperty<boolean>;
         getDateTimeSettings: GetProperty<DateTimeSettings | undefined>;
         setDateTimeSettings: SetProperty<DateTimeSettings | undefined>;
         getNumberSettings: GetProperty<NumberSettings | undefined>;

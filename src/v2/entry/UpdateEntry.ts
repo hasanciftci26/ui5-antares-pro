@@ -111,12 +111,20 @@ export default class UpdateEntry extends Factory {
         BusyIndicator.hide();
     }
 
+    public getDialogInstance() {
+        return this.getDialogGenerator().getDialog();
+    }
+
     public reset() {
         this.resetDefaultBindingMode();
 
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().resetChanges([this.getContext().getPath()]);
         }
+    }
+
+    public close() {
+        this.getDialogInstance().close();
     }
 
     private async extractContext<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
@@ -320,7 +328,10 @@ export default class UpdateEntry extends Factory {
 
                         if (!submittedByComponent) {
                             this.getNavigationProperties().forEach(property => property.deregisterP13n());
-                            this.getDialogGenerator().getDialog().close();
+
+                            if (this.getAutoCloseOnSuccess()) {
+                                this.getDialogGenerator().getDialog().close();
+                            }
                         }
                     } else {
                         this.fireSubmitError({

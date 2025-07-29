@@ -109,12 +109,20 @@ export default class CreateEntry extends Factory {
         this.getComponentRoot().setBindingContext(this.getContext());
     }
 
+    public getDialogInstance() {
+        return this.getDialogGenerator().getDialog();
+    }
+
     public reset() {
         this.resetDefaultBindingMode();
 
         if (this.getODataModel().hasPendingChanges(true)) {
             this.getODataModel().resetChanges([this.getContext().getPath()]);
         }
+    }
+
+    public close() {
+        this.getDialogInstance().close();
     }
 
     private async createNewEntry(initialData?: Record<string, any>) {
@@ -362,7 +370,10 @@ export default class CreateEntry extends Factory {
 
                         if (!submittedByComponent) {
                             this.getNavigationProperties().forEach(property => property.deregisterP13n());
-                            this.getDialogGenerator().getDialog().close();
+
+                            if (this.getAutoCloseOnSuccess()) {
+                                this.getDialogGenerator().getDialog().close();
+                            }
                         }
                     } else {
                         this.fireSubmitError({
