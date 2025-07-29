@@ -16,6 +16,8 @@ builder:
     excludes:
       - /test-resources/**
   customTasks:
+    - name: remove-debug-files
+      afterTask: generateLibraryPreload
     - name: ui5-tooling-transpile-task
       afterTask: replaceVersion
       configuration:
@@ -29,3 +31,11 @@ builder:
 resources:
   configuration:
     propertiesFileSourceEncoding: UTF-8
+---
+specVersion: "4.0"
+kind: extension
+type: task
+metadata:
+  name: remove-debug-files
+task:
+  path: task/remove-debug-files.js
