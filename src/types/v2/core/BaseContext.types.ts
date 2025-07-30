@@ -116,14 +116,14 @@ export interface Settings {
      * Text displayed on the submit button within the generated dialog.
      * A default localized text is provided by the library based on the current language.
      * This property allows the consumer to override the button text.
-     * Note: The submit button is not generated when using the **ReadEntry** class.
+     * Note: The submit button is not generated when using the **DisplayEntry** class.
      */
     submitButtonText?: string;
 
     /**
      * [Button Type](https://sapui5.hana.ondemand.com/#/api/sap.m.ButtonType) of the submit button in the generated dialog.
      * Defaults to **Emphasized**. This property allows the consumer to configure a different button type.
-     * Note: The submit button is not generated when using the **ReadEntry** class.
+     * Note: The submit button is not generated when using the **DisplayEntry** class.
      * 
      * @default "Emphasized"
      */
@@ -206,8 +206,10 @@ export interface Settings {
 
     /**
      * Custom error message to be displayed in an error **MessageBox** when an operation (update, delete, or display)
-     * is attempted on a one-to-many navigation property's generated table without selecting a row.
-     *
+     * is attempted on a one-to-many navigation property's generated table without selecting a row,
+     * or when the **run** method of update (UpdateEntry), delete (DeleteEntry), 
+     * or read (DisplayEntry) operations is called with a table ID but no row is selected.
+     * 
      * The default error message provided by the library can be overridden by setting this property.
      */
     selectRowError?: string;
