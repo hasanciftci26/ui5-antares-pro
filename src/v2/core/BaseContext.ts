@@ -44,18 +44,47 @@ export default abstract class BaseContext extends ManagedObject {
         this.setOwnerResourceModel();
     }
 
+    /**
+     * Returns the name of the **EntitySet** used in the consumer application's OData service.
+     *
+     * @returns The name of the target EntitySet.
+     */
     public getEntitySet() {
         return this.getProperty("entitySet") as string;
     }
 
+    /**
+     * Sets the name of the **EntitySet** to be used in the OData service.
+     *
+     * Any leading slash (`/`) in the provided value will be automatically removed.
+     *
+     * @param entitySet The name of the target EntitySet.
+     */
     public setEntitySet(entitySet: string) {
         this.setProperty("entitySet", entitySet.replace("/", ""));
     }
 
+    /**
+     * Retrieves the ODataModel instance used by the consumer application.
+     *
+     * @returns The current ODataModel instance associated with this component.
+     */
     public getODataModel() {
         return this.getModel() as ODataModel;
     }
 
+    /**
+     * Retrieves a localized text from the consumer application's **ResourceModel** (i18n).
+     *
+     * This method is exposed as **public** due to architectural requirements, but it is intended strictly for **internal use** within the library.
+     * It **must not** be used directly by consumers.
+     *
+     * @param key The i18n key to retrieve from the resource bundle.
+     * @param parameters Optional array of values used to replace placeholders in the localized text.
+     * @returns The resolved localized string, or **undefined** if the resource model or key is not available.
+     *
+     * @internal
+     */
     public getOwnerText(key: string, parameters?: any[]) {
         const model = this.getOwnerResourceModel();
 

@@ -50,6 +50,26 @@ export default class DisplayEntry extends Factory {
         this.getDialogGenerator().attachClosed(this.onDialogClose, this);
     }
 
+    /**
+     * Initiates the display process by extracting the context of the existing entity based on the provided reference,
+     * then generates and opens the dialog for read-only viewing of the entity data.
+     * 
+     * The context can be provided as:
+     * 1) An instance of sap.ui.model.odata.v2.Context.
+     * 2) Key values of the entity, which are used to fetch the context via a read request.
+     * 3) A string representing the ID of a table in the consumer application, from which the selected row’s context is automatically retrieved.
+     * 
+     * Supported tables for context extraction by ID:
+     * - sap.m.Table (selection mode: SingleSelect, SingleSelectMaster, or SingleSelectLeft)
+     * - sap.ui.table.Table (selection mode: Single)
+     * - sap.ui.comp.smarttable.SmartTable (inner table must be sap.m.Table or sap.ui.table.Table with the supported modes above)
+     * 
+     * If no context is found or no row is selected when using table ID, the operation aborts and an error MessageBox is displayed.
+     * 
+     * The generated dialog contains the extracted entity data in a read-only mode to prevent any modifications.
+     * 
+     * @param ref Reference used to determine the entity context (Context instance, key object, or table ID string).
+     */
     public async run<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         BusyIndicator.show(0);
 
@@ -66,6 +86,23 @@ export default class DisplayEntry extends Factory {
         BusyIndicator.hide();
     }
 
+    /**
+     * Initializes the display process in Component mode by extracting the context of the existing entity based on the provided reference,
+     * and rendering the read-only display UI inside the specified container.
+     * This method is intended for internal use only and **must not be called by the consumer**.
+     * 
+     * The reference to extract the context follows the same rules as the dialog mode run method:
+     * - An instance of sap.ui.model.odata.v2.Context.
+     * - Key values of the entity for a read request.
+     * - A string representing a table ID to derive the selected row context.
+     * 
+     * If the context is not found, the method returns early without rendering.
+     * 
+     * @param container The VBox container in which the display UI will be rendered.
+     * @param ref Reference used to determine the entity context (Context instance, key object, or table ID string).
+     * 
+     * @internal
+     */
     public async initComponent(container: VBox, ref: Context | string | Record<string, any>) {
         container.setBusy(true);
         this.setComponentRoot(container);
@@ -79,6 +116,25 @@ export default class DisplayEntry extends Factory {
         container.setBusy(false);
     }
 
+    /**
+     * Re-initializes the component by extracting and setting the context of an existing persisted entity
+     * within the ODataModel.
+     *
+     * This method is designed for use in **Component mode**, where the **DisplayEntry** instance is maintained
+     * throughout the component's lifecycle. It enables the reuse of the same component container
+     * to load a different entity without reinstantiating the entire component.
+     *
+     * The following operations are performed:
+     *
+     * - A global busy indicator is shown during the process.
+     * - The entity context is extracted based on the provided **ref**, which can be an OData context, key object, or table ID.
+     * - The component container’s binding context is updated with the extracted entity.
+     * - The busy indicator is hidden after completion.
+     *
+     * This method is not required in Dialog mode, where a new dialog is generated for each use.
+     *
+     * @param ref Reference used to identify the existing entity. It can be an OData context, key object, or a string table ID.
+     */
     public async reload<T extends Record<string, any> = Record<string, any>>(ref: Context | string | T) {
         BusyIndicator.show(0);
         await this.extractContext(ref);
