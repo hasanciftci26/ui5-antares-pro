@@ -15,6 +15,31 @@ import { SelectionMode } from "sap/ui/table/library";
 import VBox from "sap/m/VBox";
 
 /**
+ * Facilitates the update of an existing entity using the provided OData V2 model.
+ *
+ * This class is designed to generate a form-based UI for modifying persisted entities
+ * from a specified **EntitySet**. Consumers are required to provide the target entity
+ * and configuration details via the constructor or setter methods through the created instance.
+ *
+ * Depending on the configuration, the library automatically generates either a **dialog**
+ * (for modal interaction) or a **component** (for embedded integration), which includes:
+ *
+ * - Pre-filled form controls corresponding to the entity’s current values
+ * - Generated controls for each updatable property (e.g., Input, DatePicker)
+ * - Support for navigation properties, including both 1:1 forms and 1:N tables
+ * - Custom layout and content injection
+ * - Built-in support for **value helps**, **validation logic**, and **required field checks**
+ *
+ * Upon submission, the library:
+ * - Validates the user-modified data
+ * - Runs any configured custom validation logic
+ * - Submits the updated entity using a **PATCH** or **MERGE** request via the ODataModel
+ * - Automatically displays error messages or uses consumer-defined ones
+ * - Fires events to signal **successful** or **failed** updates
+ *
+ * This class encapsulates the complexity of update flows by providing
+ * a structured, configurable, and reusable mechanism for entity editing.
+ * 
  * @namespace ui5.antares.pro.v2.entry
  */
 export default class UpdateEntry extends Factory {

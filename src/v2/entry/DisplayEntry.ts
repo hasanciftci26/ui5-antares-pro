@@ -13,6 +13,24 @@ import { SelectionMode } from "sap/ui/table/library";
 import VBox from "sap/m/VBox";
 
 /**
+ * Displays the details of an existing entity in a read-only format using the provided OData V2 model.
+ *
+ * The **DisplayEntry** class is intended for use cases where an entity’s data must be presented
+ * to the end user without allowing any modifications. It provides a clean, consistent, and
+ * fully read-only UI for inspecting the contents of a specific **EntitySet**.
+ *
+ * Depending on the configuration, the library generates either a **dialog** or a **component**
+ * that includes:
+ *
+ * - Pre-filled, read-only form controls representing the entity’s current values
+ * - Display of associated navigation properties, including both 1:1 and 1:N relationships
+ * - Optional integration of custom layout and additional content elements
+ *
+ * No user interaction or submission is required. The content is rendered for informational purposes only.
+ *
+ * This class is ideal for detail views or entity inspection scenarios where data integrity
+ * must be preserved while still allowing full visibility into the entity's structure.
+ * 
  * @namespace ui5.antares.pro.v2.entry
  */
 export default class DisplayEntry extends Factory {

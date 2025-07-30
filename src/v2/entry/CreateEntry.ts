@@ -11,6 +11,30 @@ import Factory from "ui5/antares/pro/v2/ui/Factory";
 import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 
 /**
+ * Facilitates the creation of a new entity using the provided OData V2 model.
+ *
+ * This class is the central entry point for generating a form-based UI for creating
+ * and submitting new entities to the backend via an OData V2 service. The consumer
+ * must specify the target **EntitySet** and other configuration options via the constructor or setter methods through the created instance.
+ *
+ * Based on the configuration, the library automatically generates either a **dialog**
+ * (for modal use cases) or a **component** (for embedded use cases) that includes:
+ *
+ * - Generated controls for entity properties (e.g., Input, DatePicker)
+ * - Navigation property handling (1:1 forms or 1:N tables)
+ * - Custom layout and content integration
+ * - Built-in support for **value helps**, **validation logic**, and **required field checks**
+ *
+ * During submission, the library:
+ * - Validates user input (e.g., date format, required fields)
+ * - Executes custom validation logic if configured
+ * - Submits the entity using the ODataModel
+ * - Displays error messages automatically or via configurable options
+ * - Fires events to notify the consumer of **successful** or **failed** submission
+ *
+ * This class is designed to reduce the boilerplate typically involved in form creation,
+ * validation, and submission, while maintaining flexibility through configuration.
+ * 
  * @namespace ui5.antares.pro.v2.entry
  */
 export default class CreateEntry extends Factory {

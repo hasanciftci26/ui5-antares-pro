@@ -15,6 +15,26 @@ import LibraryBundle from "ui5/antares/pro/v2/util/LibraryBundle";
 import VBox from "sap/m/VBox";
 
 /**
+ * Facilitates the deletion of an existing entity using the provided OData V2 model.
+ *
+ * This class generates a UI for reviewing and confirming the removal of a persisted entity
+ * from a specified **EntitySet**. The existing entity’s data is displayed in a **read-only**
+ * form to allow the end user to review the content before deletion.
+ *
+ * Based on the configuration, either a **dialog** or a **component** is rendered, containing:
+ *
+ * - Pre-filled form controls representing the current state of the entity
+ * - Read-only access to all fields to prevent unintended modifications
+ * - Option to trigger the deletion process with a user action (e.g., button press)
+ *
+ * Upon user confirmation, the library:
+ * - Sends a **DELETE** request to the backend via the ODataModel
+ * - Automatically handles error responses and messaging
+ * - Fires an event upon **successful deletion** or **failure**, allowing the consumer to react accordingly
+ *
+ * This class provides a controlled and user-friendly mechanism for entity deletion,
+ * ensuring transparency and safety before destructive actions are executed.
+ * 
  * @namespace ui5.antares.pro.v2.entry
  */
 export default class DeleteEntry extends Factory {
