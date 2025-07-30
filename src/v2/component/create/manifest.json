@@ -6,7 +6,7 @@
         "embeddedBy": "../../../",
         "title": "UI5 Antares Pro Create Entry Component",
         "applicationVersion": {
-            "version": "0.0.1"
+            "version": "0.0.2"
         }
     },
     "sap.ui": {
