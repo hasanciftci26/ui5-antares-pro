@@ -123,6 +123,16 @@ export default abstract class Factory extends BaseContext implements MetaContext
         }));
     }
 
+    /**
+     * Retrieves the metadata context aggregation containing properties and their attributes from the OData metadata.
+     * 
+     * This method is intended for internal use only and **must not be called by the consumer**.
+     * It provides access to the metadata context stored in the aggregation named "metaContext".
+     * 
+     * @returns The MetaContext instance holding the metadata properties and attributes.
+     * 
+     * @internal
+     */
     public getMetaContext() {
         return this.getAggregation("metaContext") as MetaContext;
     }
@@ -144,6 +154,18 @@ export default abstract class Factory extends BaseContext implements MetaContext
         return this.getValueLists().find(valueList => valueList.getLocalDataProperty() === property);
     }
 
+    /**
+     * Returns the current operation type (Create, Update, Delete, or Read) managed by the library.
+     * 
+     * This method reflects the operation mode set internally by the library based on the class instance.
+     * 
+     * **Note to consumers:** This method is intended for internal use and should generally **not** be called
+     * directly in application code.
+     * 
+     * @returns The current operation as an Operation enum or type.
+     *
+     * @internal
+     */
     public getOperation() {
         return this.getProperty("operation") as Operation;
     }
