@@ -492,31 +492,255 @@ declare module "ui5/antares/pro/v2/ui/Factory" {
          * @param newValue An array of property names defining the display sequence.
          */
         setPropertyOrder: SetProperty<string[]>;
+
+        /**
+         * Adds a navigation property to the **navigationProperties** aggregation.
+         *
+         * This method registers a new navigation property (association) to be included
+         * when generating the dialog or component.
+         *
+         * The provided **aggregation** must be an instance of **ui5.antares.pro.v2.metadata.NavigationProperty**.
+         * It defines whether the associated target entity will be rendered as a form (**1:1**)
+         * or a table (**1:N**), based on its cardinality.
+         *
+         * @param aggregation The **NavigationProperty** instance to add.
+         */
         addNavigationProperty: AddAggregation<NavigationProperty>;
+
+        /**
+         * Removes a specific navigation property from the **navigationProperties** aggregation.
+         *
+         * You can remove the navigation property by passing its index, ID, or object reference.
+         * Once removed, it will no longer be used in dialog or component generation.
+         *
+         * @param aggregation The navigation property to remove (by index, ID, or instance).
+         */
         removeNavigationProperty: RemoveAggregation<NavigationProperty>;
+
+        /**
+         * Retrieves all navigation properties in the **navigationProperties** aggregation.
+         *
+         * These are used to generate additional UI elements (forms or tables) depending
+         * on the type and cardinality of each navigation association.
+         *
+         * @returns An array of **NavigationProperty** instances currently aggregated.
+         */
         getNavigationProperties: GetAggregation<NavigationProperty[]>;
+
+        /**
+         * Removes all navigation properties from the **navigationProperties** aggregation.
+         *
+         * This will reset the aggregation, meaning no associated entities will be rendered
+         * in the generated dialog or component.
+         */
         removeAllNavigationProperties: RemoveAllAggregation;
+
+        /**
+         * Destroys all navigation properties in the **navigationProperties** aggregation.
+         *
+         * This method completely removes all associated **NavigationProperty** instances
+         * and releases any resources they hold. After destruction, no additional forms
+         * or tables will be generated for associated entities.
+         */
         destroyNavigationProperties: DestroyAggregation;
+
+        /**
+         * Adds a validation logic to the **validationLogics** aggregation.
+         *
+         * This method registers a new validation rule to be executed before the submission
+         * of an entity. Use this to enforce custom data consistency checks beyond built-in validation.
+         *
+         * The provided **aggregation** must be an instance of **ui5.antares.pro.v2.validation.ValidationLogic**,
+         * with its logic fully configured in its constructor.
+         *
+         * @param aggregation The **ValidationLogic** instance to add.
+         */
         addValidationLogic: AddAggregation<ValidationLogic>;
+
+        /**
+         * Removes a specific validation logic from the **validationLogics** aggregation.
+         *
+         * You can remove the validation logic by passing its index, ID, or object reference.
+         * Removed logic will no longer be executed during entity validation.
+         *
+         * @param aggregation The validation logic to remove (by index, ID, or instance).
+         */
         removeValidationLogic: RemoveAggregation<ValidationLogic>;
+
+        /**
+         * Retrieves all validation logic instances in the **validationLogics** aggregation.
+         *
+         * These define custom validation rules that are applied before the submission of an entity.
+         *
+         * @returns An array of **ValidationLogic** instances currently aggregated.
+         */
         getValidationLogics: GetAggregation<ValidationLogic[]>;
+
+        /**
+         * Removes all validation logic instances from the **validationLogics** aggregation.
+         *
+         * This disables all custom validation rules previously configured on the entity.
+         */
         removeAllValidationLogics: RemoveAllAggregation;
+
+        /**
+         * Destroys all validation logic instances in the **validationLogics** aggregation.
+         *
+         * This method permanently deletes all custom validation rules and frees up any
+         * resources associated with them. After destruction, no validation logic will run before submission.
+         */
         destroyValidationLogics: DestroyAggregation;
+
+        /**
+         * Adds a value list definition to the **valueLists** aggregation.
+         *
+         * Use this method to register a new **ValueList** instance that defines value help
+         * behavior for a property of type **Edm.String** or **Edm.Guid**.
+         *
+         * The provided **aggregation** must be an instance of **ui5.antares.pro.v2.valuelist.ValueList**,
+         * which should include configuration such as the **EntitySet** and displayed properties.
+         *
+         * @param aggregation The **ValueList** instance to add.
+         */
         addValueList: AddAggregation<ValueList>;
+
+        /**
+         * Removes a specific value list definition from the **valueLists** aggregation.
+         *
+         * You can remove the value list by passing its index, ID, or object reference.
+         * Once removed, the corresponding property will no longer have value help support.
+         *
+         * @param aggregation The value list to remove (by index, ID, or instance).
+         */
         removeValueList: RemoveAggregation<ValueList>;
+
+        /**
+         * Retrieves all value list definitions in the **valueLists** aggregation.
+         *
+         * These instances define the value help logic for properties of type **Edm.String** or **Edm.Guid**,
+         * including data source and visible fields.
+         *
+         * @returns An array of **ValueList** instances currently aggregated.
+         */
         getValueLists: GetAggregation<ValueList[]>;
+
+        /**
+         * Removes all value list definitions from the **valueLists** aggregation.
+         *
+         * This clears all configured value helps, disabling value help dialogs
+         * for all properties that previously had one.
+         */
         removeAllValueLists: RemoveAllAggregation;
+
+        /**
+         * Destroys all value list definitions in the **valueLists** aggregation.
+         *
+         * This permanently deletes all configured **ValueList** instances and
+         * releases their resources. No value help dialogs will be available after destruction.
+         */
         destroyValueLists: DestroyAggregation;
+
+        /**
+         * Retrieves the current form layout from the **formLayout** property.
+         *
+         * The form layout defines the visual structure of the generated form.
+         * If not explicitly set, a default layout is used.
+         *
+         * @returns The current **ui5.antares.pro.v2.ui.FormLayout** instance, if defined.
+         */
         getFormLayout: GetAggregation<FormLayout>;
+
+        /**
+         * Sets a custom form layout to the **formLayout** property.
+         *
+         * Use this to override the default form layout with a specific **ui5.antares.pro.v2.ui.FormLayout** instance,
+         * enabling a custom structure for the generated form inside the dialog or component.
+         *
+         * @param newValue The **ui5.antares.pro.v2.ui.FormLayout** instance to set.
+         */
         setFormLayout: SetAggregation<FormLayout>;
+
+        /**
+         * Retrieves all custom control definitions in the **customElements** aggregation.
+         *
+         * These definitions override the default metadata-driven controls for specific properties.
+         * For example, a consumer can provide a **CustomElement** to use a **Slider** instead of an **Input**.
+         *
+         * @returns An array of **CustomElement** instances currently aggregated.
+         */
         getCustomElements: GetAggregation<CustomElement[]>;
+
+        /**
+         * Removes a specific custom control definition from the **customElements** aggregation.
+         *
+         * You can remove a custom element by passing its index, ID, or object reference.
+         * Once removed, the default control generation will be restored for the corresponding property.
+         *
+         * @param aggregation The custom element to remove (by index, ID, or instance).
+         */
         removeCustomElement: RemoveAggregation<CustomElement>;
+
+        /**
+         * Removes all custom control definitions from the **customElements** aggregation.
+         *
+         * This resets the control generation behavior to rely solely on metadata.
+         * All previously customized properties will use the default controls again.
+         */
         removeAllCustomElements: RemoveAllAggregation;
+
+        /**
+         * Destroys all custom control definitions in the **customElements** aggregation.
+         *
+         * This permanently deletes all **CustomElement** instances and frees up their associated resources.
+         * The default metadata-based controls will be used for all properties afterward.
+         */
         destroyCustomElements: DestroyAggregation;
+
+        /**
+         * Adds a custom content element to the **customContents** aggregation.
+         *
+         * This allows consumers to insert additional SAPUI5 controls into the generated dialog or component.
+         * The provided **aggregation** must be an instance of **ui5.antares.pro.v2.custom.CustomContent**.
+         *
+         * **Note:** The lifecycle and behavior of custom content must be fully managed by the consumer.
+         *
+         * @param aggregation The **CustomContent** instance to add.
+         */
         addCustomContent: AddAggregation<CustomContent>;
+
+        /**
+         * Retrieves all custom content elements in the **customContents** aggregation.
+         *
+         * These elements are used to extend the UI with additional SAPUI5 controls,
+         * as defined by the consumer.
+         *
+         * @returns An array of **CustomContent** instances currently aggregated.
+         */
         getCustomContents: GetAggregation<CustomContent[]>;
+
+        /**
+         * Removes a specific custom content element from the **customContents** aggregation.
+         *
+         * The content can be removed by its index, ID, or object reference.
+         * After removal, it will no longer be rendered in the generated UI.
+         *
+         * @param aggregation The custom content to remove (by index, ID, or instance).
+         */
         removeCustomContent: RemoveAggregation<CustomContent>;
+
+        /**
+         * Removes all custom content elements from the **customContents** aggregation.
+         *
+         * This clears all additional UI controls provided by the consumer.
+         */
         removeAllCustomContents: RemoveAllAggregation;
+
+        /**
+         * Destroys all custom content elements in the **customContents** aggregation.
+         *
+         * This permanently deletes all **CustomContent** instances and releases their associated resources.
+         * The default UI remains intact, but any custom UI enhancements are removed.
+         */
         destroyCustomContents: DestroyAggregation;
     }
 }
