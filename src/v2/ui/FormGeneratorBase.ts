@@ -8,6 +8,14 @@ import Factory from "ui5/antares/pro/v2/ui/Factory";
 import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
 
 /**
+ * **Internal use only.**
+ *
+ * This is an abstract base class used internally by the **UI5 Antares Pro** library to define shared behavior.
+ * It is not intended to be instantiated or extended directly by consumers.
+ *
+ * @abstract
+ * @internal
+ * 
  * @namespace ui5.antares.pro.v2.ui
  */
 export default abstract class FormGeneratorBase extends ManagedObject {

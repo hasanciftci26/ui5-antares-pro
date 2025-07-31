@@ -12,6 +12,15 @@ import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator
 import TableGeneratorBase from "ui5/antares/pro/v2/ui/TableGeneratorBase";
 
 /**
+ * **Internal use only.**
+ *
+ * This class is part of the internal implementation of the **UI5 Antares Pro** library
+ * and is not intended for public use or direct consumption.
+ *
+ * It may change or be removed without notice in future versions.
+ *
+ * @internal
+ * 
  * @namespace ui5.antares.pro.v2.ui
  */
 export default class ResponsiveTableGenerator extends TableGeneratorBase {

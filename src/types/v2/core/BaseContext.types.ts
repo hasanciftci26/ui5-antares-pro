@@ -192,6 +192,9 @@ export interface Settings {
     /**
      * Custom error message to be displayed when required fields are not provided by the end user during submission.
      * This property overrides the default localized error message shown for missing required fields.
+     * 
+     * If the message contains the placeholder **{property}**, it will be replaced at runtime
+     * with the label of the target property.
      *
      * **Note:** This property is applicable only when **formType** is set to **SimpleForm**. In **SmartForm**, 
      * the SAPUI5 library automatically provides a localized error message for required smart fields.

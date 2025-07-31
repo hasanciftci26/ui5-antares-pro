@@ -9,6 +9,14 @@ import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Settings } from "ui5/antares/pro/types/v2/core/BaseContext.types";
 
 /**
+ * **Internal use only.**
+ *
+ * This is an abstract base class used internally by the **UI5 Antares Pro** library to define shared behavior.
+ * It is not intended to be instantiated or extended directly by consumers.
+ *
+ * @abstract
+ * @internal
+ * 
  * @namespace ui5.antares.pro.v2.core
  */
 export default abstract class BaseContext extends ManagedObject {

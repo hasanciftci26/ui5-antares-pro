@@ -7,6 +7,15 @@ import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
 
 /**
+ * **Internal use only.**
+ *
+ * This class is part of the internal implementation of the **UI5 Antares Pro** library
+ * and is not intended for public use or direct consumption.
+ *
+ * It may change or be removed without notice in future versions.
+ *
+ * @internal
+ * 
  * @namespace ui5.antares.pro.v2.ui
  */
 export default class DialogGenerator extends ManagedObject {
