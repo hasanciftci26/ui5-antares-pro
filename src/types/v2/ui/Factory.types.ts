@@ -757,25 +757,86 @@ export type TextInEditModeSource =
     "ValueListWarning";
 
 export interface DateTimeSettings {
+    /**
+     * Pattern for formatting dates in DatePicker controls, using Unicode LDML format syntax.
+     */
     datePattern?: string;
+
+    /**
+     * Pattern for formatting date and time in DateTimePicker controls, using Unicode LDML format syntax.
+     */
     dateTimePattern?: string;
+
+    /**
+     * Pattern for formatting time values in TimePicker controls, using Unicode LDML format syntax.
+     */
     timePattern?: string;
 }
 
 export interface NumberSettings {
+    /**
+     * Enables or disables grouping separators in numbers.
+     * When false, only the decimal separator is active.
+     */
     groupingEnabled?: boolean;
+
+    /**
+     * Custom character used as the grouping separator.
+     */
     groupingSeparator?: string;
+
+    /**
+     * Number of digits between grouping separators (e.g., 3 for thousands).
+     */
     groupingSize?: number;
+
+    /**
+     * Custom character used as the decimal separator.
+     */
     decimalSeparator?: string;
 }
 
 export interface PropertySettings {
+    /**
+     * The technical name of the property in the entity.
+     */
     name: string;
+
+    /**
+     * Consumer-defined label for the property to be displayed on generated controls.
+     * If not provided, the library attempts to derive the label using the following order:
+     * 1. Metadata labels if **metadataLabelEnabled** is true in the Entry class.
+     * 2. Labels from the consumer’s ResourceModel (i18n) based on naming conventions.
+     * 3. Labels generated from the property’s naming style (e.g., camelCase, CONSTANT_CASE).
+     */
     label?: string;
+
+    /**
+     * Marks the property as required, enforcing that a value must be provided by the user.
+     */
     required?: boolean;
+
+    /**
+     * Marks the property as read-only, preventing user edits on the generated control.
+     */
     readonly?: boolean;
+
+    /**
+     * Excludes the property from rendering in the generated UI.
+     */
     excluded?: boolean;
+
+    /**
+     * Specifies the source of the display text used for the property in edit mode.
+     * This is effective only when the **formType** is set to **SmartForm** in the corresponding Entry class.
+     * Primarily used for generated SmartField controls.
+     */
     textInEditModeSource?: TextInEditModeSource;
+
+    /**
+     * Layout data applied to the control generated for this property.
+     * For example, this layout data can be assigned to a sap.m.Input control created by the library.
+     */
     layoutData?: LayoutData;
 }
 

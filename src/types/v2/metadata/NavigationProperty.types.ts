@@ -367,38 +367,255 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
          */
         setNoEntryErrorMessage: SetProperty<string>;
 
+        /**
+         * Returns the name of the target EntitySet associated with this navigation property.
+         * The library automatically determines the EntitySet based on metadata.
+         * **This method is for internal use only and must NOT be called by consumers under any circumstances.**
+         *
+         * @returns The name of the target EntitySet.
+         * @internal
+         */
         getEntitySet: GetProperty<string>;
+
+        /**
+         * Sets the name of the target EntitySet for this navigation property.
+         * This value is determined by the library and must NOT be set manually by consumers.
+         * **Intended strictly for internal use only.**
+         *
+         * @param newValue - The name of the target EntitySet.
+         * @internal
+         */
         setEntitySet: SetProperty<string>;
+
+        /**
+         * Returns the multiplicity of the association (e.g., **one** or **many**) derived from the navigation property.
+         * **This method is strictly for internal use and must NOT be accessed by consumers.**
+         *
+         * @returns The multiplicity of the association.
+         * @internal
+         */
         getMultiplicity: GetProperty<Multiplicity>;
+
+        /**
+         * Sets the multiplicity of the navigation property association.
+         * This is determined by the library from metadata and must NOT be set manually.
+         * **Reserved for internal library use only.**
+         *
+         * @param newValue - The multiplicity value (**one** or **many**).
+         * @internal
+         */
         setMultiplicity: SetProperty<Multiplicity>;
+
+        /**
+         * Retrieves the **sap.ui.model.odata.v2.Context** associated with this navigation property.
+         * The library manages the lifecycle of this context internally.
+         * **Consumers must NOT call this method directly as it is for internal management only.**
+         *
+         * @returns The context of the navigation property.
+         * @internal
+         */
         getContext: GetProperty<Context>;
+
+        /**
+         * Sets the **sap.ui.model.odata.v2.Context** associated with this navigation property.
+         * This is handled internally by the library and must NOT be set by consumers.
+         * **Intended exclusively for internal library use.**
+         *
+         * @param newValue - The context to associate with this navigation property.
+         * @internal
+         */
         setContext: SetProperty<Context>;
+
+        /**
+         * Returns the property-level configurations applied to the child entity.
+         * These configurations include flags such as **required**, **excluded**, **readonly**, etc.,
+         * which control how each child property behaves in the UI.
+         * 
+         * @returns An array of PropertySettings defining child property configurations.
+         */
         getPropertySettings: GetProperty<PropertySettings[]>;
+
+        /**
+         * Sets the property-level configurations for the child entity.
+         * Use this method to specify which properties are required, excluded, readonly, and so forth.
+         * 
+         * @param newValue - An array of PropertySettings to configure child entity properties.
+         */
         setPropertySettings: SetProperty<PropertySettings[]>;
+
+        /**
+         * Returns the explicit order of child entity properties to be rendered.
+         * When defined, this order overrides the default metadata order in generated forms or tables.
+         * 
+         * @returns An array of property names defining the rendering order or an empty array if not explicitly set by the consumer.
+         */
         getPropertyOrder: GetProperty<string[]>;
+
+        /**
+         * Sets the order in which the child entity’s properties should be rendered.
+         * This allows customization of the sequence of properties in the generated UI.
+         * 
+         * @param newValue - An array of property names specifying the desired property rendering order.
+         */
         setPropertyOrder: SetProperty<string[]>;
+
+        /**
+         * Returns the array of value inheritance configurations defining which values
+         * are inherited from the parent entity during child entity creation.
+         * 
+         * @returns An array of ValueInheritance objects specifying inherited values.
+         */
         getInheritValues: GetProperty<ValueInheritance[]>;
+
+        /**
+         * Sets the value inheritance configurations for the child entity.
+         * This enables automatic inheritance of specified parent values when creating a new child entry.
+         * 
+         * @param newValue - An array of ValueInheritance objects to configure inherited values.
+         */
         setInheritValues: SetProperty<ValueInheritance[]>;
+
+        /**
+         * Adds a ValidationLogic instance to the child entity.
+         * These validation logics run before submission of Create or Update operations
+         * to enforce business rules and prevent invalid data.
+         * 
+         * @param aggregation - The ValidationLogic instance to add.
+         */
         addValidationLogic: AddAggregation<ValidationLogic>;
+
+        /**
+         * Removes a ValidationLogic instance from the child entity by reference, ID, or index.
+         * 
+         * @param reference - The index, ID, or instance of the ValidationLogic to remove.
+         */
         removeValidationLogic: RemoveAggregation<ValidationLogic>;
+
+        /**
+         * Returns all ValidationLogic instances currently assigned to the child entity.
+         * 
+         * @returns An array of ValidationLogic instances or a single instance.
+         */
         getValidationLogics: GetAggregation<ValidationLogic[]>;
+
+        /**
+         * Removes all ValidationLogic instances from the child entity.
+         */
         removeAllValidationLogics: RemoveAllAggregation;
+
+        /**
+         * Destroys all ValidationLogic instances associated with the child entity,
+         * releasing resources and references.
+         */
         destroyValidationLogics: DestroyAggregation;
+
+        /**
+         * Adds a ValueList instance to provide value help (F4) for a child entity property.
+         * These lists appear in Create or Update dialogs for easy data selection.
+         * 
+         * @param aggregation - The ValueList instance to add.
+         */
         addValueList: AddAggregation<ValueList>;
+
+        /**
+         * Removes a ValueList instance by reference, ID, or index from the child entity.
+         * 
+         * @param reference - The index, ID, or instance of the ValueList to remove.
+         */
         removeValueList: RemoveAggregation<ValueList>;
+
+        /**
+         * Returns all ValueList instances configured for the child entity.
+         * 
+         * @returns An array of ValueList instances or a single instance.
+         */
         getValueLists: GetAggregation<ValueList[]>;
+
+        /**
+         * Removes all ValueList instances from the child entity.
+         */
         removeAllValueLists: RemoveAllAggregation;
+
+        /**
+         * Destroys all ValueList instances associated with the child entity,
+         * freeing resources and clearing references.
+         */
         destroyValueLists: DestroyAggregation;
+
+        /**
+         * Returns the FormLayout instance that configures the layout of the generated form
+         * for the child entity when the navigation property cardinality is **one**.
+         * This layout controls aspects such as column span and label alignment.
+         * 
+         * @returns The FormLayout aggregation instance.
+         */
         getFormLayout: GetAggregation<FormLayout>;
+
+        /**
+         * Sets the FormLayout instance to configure the layout of the generated form
+         * for the child entity when the navigation property cardinality is **one**.
+         * Consumers can customize layout details like column span and label alignment.
+         * 
+         * @param formLayout - The FormLayout instance to set.
+         */
         setFormLayout: SetAggregation<FormLayout>;
+
+        /**
+         * Returns all custom UI5 controls that replace the default generated controls for specific child entity properties.
+         * This allows fine-grained customization of the UI by substituting standard controls with custom ones.
+         * 
+         * @returns An array of CustomElement instances or a single instance.
+         */
         getCustomElements: GetAggregation<CustomElement[]>;
+
+        /**
+         * Removes a specific CustomElement from the child entity’s custom UI elements by reference, ID, or index.
+         * 
+         * @param reference - The index, ID, or instance of the CustomElement to remove.
+         */
         removeCustomElement: RemoveAggregation<CustomElement>;
+
+        /**
+         * Removes all CustomElement instances from the child entity, clearing all custom control overrides.
+         */
         removeAllCustomElements: RemoveAllAggregation;
+
+        /**
+         * Destroys all CustomElement instances, releasing resources and removing references.
+         */
         destroyCustomElements: DestroyAggregation;
+
+        /**
+         * Adds custom UI content to dialogs opened by action buttons (Create, Update, Delete, Display) in **many** cardinality navigation properties.
+         * This content is not managed by the library and must be manually handled by the consumer.
+         * It is useful for injecting static UI elements or custom logic blocks.
+         * 
+         * @param aggregation - The CustomContent instance to add.
+         */
         addCustomContent: AddAggregation<CustomContent>;
+
+        /**
+         * Returns all custom UI content elements currently added to the dialogs for the child entity.
+         * 
+         * @returns An array of CustomContent instances or a single instance.
+         */
         getCustomContents: GetAggregation<CustomContent[]>;
+
+        /**
+         * Removes a specific CustomContent element from the dialogs by reference, ID, or index.
+         * 
+         * @param reference - The index, ID, or instance of the CustomContent to remove.
+         */
         removeCustomContent: RemoveAggregation<CustomContent>;
+
+        /**
+         * Removes all CustomContent instances from the dialogs, clearing injected content.
+         */
         removeAllCustomContents: RemoveAllAggregation;
+
+        /**
+         * Destroys all CustomContent instances, freeing resources and clearing references.
+         */
         destroyCustomContents: DestroyAggregation;
     }
 }
@@ -615,6 +832,13 @@ export interface Settings {
 export type TableClass = "sap.m.Table" | "sap.ui.table.Table";
 
 export interface ValueInheritance {
+    /**
+     * The name of the property in the parent entity whose value should be inherited.
+     */
     parentProperty: string;
+
+    /**
+     * The name of the property in the child (target) entity that will receive the inherited value.
+     */
     targetProperty: string;
 }
