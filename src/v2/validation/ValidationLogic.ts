@@ -131,6 +131,18 @@ export default class ValidationLogic extends ManagedObject {
         super(settings as $ManagedObjectSettings);
     }
 
+    /**
+     * Evaluates the validation logic defined in this instance.
+     * This method is automatically called by the library during the submission process.
+     * 
+     * It checks the provided conditions or runs the custom validator function,
+     * depending on how the instance was configured. If the validation fails,
+     * the corresponding error message is displayed under the field.
+     * 
+     * **Do not call this method manually.** It is handled internally by the UI5 Antares Pro library.
+     * 
+     * @internal
+     */
     public async evaluate(value: any) {
         const validator = this.getValidator();
         const factory = this.getFactory();
