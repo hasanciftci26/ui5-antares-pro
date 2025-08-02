@@ -8,7 +8,7 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import { ValueHelpDialog$CancelEvent } from "sap/zen/dsh/widgets/ValueHelpDialog";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
-import { Operation, PropertySettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
+import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
 import { Settings } from "ui5/antares/pro/types/v2/valuelist/ValueList.types";
 import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
@@ -35,6 +35,38 @@ import CustomFilterBar from "ui5/antares/pro/v2/custom/type/CustomFilterBar";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
 
 /**
+ * The **ValueList** class in the UI5 Antares Pro library provides a programmatic way to configure and attach
+ * a value help dialog to entity properties in an **CreateEntry** or **UpdateEntry** instance, 
+ * similar in spirit to OData annotations but handled in code.
+ * 
+ * Instead of relying on metadata annotations like **@Common.ValueList**, consumers can create a **ValueList** instance
+ * and bind it directly to the target property in the **CreateEntry** or **UpdateEntry** instance.
+ * 
+ * ### Prerequisites
+ * - The property must be of type **Edm.String** or **Edm.Guid**.
+ * - The **formType** in the **CreateEntry/UpdateEntry** class constructor must be set to **"SimpleForm"**.
+ *   - This is because the **SimpleForm** renders standard input controls for each property, 
+ * which the library can extend with custom value help dialogs.
+ *   - If **formType** is set to **"SmartForm"**, the library renders **SmartField** instances, 
+ * which only support value lists via OData metadata annotations.
+ * 
+ * ### SmartForm vs. SimpleForm
+ * - When using **SmartForm**, if the OData metadata includes 
+ * standard annotations (e.g., **@Common.ValueList**, **@Common.Text**, **@Common.TextArrangement**),
+ *   these will be interpreted by the **SmartField**, and no manual **ValueList** instance is needed.
+ * - When using **SimpleForm**, consumers must manually configure value help using this class, as annotations are not interpreted.
+ *   - **Note**: **@Common.Text** and **@Common.TextArrangement** are **not** currently supported in **SimpleForm** mode.
+ *   - However, for SmartForms, these can be controlled through the **textInEditModeSource** setting 
+ * in the **propertySettings** array of the **CreateEntry/UpdateEntry** class.
+ * 
+ * ### Limitations
+ * - This class **does not support fixed value lists** (i.e., predefined sets rendered as a dropdown).
+ *   - If your use case involves dropdowns, consider either using **SmartForm** with annotated metadata or handling the dropdown manually.
+ * 
+ * Overall, the **ValueList** class provides flexible, 
+ * code-driven value help functionality for editable forms without needing to extend OData metadata.
+ * It is especially useful in custom-built **SimpleForm** UIs where annotation-driven support is unavailable.
+ * 
  * @namespace ui5.antares.pro.v2.valuelist
  */
 export default class ValueList extends ManagedObject implements MetaContextOwner {
@@ -52,7 +84,6 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
             pathPrefix: { type: "string", defaultValue: "" },
             dateRangeOptions: { type: "string[]" },
             parameters: { type: "object[]", defaultValue: [] },
-            propertyOrder: { type: "string[]", defaultValue: [] },
             propertyLabels: { type: "object[]", defaultValue: [] },
             valueHelpDialog: { type: "object", visibility: "hidden" },
         },
@@ -78,29 +109,70 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
         this.setModel(model, "valueHelpFilter");
     }
 
+    /**
+     * Returns the name of the OData entity set from which value help data will be fetched.
+     * This value is used to construct the request URL to retrieve entries in the value help dialog.
+     *
+     * @returns The name of the entity set associated with the value list.
+     */
     public getEntitySet() {
         return this.getProperty("entitySet") as string;
     }
 
+    /**
+     * Sets the name of the OData entity set from which value help data will be retrieved.
+     * This value is essential for determining the backend endpoint that serves the value help entries.
+     *
+     * @param entitySet The name of the entity set to be associated with the value list.
+     */
     public setEntitySet(entitySet: string) {
         this.setProperty("entitySet", entitySet.startsWith("/") ? entitySet.substring(1) : entitySet);
     }
 
+    /**
+     * Returns the internal property order definition.
+     * **This method is used only for internal bookkeeping and does not
+     * affect the actual display order of columns in the value help dialog.**
+     * 
+     * @returns Array of property names for internal ordering.
+     * @internal
+     */
+    public getPropertyOrder() {
+        return [];
+    }
+
+    /**
+     * Returns the current operation type for internal use by the UI5 Antares Pro library.
+     * This method always returns **"Create"** to indicate the default operation context
+     * and must not be called or overridden by the consumer.
+     *
+     * @returns The string "Create" representing the operation type.
+     * @internal
+     */
     public getOperation() {
         return "Create" as Operation;
     };
 
+    /**
+     * Returns an empty array representing property-specific settings.
+     * This method exists for internal compatibility within the UI5 Antares Pro library
+     * and should not be called or relied upon by the consumer.
+     *
+     * @returns An empty array.
+     * @internal
+     */
     public getPropertySettings() {
-        const settings: PropertySettings[] = this.getPropertyLabels().map((property) => {
-            return {
-                name: property.name,
-                label: property.label
-            };
-        });
-
-        return settings;
+        return [];
     }
 
+    /**
+     * Opens the Value Help Dialog when the end user activates value help (F4 or input field icon).
+     * This method is called internally by the UI5 Antares Pro library and handles the dialog setup,
+     * data retrieval, and binding processes. **It must not be called directly by the consumer.**
+     *
+     * @returns A Promise that resolves when the dialog is successfully opened.
+     * @internal
+     */
     public async open() {
         BusyIndicator.show(0);
         this.checkValidity();
