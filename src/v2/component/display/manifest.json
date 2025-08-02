@@ -6,7 +6,7 @@
         "embeddedBy": "../../../",
         "title": "UI5 Antares Pro Display Entry Component",
         "applicationVersion": {
-            "version": "0.0.2"
+            "version": "1.0.0"
         }
     },
     "sap.ui": {

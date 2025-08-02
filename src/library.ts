@@ -12,7 +12,7 @@ const library = Lib.init({
     ],
     controls: [],
     noLibraryCSS: true,
-    version: "0.0.2"
+    version: "1.0.0"
 });
 
 export default library;
