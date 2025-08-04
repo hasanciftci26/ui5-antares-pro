@@ -333,7 +333,21 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
          */
         setVisibleColumnCount: SetProperty<number>;
 
+        /**
+         * Retrieves the configured number of visible rows for the generated table when **sap.ui.table.Table** is used.
+         *
+         * @returns The number of visible rows. This value is relevant only when the table type is **sap.ui.table.Table**.
+         */
         getVisibleRowCount: GetProperty<number>;
+
+        /**
+         * Defines the number of visible rows for the generated table when **sap.ui.table.Table** is used.
+         *
+         * This setting determines how many rows are rendered in the visible area of the table, without the need for vertical scrolling.
+         * Note that this property has no effect if the table type is **sap.m.Table**, as that control handles content rendering responsively.
+         *
+         * @param newValue - The number of rows to display in the visible area of the table.
+         */
         setVisibleRowCount: SetProperty<number>;
 
         /**
@@ -754,9 +768,23 @@ export interface Settings {
      * navigation properties. By default, up to five columns are shown and the rest are hidden but accessible
      * through the table's personalization settings.
      * This property gives consumers control over the table’s initial appearance.
+     * 
+     * @default 5
      */
     visibleColumnCount?: number;
 
+    /**
+     * Specifies the number of rows to be displayed in the generated table when the associated cardinality is 1:N 
+     * and the table type is **sap.ui.table.Table**.
+     *
+     * This setting is applicable only when the **tableClass** is set to **sap.ui.table.Table**. 
+     * It is ignored for **sap.m.Table**, which manages row rendering responsively through its growing mechanism.
+     *
+     * By default, the value is set to **5**, meaning that 5 rows will be visible without scrolling. 
+     * Consumers may override this value to tailor the table’s height according to their layout requirements.
+     *
+     * @default 5
+     */
     visibleRowCount?: number;
 
     /**
