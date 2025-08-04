@@ -9,7 +9,7 @@
 [UI5_DIALOG]: https://sapui5.hana.ondemand.com/#/api/sap.m.Dialog
 [UI5_V2_ODATA]: https://sapui5.hana.ondemand.com/#/api/sap.ui.model.odata.v2.ODataModel
 
-> ⚡ **Note:**  
+> ⚡ **Note**  
 > **UI5 Antares Pro** is the successor of the [UI5 Antares][UI5_ANTARES] library, completely rebuilt from the ground up with a renewed code base to ensure higher code quality, better maintainability, and enhanced performance.
 > It adds advanced capabilities such as comprehensive navigation handling and improved flexibility for robust SAPUI5 apps.
 
