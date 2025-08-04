@@ -14,7 +14,7 @@
 > **UI5 Antares Pro** is the successor of the [UI5 Antares][UI5_ANTARES_URL] library, completely rebuilt from the ground up with a renewed code base to ensure higher code quality, better maintainability, and enhanced performance.
 > It adds advanced capabilities such as comprehensive navigation handling and improved flexibility for robust SAPUI5 apps.
 
-**UI5 Antares Pro** is a modular SAPUI5 library designed to standardize and accelerate the implementation of CRUD operations for OData EntitySets in enterprise applications.
+**UI5 Antares Pro** is a modular [SAPUI5][SAPUI5_URL] library designed to standardize and accelerate the implementation of CRUD operations for OData EntitySets in enterprise applications.
 
 Leveraging the OData model defined in the consuming application, the library dynamically generates UI elements such as dialogs, forms, and tables. Full lifecycle handling is provided, including data binding, submission, and error management. Support is also included for custom validation logic, which can be implemented by the consumer as needed.
 
