@@ -4,6 +4,7 @@ import Fragment from "sap/ui/core/Fragment";
 import { Binding$ChangeEvent } from "sap/ui/model/Binding";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import Column from "sap/ui/table/Column";
+import Fixed from "sap/ui/table/rowmodes/Fixed";
 import Table from "sap/ui/table/Table";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { P13nProperty, Settings } from "ui5/antares/pro/types/v2/ui/TableGeneratorBase.types";
@@ -42,6 +43,9 @@ export default class GridTableGenerator extends TableGeneratorBase {
         this.initialize();
         table.addExtension(this.getToolbar());
         table.addStyleClass("sapUiMediumMargin");
+        table.setRowMode(new Fixed({
+            rowCount: this.getVisibleRowCount()
+        }));
 
         table.bindRows({
             path: this.getOwnerParent().getName(),

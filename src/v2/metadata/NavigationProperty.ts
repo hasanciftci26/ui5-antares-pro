@@ -83,6 +83,7 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             closeButtonText: { type: "string", defaultValue: LibraryBundle.getText("ui5AntaresPro.button.close") },
             closeButtonType: { type: "string", defaultValue: "Default" },
             visibleColumnCount: { type: "int", defaultValue: 5 },
+            visibleRowCount: { type: "int", defaultValue: 5 },
             noEntryErrorEnabled: { type: "boolean", defaultValue: false },
             noEntryErrorMessage: { type: "string" },
             entitySet: { type: "string" },
@@ -396,7 +397,8 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
             deleteButtonType: this.getDeleteButtonType(),
             closeButtonText: this.getCloseButtonText(),
             closeButtonType: this.getCloseButtonType(),
-            visibleColumnCount: this.getVisibleColumnCount()
+            visibleColumnCount: this.getVisibleColumnCount(),
+            visibleRowCount: this.getVisibleRowCount()
         };
 
         return settings;

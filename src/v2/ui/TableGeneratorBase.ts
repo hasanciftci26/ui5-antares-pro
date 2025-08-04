@@ -64,6 +64,7 @@ export default abstract class TableGeneratorBase extends ManagedObject {
             closeButtonText: { type: "string" },
             closeButtonType: { type: "string" },
             visibleColumnCount: { type: "int" },
+            visibleRowCount: { type: "int"},
             visibleColumns: { type: "string[]", visibility: "hidden" },
             tableInstance: { type: "object", visibility: "hidden" },
             p13nStateChangeHandler: { type: "function", visibility: "hidden" }

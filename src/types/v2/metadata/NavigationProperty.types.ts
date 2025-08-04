@@ -333,6 +333,9 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
          */
         setVisibleColumnCount: SetProperty<number>;
 
+        getVisibleRowCount: GetProperty<number>;
+        setVisibleRowCount: SetProperty<number>;
+
         /**
          * Indicates whether the validation check for at least one child entity is enabled in **many** cardinality
          * navigation properties when used with the **CreateEntry** class.
@@ -753,6 +756,8 @@ export interface Settings {
      * This property gives consumers control over the table’s initial appearance.
      */
     visibleColumnCount?: number;
+
+    visibleRowCount?: number;
 
     /**
      * Enables a validation check for **many** cardinality navigation properties used with the **CreateEntry** class.

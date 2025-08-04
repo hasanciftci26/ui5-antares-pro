@@ -55,6 +55,7 @@ export default class Homepage extends BaseController {
             name: "toCertifications",
             noEntryErrorEnabled: true,
             noEntryErrorMessage: "Test",
+            visibleRowCount: 3,
             inheritValues: [{
                 parentProperty: "ID",
                 targetProperty: "employeeID"

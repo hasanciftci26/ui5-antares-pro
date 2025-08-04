@@ -41,6 +41,8 @@ declare module "ui5/antares/pro/v2/ui/TableGeneratorBase" {
         setCloseButtonType: SetProperty<ButtonType>;
         getVisibleColumnCount: GetProperty<number>;
         setVisibleColumnCount: SetProperty<number>;
+        getVisibleRowCount: GetProperty<number>;
+        setVisibleRowCount: SetProperty<number>;
     }
 }
 
@@ -59,6 +61,7 @@ export interface Settings {
     closeButtonText: string;
     closeButtonType: ButtonType;
     visibleColumnCount: number;
+    visibleRowCount: number;
 }
 
 export interface P13nProperty {
