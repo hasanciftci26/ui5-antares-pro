@@ -603,10 +603,47 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
          */
         destroyCustomElements: DestroyAggregation;
 
+        /**
+         * Registers a **CustomCell** definition to override the default rendering behavior
+         * for a specific property in the generated table. This enables consumers to inject
+         * their own UI5 controls (e.g., **ObjectStatus**) instead of the standard **sap.m.Text**.
+         *
+         * Use this method when you want to customize how a specific field is displayed in the table
+         * for a 1:N navigation.
+         *
+         * @param aggregation The **CustomCell** instance that defines the target property and replacement control.
+         */
         addCustomCell: AddAggregation<CustomCell>;
+
+        /**
+         * Retrieves all **CustomCell** definitions currently assigned to this navigation.
+         * These definitions determine which properties of the child entity will use
+         * custom controls instead of the default ones in the generated table.
+         *
+         * @returns An array of **CustomCell** instances.
+         */
         getCustomCells: GetAggregation<CustomCell[]>;
+
+        /**
+         * Removes a CustomCell aggregation from the NavigationProperty instance.
+         * 
+         * The aggregation to remove can be identified by its index (number), ID (string), or by passing the CustomCell instance itself.
+         * Once removed, the CustomCell is detached from the NavigationProperty.
+         * 
+         * @param reference - The index, ID, or instance of the CustomCell to remove.
+         */
         removeCustomCell: RemoveAggregation<CustomCell>;
+
+        /**
+         * Clears all **CustomCell** definitions from the **customCells** aggregation.
+         * This effectively removes all custom rendering logic and restores default behavior
+         * for all properties in the generated table.
+         */
         removeAllCustomCells: RemoveAllAggregation;
+
+        /**
+         * Destroys all **CustomCell** instances in the **customCells** aggregation and releases associated resources.
+         */
         destroyCustomCells: DestroyAggregation;
 
         /**
@@ -860,6 +897,14 @@ export interface Settings {
      */
     customElements?: CustomElement[];
 
+    /**
+     * An optional array of custom cell definitions to override the default **sap.m.Text** controls
+     * used in the generated tables. Each **CustomCell** instance targets a specific property of
+     * the navigation entity and replaces its default cell with a provided SAPUI5 control such as **ObjectStatus**.
+     *
+     * This feature is only applicable when the cardinality is 1:N and the table is generated automatically
+     * by the library.
+     */
     customCells?: CustomCell[];
 
     /**

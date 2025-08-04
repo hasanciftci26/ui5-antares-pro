@@ -282,6 +282,15 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
         return this.getValueLists().find(valueList => valueList.getLocalDataProperty() === property);
     }
 
+    /**
+     * Retrieves the CustomCell instance associated with the specified property name.
+     * 
+     * Searches the aggregated CustomCell instances and returns the first one
+     * whose **propertyName** matches the given parameter.
+     * 
+     * @param property - The name of the property to find the corresponding CustomCell for.
+     * @returns The matching CustomCell instance if found; otherwise, undefined.
+     */
     public getCustomCellByProperty(property: string) {
         return this.getCustomCells().find(cell => cell.getPropertyName() === property);
     }
