@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import MessageBox from "sap/m/MessageBox";
+import ObjectStatus from "sap/m/ObjectStatus";
 import Table from "sap/m/Table";
 import Title from "sap/m/Title";
+import { ValueState } from "sap/ui/core/library";
 import View from "sap/ui/core/mvc/View";
 import { Binding$ChangeEvent } from "sap/ui/model/Binding";
 import ListBinding from "sap/ui/model/ListBinding";
 import Context from "sap/ui/model/odata/v2/Context";
 import BaseController from "test/v2/ui5/antares/pro/controller/BaseController";
+import CustomCell from "ui5/antares/pro/v2/custom/CustomCell";
 import CreateEntry from "ui5/antares/pro/v2/entry/CreateEntry";
 import DeleteEntry from "ui5/antares/pro/v2/entry/DeleteEntry";
 import DisplayEntry from "ui5/antares/pro/v2/entry/DisplayEntry";
@@ -55,7 +58,18 @@ export default class Homepage extends BaseController {
             inheritValues: [{
                 parentProperty: "ID",
                 targetProperty: "employeeID"
-            }]
+            }],
+            customCells: [
+                new CustomCell({
+                    propertyName: "authority",
+                    cell: new ObjectStatus({
+                        text: {
+                            path: "authority"
+                        },
+                        state: ValueState.Error
+                    })
+                })
+            ]
         }));
 
         entry.run();
@@ -98,7 +112,7 @@ export default class Homepage extends BaseController {
         entry.addNavigationProperty(new NavigationProperty({
             name: "toCertifications",
             tableClass: "sap.m.Table"
-        }));        
+        }));
 
         entry.run("tblEmployees");
     }

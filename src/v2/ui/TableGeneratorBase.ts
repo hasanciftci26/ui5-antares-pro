@@ -137,6 +137,10 @@ export default abstract class TableGeneratorBase extends ManagedObject {
         this.setProperty("tableInstance", tableInstance);
     }
 
+    protected getCustomCellByProperty(property: string) {
+        return this.getOwnerParent().getCustomCellByProperty(property);
+    }
+
     protected initialize() {
         if (this.getFactory().getFormType() === "SimpleForm") {
             this.setFormGenerator(new SimpleFormGenerator());

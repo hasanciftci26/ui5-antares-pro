@@ -113,6 +113,11 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
                 multiple: true,
                 singularName: "customElement"
             },
+            customCells: {
+                type: "ui5.antares.pro.v2.custom.CustomCell",
+                multiple: true,
+                singularName: "customCell"
+            },
             customContents: {
                 type: "ui5.antares.pro.v2.custom.CustomContent",
                 multiple: true,
@@ -274,6 +279,10 @@ export default class NavigationProperty extends ManagedObject implements MetaCon
      */
     public getValueListByProperty(property: string) {
         return this.getValueLists().find(valueList => valueList.getLocalDataProperty() === property);
+    }
+
+    public getCustomCellByProperty(property: string) {
+        return this.getCustomCells().find(cell => cell.getPropertyName() === property);
     }
 
     /**

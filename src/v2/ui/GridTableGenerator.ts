@@ -62,7 +62,7 @@ export default class GridTableGenerator extends TableGeneratorBase {
     }
 
     private addColumns(table: Table) {
-        const properties = this.getMetaContext().getEntityProperties().filter(prop => prop.visible);        
+        const properties = this.getMetaContext().getEntityProperties().filter(prop => prop.visible);
         const p13nProperties: P13nProperty[] = [];
         const generator = new ControlGenerator({
             generateFor: "Table",
@@ -72,6 +72,8 @@ export default class GridTableGenerator extends TableGeneratorBase {
         let index = 0;
 
         for (const property of properties) {
+            const customCell = this.getCustomCellByProperty(property.name);
+
             p13nProperties.push({
                 key: property.name,
                 label: property.label,
@@ -82,7 +84,7 @@ export default class GridTableGenerator extends TableGeneratorBase {
                 customData: new CustomData({ key: "p13nKey", value: property.name }),
                 visible: index < this.getVisibleColumnCount(),
                 label: new Label({ text: property.label }),
-                template: generator.generate(property, property.name)
+                template: customCell?.getCell() || generator.generate(property, property.name)
             }));
 
             index++;

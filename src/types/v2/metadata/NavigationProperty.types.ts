@@ -14,6 +14,7 @@ import {
 } from "ui5/antares/pro/types/Global.types";
 import { Multiplicity } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { PropertySettings } from "ui5/antares/pro/types/v2/ui/Factory.types";
+import CustomCell from "ui5/antares/pro/v2/custom/CustomCell";
 import CustomContent from "ui5/antares/pro/v2/custom/CustomContent";
 import CustomElement from "ui5/antares/pro/v2/custom/CustomElement";
 import FormLayout from "ui5/antares/pro/v2/ui/FormLayout";
@@ -585,6 +586,12 @@ declare module "ui5/antares/pro/v2/metadata/NavigationProperty" {
          */
         destroyCustomElements: DestroyAggregation;
 
+        addCustomCell: AddAggregation<CustomCell>;
+        getCustomCells: GetAggregation<CustomCell[]>;
+        removeCustomCell: RemoveAggregation<CustomCell>;
+        removeAllCustomCells: RemoveAllAggregation;
+        destroyCustomCells: DestroyAggregation;
+
         /**
          * Adds custom UI content to dialogs opened by action buttons (Create, Update, Delete, Display) in **many** cardinality navigation properties.
          * This content is not managed by the library and must be manually handled by the consumer.
@@ -819,6 +826,8 @@ export interface Settings {
      * This offers fine-grained control over the child entity UI behavior.
      */
     customElements?: CustomElement[];
+
+    customCells?: CustomCell[];
 
     /**
      * Inserts custom UI content into the generated dialogs that are opened via action buttons (Create, Update, Display, etc.)

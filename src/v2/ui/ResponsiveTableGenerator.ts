@@ -107,7 +107,14 @@ export default class ResponsiveTableGenerator extends TableGeneratorBase {
             const property = properties.find(property => property.name === column);
 
             if (property) {
-                template.addCell(generator.generate(property, property.name));
+                const customCell = this.getCustomCellByProperty(property.name);
+
+                if (customCell) {
+                    const control = customCell.getCell().clone();
+                    template.addCell(control);
+                } else {
+                    template.addCell(generator.generate(property, property.name));
+                }
             }
         }
 

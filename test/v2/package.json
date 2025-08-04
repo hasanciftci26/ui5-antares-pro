@@ -30,6 +30,6 @@
     "ui5-tooling-transpile": "^3.8.0"
   },
   "dependencies": {
-    "ui5-antares-pro": "file:../../ui5-antares-pro-0.0.1.tgz"
+    "ui5-antares-pro": "file:../../ui5-antares-pro-1.0.0.tgz"
   }
 }
