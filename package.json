@@ -1,6 +1,6 @@
 {
   "name": "ui5-antares-pro",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A modular SAPUI5 library for generating dialogs and components with full CRUD support for OData EntitySets.",
   "scripts": {
     "build": "ui5 build --config=ui5-npm.yaml --clean-dest",

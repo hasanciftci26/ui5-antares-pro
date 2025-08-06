@@ -6,7 +6,7 @@
         "embeddedBy": "../../../",
         "title": "UI5 Antares Pro Delete Entry Component",
         "applicationVersion": {
-            "version": "1.0.0"
+            "version": "1.0.2"
         }
     },
     "sap.ui": {
