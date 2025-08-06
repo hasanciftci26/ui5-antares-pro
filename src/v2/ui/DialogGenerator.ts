@@ -1,5 +1,5 @@
 import Button from "sap/m/Button";
-import Dialog, { EscapeHandler } from "sap/m/Dialog";
+import Dialog from "sap/m/Dialog";
 import ManagedObject, { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { Settings } from "ui5/antares/pro/types/v2/ui/DialogGenerator.types";
@@ -50,7 +50,7 @@ export default class DialogGenerator extends ManagedObject {
                 path: "dialog>/dialogTitle"
             },
             endButton: this.getEndButton(),
-            escapeHandler: this.onEscape.bind(this) as EscapeHandler
+            escapeHandler: this.onEscape.bind(this)
         });
 
         dialog.setModel(factory.getODataModel());

@@ -289,7 +289,7 @@ export default class UpdateEntry extends Factory {
     }
 
     private getContextPathFromResponsiveTable(table: ResponsiveTable) {
-        if (![ListMode.SingleSelect, ListMode.SingleSelectLeft, ListMode.SingleSelectMaster].includes(table.getMode())) {
+        if (![ListMode.SingleSelect, ListMode.SingleSelectLeft, ListMode.SingleSelectMaster].includes(table.getMode() as ListMode)) {
             throw new Error("The mode property of the sap.m.Table must be one of the followings: SingleSelect, SingleSelectLeft, SingleSelectMaster");
         }
 

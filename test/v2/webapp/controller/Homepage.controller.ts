@@ -15,6 +15,7 @@ import DeleteEntry from "ui5/antares/pro/v2/entry/DeleteEntry";
 import DisplayEntry from "ui5/antares/pro/v2/entry/DisplayEntry";
 import UpdateEntry from "ui5/antares/pro/v2/entry/UpdateEntry";
 import NavigationProperty from "ui5/antares/pro/v2/metadata/NavigationProperty";
+import ValueList from "ui5/antares/pro/v2/valuelist/ValueList";
 
 /**
  * @namespace test.v2.ui5.antares.pro.controller
@@ -42,6 +43,7 @@ export default class Homepage extends BaseController {
         const entry = new CreateEntry({
             controller: this,
             entitySet: "Employees",
+            formType: "SimpleForm",
             propertySettings: [{
                 name: "firstName",
                 required: true
@@ -50,6 +52,19 @@ export default class Homepage extends BaseController {
                 required: true
             }]
         });
+
+        entry.addValueList(new ValueList({
+            localDataProperty: "countryCode",
+            entitySet: "EmployeeCertifications",
+            parameters: [{
+                type: "InOut",
+                localDataProperty: "countryCode",
+                valueListProperty: "authority"
+            }, {
+                type: "DisplayOnly",
+                valueListProperty: "issuedDate"
+            }]
+        }));
 
         entry.addNavigationProperty(new NavigationProperty({
             name: "toCertifications",

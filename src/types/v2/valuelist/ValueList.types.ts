@@ -1,5 +1,6 @@
 /* eslint-disable semi */
 /* eslint-disable @typescript-eslint/naming-convention */
+import DynamicDateRange from "sap/m/DynamicDateRange";
 import Context from "sap/ui/model/odata/v2/Context";
 import { GetProperty, SetProperty } from "ui5/antares/pro/types/Global.types";
 
@@ -270,3 +271,13 @@ export type Parameter = {
      */
     valueListProperty: string;
 };
+
+export interface ExtendedDynamicDateRange extends DynamicDateRange {
+    getValue(): DynamicDateRangeValue;
+    setValue(value: DynamicDateRangeValue): void;
+}
+
+export interface DynamicDateRangeValue {
+    operator: string;
+    values: Array<Date | int | string | any>;
+}

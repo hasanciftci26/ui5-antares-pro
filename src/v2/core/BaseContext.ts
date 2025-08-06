@@ -45,7 +45,7 @@ export default abstract class BaseContext extends ManagedObject {
         this.setView(this.getController().getView() as View);
         this.setComponent(this.getController().getOwnerComponent() as UIComponent);
         this.setODataModel(this.getModelRef());
-        this.setDefaultBindingMode(this.getODataModel().getDefaultBindingMode());
+        this.setDefaultBindingMode(this.getODataModel().getDefaultBindingMode() as BindingMode);
         this.enableTwoWayBinding();
         this.setDeferredGroups();
         this.getODataModel().setUseBatch(true);

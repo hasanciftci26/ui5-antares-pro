@@ -9,7 +9,7 @@ import { ValueHelpDialog$CancelEvent } from "sap/zen/dsh/widgets/ValueHelpDialog
 import { ClassMetadata } from "ui5/antares/pro/types/Global.types";
 import { MetaContextOwner } from "ui5/antares/pro/types/v2/metadata/MetaContext.types";
 import { Operation } from "ui5/antares/pro/types/v2/ui/Factory.types";
-import { Settings } from "ui5/antares/pro/types/v2/valuelist/ValueList.types";
+import { ExtendedDynamicDateRange, Settings } from "ui5/antares/pro/types/v2/valuelist/ValueList.types";
 import ControlGenerator from "ui5/antares/pro/v2/custom/control/ControlGenerator";
 import MetaContext from "ui5/antares/pro/v2/metadata/MetaContext";
 import Factory from "ui5/antares/pro/v2/ui/Factory";
@@ -499,7 +499,7 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
                     const dynamicDateRange = dynamicDateRanges.find(control => control.getName() === property.name);
 
                     if (dynamicDateRange) {
-                        dynamicDateRange.setValue({
+                        (dynamicDateRange as ExtendedDynamicDateRange).setValue({
                             operator: "DATE",
                             values: [contextValue]
                         });
@@ -670,7 +670,7 @@ export default class ValueList extends ManagedObject implements MetaContextOwner
                 continue;
             }
 
-            const value = control.getValue();
+            const value = (control as ExtendedDynamicDateRange).getValue();
 
             if (value) {
                 const dates = DynamicDateRange.toDates(value, "Default");
